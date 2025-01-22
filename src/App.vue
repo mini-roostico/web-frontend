@@ -16,17 +16,15 @@ html {
   background-color: #19191C;
 }
 #app {
-  font-family: Inter, Helvetica, Arial, sans-serif;
+  font-family: Poppins, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   background-color: #19191C;
 }
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
 }
 
 nav a.router-link-exact-active {
