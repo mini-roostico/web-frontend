@@ -77,8 +77,10 @@ export default {
             first_name: '',
             defaultRefreshTimeoutMs: 5 * 60 * 1000,
             username: '',
-            links: [{href: "/", name: "Home", loginNeeded: false},
-              {href: "/whiteboards", name: "Whiteboards", loginNeeded: true}, {href: "/profile", name: "Profile", loginNeeded: true}, ],
+            links: [
+              {href: "/", name: "Home", loginNeeded: false},
+              {href: "/sources", name: "Sources", loginNeeded: false},
+            ],
             linkToNotification: '/notifications',
             unreadMessage:  0
         }
