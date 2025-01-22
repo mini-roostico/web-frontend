@@ -1,15 +1,38 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <div class="about-view container py-4">
+    <h1 class="text-center mb-4">About Us</h1>
+    <p class="text-center">
+      Welcome to Subjekt! TODO: Add more content here.
+    </p>
   </div>
 </template>
 
-<style>
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
+<script>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
+  name: 'AboutView',
+  setup() {
+
+    return {
+    };
   }
+});
+</script>
+
+<style scoped>
+.about-view {
+  background-color: #19191C;
+  border-radius: 8px;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+h1 {
+  color: #CE29AA;
+}
+
+p {
+  color: #ccc;
 }
 </style>

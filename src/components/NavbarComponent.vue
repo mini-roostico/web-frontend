@@ -21,8 +21,8 @@
       </ul>
         <div class="col loginButtons">
             <div v-if="!isLogged">
-                <a role="button" class="btn btn-light mx-2"  href="#/login">Sign In</a>
-                <a role="button" class="btn btn-outline-primary" href="#/register">Sign Up</a>
+                <a role="button" class="btn btn-light mx-2"  href="/login">Sign In</a>
+                <a role="button" class="btn btn-outline-primary" href="/register">Sign Up</a>
             </div>
             <div v-else>
               <NavbarUserDropdown :username="this.username" :first_name="this.first_name" @logout="this.logout"></NavbarUserDropdown>
@@ -80,6 +80,7 @@ export default {
             links: [
               {href: "/", name: "Home", loginNeeded: false},
               {href: "/sources", name: "Sources", loginNeeded: false},
+              {href: "/about", name: "About", loginNeeded: false},
             ],
             linkToNotification: '/notifications',
             unreadMessage:  0
