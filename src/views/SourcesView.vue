@@ -43,6 +43,7 @@
 <script>
 import { ref, computed } from "vue";
 import SourceCard from "@/components/SourceCard.vue";
+import router from "@/router/index.js";
 
 export default {
   name: "SourcesView",
@@ -69,7 +70,7 @@ export default {
     });
 
     const openFile = (file) => {
-      alert(`Opening: ${file.title}`);
+      router.push({ path: "/suite" })
     };
 
     const renameFile = (file) => {
