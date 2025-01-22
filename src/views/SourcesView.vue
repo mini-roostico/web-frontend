@@ -21,7 +21,7 @@
       <p class="text-muted">Wow...it's empty here!</p>
     </div>
 
-    <!-- File cards -->
+    <!-- Source cards -->
     <div v-else class="row g-3">
       <div
         v-for="(file, index) in filteredFiles"
@@ -70,7 +70,8 @@ export default {
     });
 
     const openFile = (file) => {
-      router.push({ path: "/suite" })
+      console.log("Opening file:", file);
+      router.push({ path: `/suite/${file.title}` })
     };
 
     const renameFile = (file) => {

@@ -31,7 +31,7 @@ const router = createRouter({
       component: () => SourcesView
     },
     {
-      path: '/suite',
+      path: '/suite/:suiteId',
       name: 'suite',
       component: () => import('../views/SuiteView.vue')
     }
