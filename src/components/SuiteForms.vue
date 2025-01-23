@@ -6,7 +6,7 @@ const suiteName = ref('');
 const configuration = ref([]);
 const parameters = ref([]);
 const macros = ref([]);
-const subjects = ref([{ name: 'Subject 1', pairs: [] }]);
+const subjects = ref([{name: 'Subject 1', pairs: []}]);
 
 // to generate YAML from the forms
 const generateYAML = computed(() => {
@@ -59,7 +59,7 @@ defineExpose({
 });
 
 const addConfigPair = () => {
-  configuration.value.push({ key: '', value: '' });
+  configuration.value.push({key: '', value: ''});
 };
 
 const removeConfigPair = (index) => {
@@ -116,7 +116,7 @@ const removeSubject = (index) => {
 };
 
 const addSubjectPair = (subjectIndex) => {
-  subjects.value[subjectIndex].pairs.push({ key: '', value: '' });
+  subjects.value[subjectIndex].pairs.push({key: '', value: ''});
 };
 
 const removeSubjectPair = (subjectIndex, pairIndex) => {
@@ -132,7 +132,8 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
         <h5 class="mb-0">Suite Name</h5>
       </div>
       <div class="card-body">
-        <input v-model="suiteName" type="text" class="form-control dark-input" placeholder="Enter suite name">
+        <input v-model="suiteName" type="text" class="form-control dark-input"
+               placeholder="Enter suite name">
       </div>
     </div>
 
@@ -150,7 +151,8 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             <input v-model="pair.key" type="text" class="form-control dark-input" placeholder="Key">
           </div>
           <div class="col-5">
-            <input v-model="pair.value" type="text" class="form-control dark-input" placeholder="Value">
+            <input v-model="pair.value" type="text" class="form-control dark-input"
+                   placeholder="Value">
           </div>
           <div class="col-2">
             <button @click="removeConfigPair(index)" class="btn btn-outline-danger btn-sm">
@@ -172,9 +174,11 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
       <div class="card-body">
         <div v-for="(param, paramIndex) in parameters" :key="paramIndex" class="mb-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <input v-model="param.name" type="text" class="form-control dark-input w-75" placeholder="Parameter name">
+            <input v-model="param.name" type="text" class="form-control dark-input w-75"
+                   placeholder="Parameter name">
             <div>
-              <button @click="addParameterValue(paramIndex)" class="btn btn-outline-success btn-sm me-2">
+              <button @click="addParameterValue(paramIndex)"
+                      class="btn btn-outline-success btn-sm me-2">
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
               <button @click="removeParameter(paramIndex)" class="btn btn-outline-danger btn-sm">
@@ -184,10 +188,12 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
           </div>
           <div v-for="(value, valueIndex) in param.values" :key="valueIndex" class="row mb-2">
             <div class="col-10">
-              <input v-model="param.values[valueIndex]" type="text" class="form-control dark-input" placeholder="Value">
+              <input v-model="param.values[valueIndex]" type="text" class="form-control dark-input"
+                     placeholder="Value">
             </div>
             <div class="col-2">
-              <button @click="removeParameterValue(paramIndex, valueIndex)" class="btn btn-outline-danger btn-sm">
+              <button @click="removeParameterValue(paramIndex, valueIndex)"
+                      class="btn btn-outline-danger btn-sm">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -207,9 +213,11 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
       <div class="card-body">
         <div v-for="(macro, macroIndex) in macros" :key="macroIndex" class="mb-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <input v-model="macro.name" type="text" class="form-control dark-input w-75" placeholder="Macro name">
+            <input v-model="macro.name" type="text" class="form-control dark-input w-75"
+                   placeholder="Macro name">
             <div>
-              <button @click="addMacroValue(macroIndex)" class="btn btn-outline-success btn-sm me-2">
+              <button @click="addMacroValue(macroIndex)"
+                      class="btn btn-outline-success btn-sm me-2">
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
               <button @click="removeMacro(macroIndex)" class="btn btn-outline-danger btn-sm">
@@ -219,10 +227,12 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
           </div>
           <div v-for="(value, valueIndex) in macro.values" :key="valueIndex" class="row mb-2">
             <div class="col-10">
-              <textarea v-model="macro.values[valueIndex]" class="form-control dark-input" rows="3" placeholder="Value"></textarea>
+              <textarea v-model="macro.values[valueIndex]" class="form-control dark-input" rows="3"
+                        placeholder="Value"></textarea>
             </div>
             <div class="col-2">
-              <button @click="removeMacroValue(macroIndex, valueIndex)" class="btn btn-outline-danger btn-sm">
+              <button @click="removeMacroValue(macroIndex, valueIndex)"
+                      class="btn btn-outline-danger btn-sm">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -243,9 +253,11 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
         <div v-for="(subject, subjectIndex) in subjects" :key="subjectIndex" class="mb-4">
           <div class="card dark-card">
             <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-              <input v-model="subject.name" type="text" class="form-control dark-input w-75" :placeholder="`Subject ${subjectIndex + 1}`">
+              <input v-model="subject.name" type="text" class="form-control dark-input w-75"
+                     :placeholder="`Subject ${subjectIndex + 1}`" disabled>
               <div>
-                <button @click="addSubjectPair(subjectIndex)" class="btn btn-outline-success btn-sm me-2">
+                <button @click="addSubjectPair(subjectIndex)"
+                        class="btn btn-outline-success btn-sm me-2">
                   <i class="bi bi-plus-lg"></i> Add Pair
                 </button>
                 <button @click="removeSubject(subjectIndex)" class="btn btn-outline-danger btn-sm">
@@ -256,13 +268,16 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             <div class="card-body">
               <div v-for="(pair, pairIndex) in subject.pairs" :key="pairIndex" class="row mb-2">
                 <div class="col-5">
-                  <input v-model="pair.key" type="text" class="form-control dark-input" placeholder="Key">
+                  <input v-model="pair.key" type="text" class="form-control dark-input"
+                         placeholder="Key">
                 </div>
                 <div class="col-5">
-                  <input v-model="pair.value" type="text" class="form-control dark-input" placeholder="Value">
+                  <input v-model="pair.value" type="text" class="form-control dark-input"
+                         placeholder="Value">
                 </div>
                 <div class="col-2">
-                  <button @click="removeSubjectPair(subjectIndex, pairIndex)" class="btn btn-outline-danger btn-sm">
+                  <button @click="removeSubjectPair(subjectIndex, pairIndex)"
+                          class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>
