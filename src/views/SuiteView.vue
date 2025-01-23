@@ -49,10 +49,10 @@
           </ul>
           <div class="tab-content">
             <div v-show="activeTabRight === 'Subjekt Output'" class="tab-pane fade show active">
-              <p>Content for Subjekt Output.</p>
+              <p>Run the generation to produce an output.</p>
             </div>
             <div v-show="activeTabRight === 'Generation graph'" class="tab-pane fade show active">
-
+              <GraphViewer v-model="graphData"></GraphViewer>
             </div>
           </div>
         </div>
@@ -66,20 +66,65 @@ import { defineComponent, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import YamlEditor from "@/components/YamlEditor.vue";
 import SuiteForms from "@/components/SuiteForms.vue";
+import GraphViewer from "@/components/GraphViewer.vue";
 
 export default defineComponent({
   name: 'SuiteView',
-  components: {SuiteForms, YamlEditor},
+  components: {GraphViewer, SuiteForms, YamlEditor},
   setup() {
     const route = useRoute();
     const suiteName = ref(route.params.suiteId);
     const activeTabLeft = ref('Suite Configuration');
     const activeTabRight = ref('Subjekt Output');
 
+    const position = { x: 0, y: 0 }
+    const initialNodes = [
+      {
+        id: 'root',
+        position,
+        data: {
+          label: 'Root',
+        },
+      },
+      {
+        id: 's1',
+        position,
+        data: {
+          label: 'Subject 1',
+        },
+      },
+      {
+        id: 's2',
+        position,
+        data: {
+          label: 'Subject 2',
+        },
+      },
+      {
+        id: 'rs1',
+        position,
+        data: {
+          label: 'Resolved Subject 1',
+        },
+      },
+    ]
+
+    const initialEdges = [
+      { id: 'root-s1', source: 'root', target: 's1' },
+      { id: 'root-s2', source: 'root', target: 's2' },
+      { id: 's1-rs1', source: 's1', target: 'rs1' },
+    ]
+
+    const graphData = {
+      nodes: initialNodes,
+      edges: initialEdges,
+    }
+
     return {
       suiteName,
       activeTabLeft,
-      activeTabRight
+      activeTabRight,
+      graphData,
     };
   }
 });

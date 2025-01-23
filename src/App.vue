@@ -6,12 +6,19 @@ import FooterComponent from "@/components/FooterComponent.vue";
 
 <template>
   <NavbarComponent ref="navbar"></NavbarComponent>
-  <router-view v-on:updateNotificationBadge="this.onVisualizeNotification" v-on:onLogin="this.onLogin"
-               v-on:onBadToken="this.onBadToken" v-on:onChangedInfo="this.onChangedInfo" />
+  <router-view v-on:onLogin="this.onLogin"
+               v-on:onBadToken="this.onBadToken"/>
   <FooterComponent></FooterComponent>
 </template>
 
 <style>
+
+/* these are necessary styles for vue flow */
+@import '@vue-flow/core/dist/style.css';
+
+/* this contains the default theme, these are optional styles */
+@import '@vue-flow/core/dist/theme-default.css';
+
 html {
   background-color: #19191C;
 }
