@@ -2,7 +2,6 @@
 import {ref, reactive, computed} from 'vue';
 import yaml from "js-yaml";
 
-const suiteName = ref('');
 const configuration = ref([]);
 const parameters = ref([]);
 const macros = ref([]);
@@ -37,7 +36,6 @@ const generateYAML = computed(() => {
   ).filter(subject => Object.keys(subject).length > 0);
 
   const yamlObject = {
-    name: suiteName.value,
     configuration: configObj,
     parameters: parametersArray,
     macros: macrosArray,
@@ -54,8 +52,51 @@ const generateYAML = computed(() => {
   }
 });
 
+const setFromYAML = (yamlString) => {
+  try {
+    // Parse the YAML
+    const parsedObject = yaml.load(yamlString);
+
+    // Configuration
+    configuration.value = Object.entries(parsedObject.configuration || {}).map(([key, value]) => ({
+      key,
+      value
+    }));
+
+    // Parameters
+    parameters.value = (parsedObject.parameters || []).map(param => ({
+      name: param.name,
+      values: param.values || []
+    }));
+
+    // Macros
+    macros.value = (parsedObject.macros || []).map(macro => ({
+      name: macro.name,
+      values: macro.values || []
+    }));
+
+    // Subjects
+    subjects.value = (parsedObject.subjects || []).map(subject => ({
+      name: `Subject ${subjects.value.length + 1}`,
+      pairs: Object.entries(subject).map(([key, value]) => ({
+        key,
+        value
+      }))
+    }));
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+};
+
+// Expose both methods
 defineExpose({
-  generateYAML: () => generateYAML.value
+  generateYAML: () => generateYAML.value,
+  setFromYAML
 });
 
 const addConfigPair = () => {
@@ -126,17 +167,6 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
 
 <template>
   <div class="container mt-4">
-    <!-- Suite Name -->
-    <div class="card dark-card mb-4">
-      <div class="card-header">
-        <h5 class="mb-0">Suite Name</h5>
-      </div>
-      <div class="card-body">
-        <input v-model="suiteName" type="text" class="form-control dark-input"
-               placeholder="Enter suite name">
-      </div>
-    </div>
-
     <!-- Configuration -->
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">

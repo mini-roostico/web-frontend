@@ -7,7 +7,11 @@ import GraphViewer from "@/components/GraphViewer.vue";
 
 // TODO
 const initialYaml = `---
-
+name: ''
+configuration: {}
+parameters: []
+macros: []
+subjects: []
 `
 
 const route = useRoute();
@@ -18,12 +22,39 @@ const loading = ref(false);
 const generationDone = ref(false);
 const yamlText = ref(initialYaml);
 const suiteFormsRef = ref(null);
+const alertText = ref('');
+const alertType = ref('alert-info');
+
+const showAlert = (text, type = 'alert-info') => {
+  alertText.value = text;
+  alertType.value = type;
+};
+
+const clearAlert = () => {
+  alertText.value = '';
+};
+
+const saveSuite = () => {
+  // TODO Implement save logic
+  showAlert('Suite saved successfully!', 'alert-success');
+};
+
 
 const position = {x: 0, y: 0}
 
 watch(activeTabLeft, (newTab) => {
   if (newTab === 'Suite YAML') {
     yamlText.value = suiteFormsRef.value.generateYAML().yaml;
+  } else if (newTab === 'Suite Configuration') {
+    let result = suiteFormsRef.value.setFromYAML(yamlText.value);
+    if (result.success === false) {
+      console.log(result.error);
+      showAlert(
+        "There was an error parsing your YAML, please fix it before going back",
+        'alert-danger'
+      );
+      activeTabLeft.value = 'Suite YAML';
+    }
   }
 })
 
@@ -79,14 +110,37 @@ const graphData = {
 </script>
 <template>
   <div class="suite-view container py-4">
+    <!-- Alert Component -->
+    <div
+      v-if="alertText"
+      class="alert alert-dismissible alert-dark fade show"
+      :class="alertType"
+      role="alert"
+    >
+      {{ alertText }}
+      <button
+        type="button"
+        class="btn-close"
+        @click="clearAlert"
+        aria-label="Close"
+      ></button>
+    </div>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="m-0 col">{{ suiteName }}</h1>
       <div class="d-flex align-items-center">
-        <!-- Play button -->
+        <input
+          v-model="suiteName"
+          class="form-control form-control dark-input me-2"
+          placeholder="Enter Suite Name"
+        />
+        <button class="btn btn-outline-secondary" @click="saveSuite">
+          <i class="bi bi-save me-1"></i>Save
+        </button>
+      </div>
+      <div class="d-flex align-items-center">
         <button class="btn play-btn me-2" @click="runRegeneration">
           <i class="bi bi-play-fill"></i> Run Suite
         </button>
-        <!-- Spinner -->
         <div
           class="spinner-border"
           role="status"
@@ -232,5 +286,78 @@ const graphData = {
 h1 {
   font-size: 1.75rem;
   font-weight: 600;
+}
+
+.alert-dark {
+  background-color: #2c2c2c;
+  color: #f4f4f4;
+  border-color: #1a1a1a;
+}
+
+.alert-dark hr {
+  border-top-color: #1a1a1a;
+}
+
+.alert-dark .alert-link {
+  color: #9ed9cc;
+}
+
+/* Variant Specific Dark Styles */
+.alert-dark.alert-primary {
+  background-color: #1e3a54;
+  border-color: #1a3245;
+  color: #bee1fc;
+}
+
+.alert-dark.alert-secondary {
+  background-color: #3a3a3a;
+  border-color: #2c2c2c;
+  color: #e0e0e0;
+}
+
+.alert-dark.alert-success {
+  background-color: #1e4a3c;
+  border-color: #163a2e;
+  color: #c3e6cb;
+}
+
+.alert-dark.alert-danger {
+  background-color: #4a1e1e;
+  border-color: #3a1515;
+  color: #f5c6cb;
+}
+
+.alert-dark.alert-warning {
+  background-color: #4a3a1e;
+  border-color: #3a2e15;
+  color: #ffeeba;
+}
+
+.alert-dark.alert-info {
+  background-color: #1e3a4a;
+  border-color: #1a2e3a;
+  color: #bee1fc;
+}
+
+.dark-input {
+  background-color: #2d2d31;
+  border-color: #3a3a3e;
+  color: #e1e1e1;
+}
+
+.dark-input:focus {
+  background-color: #2d2d31;
+  border-color: #4a4a4e;
+  color: #e1e1e1;
+  box-shadow: 0 0 0 0.25rem rgba(130, 138, 145, 0.15);
+}
+
+.dark-input::placeholder {
+  color: #8b8b8b;
+}
+
+.dark-input:disabled {
+  background-color: #1e1e21;
+  color: #666;
 }
 </style>
