@@ -1,3 +1,80 @@
+<script setup>
+import {ref, watch} from 'vue';
+import {useRoute} from 'vue-router';
+import YamlEditor from "@/components/YamlEditor.vue";
+import SuiteForms from "@/components/SuiteForms.vue";
+import GraphViewer from "@/components/GraphViewer.vue";
+
+// TODO
+const initialYaml = `---
+name: Suite Name
+configuration:
+  - key: key1
+    value: value1
+  - key: key2
+    value: value2
+`
+
+const route = useRoute();
+const suiteName = ref(route.params.suiteId);
+const activeTabLeft = ref('Suite Configuration');
+const activeTabRight = ref('Subjekt Output');
+const loading = ref(false);
+const generationDone = ref(false);
+const yamlText = ref(initialYaml);
+
+const position = {x: 0, y: 0}
+
+function runRegeneration() {
+  loading.value = true;
+  setTimeout(() => {
+    loading.value = false;
+    generationDone.value = true;
+  }, 2000);
+}
+
+const initialNodes = [
+  {
+    id: 'root',
+    position,
+    data: {
+      label: 'Root',
+    },
+  },
+  {
+    id: 's1',
+    position,
+    data: {
+      label: 'Subject 1',
+    },
+  },
+  {
+    id: 's2',
+    position,
+    data: {
+      label: 'Subject 2',
+    },
+  },
+  {
+    id: 'rs1',
+    position,
+    data: {
+      label: 'Resolved Subject 1',
+    },
+  },
+]
+
+const initialEdges = [
+  {id: 'root-s1', source: 'root', target: 's1'},
+  {id: 'root-s2', source: 'root', target: 's2'},
+  {id: 's1-rs1', source: 's1', target: 'rs1'},
+]
+
+const graphData = {
+  nodes: initialNodes,
+  edges: initialEdges,
+}
+</script>
 <template>
   <div class="suite-view container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -23,7 +100,8 @@
         <div class="tabs-container">
           <ul class="nav nav-tabs custom-tabs">
             <li class="nav-item" @click="activeTabLeft = 'Suite Configuration'">
-              <a class="nav-link" :class="{ active: activeTabLeft === 'Suite Configuration' }" href="#">
+              <a class="nav-link" :class="{ active: activeTabLeft === 'Suite Configuration' }"
+                 href="#">
                 <i class="bi bi-gear-fill me-2"></i>Suite Configuration
               </a>
             </li>
@@ -38,7 +116,7 @@
               <SuiteForms></SuiteForms>
             </div>
             <div v-show="activeTabLeft === 'Suite YAML'" class="tab-pane fade show active">
-              <YamlEditor></YamlEditor>
+              <YamlEditor v-model="yamlText"></YamlEditor>
             </div>
           </div>
         </div>
@@ -52,7 +130,8 @@
               </a>
             </li>
             <li class="nav-item" @click="activeTabRight = 'Generation graph'">
-              <a class="nav-link" :class="{ active: activeTabRight === 'Generation graph' }" href="#">
+              <a class="nav-link" :class="{ active: activeTabRight === 'Generation graph' }"
+                 href="#">
                 <i class="bi bi-graph-up me-2"></i>Generation Graph
               </a>
             </li>
@@ -72,90 +151,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import { defineComponent, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import YamlEditor from "@/components/YamlEditor.vue";
-import SuiteForms from "@/components/SuiteForms.vue";
-import GraphViewer from "@/components/GraphViewer.vue";
-
-export default defineComponent({
-  name: 'SuiteView',
-  components: {GraphViewer, SuiteForms, YamlEditor},
-  setup() {
-    const route = useRoute();
-    const suiteName = ref(route.params.suiteId);
-    const activeTabLeft = ref('Suite Configuration');
-    const activeTabRight = ref('Subjekt Output');
-    const loading = ref(false);
-    const generationDone = ref(false);
-
-    const position = { x: 0, y: 0 }
-
-    function runRegeneration() {
-      loading.value = true;
-      setTimeout(() => {
-        loading.value = false;
-        generationDone.value = true;
-      }, 2000);
-    }
-
-    const initialNodes = [
-      {
-        id: 'root',
-        position,
-        data: {
-          label: 'Root',
-        },
-      },
-      {
-        id: 's1',
-        position,
-        data: {
-          label: 'Subject 1',
-        },
-      },
-      {
-        id: 's2',
-        position,
-        data: {
-          label: 'Subject 2',
-        },
-      },
-      {
-        id: 'rs1',
-        position,
-        data: {
-          label: 'Resolved Subject 1',
-        },
-      },
-    ]
-
-    const initialEdges = [
-      { id: 'root-s1', source: 'root', target: 's1' },
-      { id: 'root-s2', source: 'root', target: 's2' },
-      { id: 's1-rs1', source: 's1', target: 'rs1' },
-    ]
-
-    const graphData = {
-      nodes: initialNodes,
-      edges: initialEdges,
-    }
-
-    return {
-      suiteName,
-      activeTabLeft,
-      activeTabRight,
-      graphData,
-      loading,
-      runRegeneration,
-      generationDone,
-    };
-  }
-});
-</script>
-
 <style scoped>
 .suite-view {
   background-color: #19191C;

@@ -1,37 +1,42 @@
-<script>
+<script setup>
 import hljs from 'highlight.js';
 import CodeEditor from "simple-code-editor";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import 'highlight.js/styles/default.css';
 import yaml from 'highlight.js/lib/languages/yaml';
 
 hljs.registerLanguage('yaml', yaml);
 
-const initialText = `
-name: "My Suite"
-
-subjects:
-  - name: "Example Subject"
-    content: "Hello, world!"
-`;
-
-export default {
-  components: {
-    CodeEditor,
+const props = defineProps({
+  modelValue: {
+    type: String,
+    default: () => (""),
   },
-  setup() {
-    const text = ref(initialText);
+});
 
-    const highlightCode = (code) => {
-      // Create a new highlighting instance each time
-      return hljs.highlight(code, { language: 'yaml' }).value;
-    };
+const emit = defineEmits(['update:modelValue']);
 
-    return {
-      text,
-      highlightCode
-    };
+const text = ref(props.modelValue.text);
+
+// changes in model
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    text.value = newValue;
+  },
+  { immediate: true }
+);
+
+// local changes propagated
+watch(
+  text,
+  (newText) => {
+    emit('update:modelValue', newText);
   }
+);
+
+const highlightCode = (code) => {
+  return hljs.highlight(code, { language: 'yaml' }).value;
 };
 </script>
 
@@ -44,7 +49,7 @@ export default {
       :wrap="false"
       v-model="text"
       width="100%"
-      height="500px"
+      height="700px"
       :highlight="highlightCode"
     >
     </CodeEditor>
