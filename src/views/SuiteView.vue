@@ -1,11 +1,21 @@
 <template>
   <div class="suite-view container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h1 class="m-0">{{ suiteName }}</h1>
-      <!-- Play button that's always visible -->
-      <button class="btn play-btn">
-        <i class="bi bi-play-fill"></i> Run Suite
-      </button>
+      <h1 class="m-0 col">{{ suiteName }}</h1>
+      <div class="d-flex align-items-center">
+        <!-- Play button -->
+        <button class="btn play-btn me-2" @click="runRegeneration">
+          <i class="bi bi-play-fill"></i> Run Suite
+        </button>
+        <!-- Spinner -->
+        <div
+          class="spinner-border"
+          role="status"
+          :style="{ visibility: loading ? 'visible' : 'hidden' }"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
     </div>
 
     <div class="row">
@@ -49,10 +59,12 @@
           </ul>
           <div class="tab-content">
             <div v-show="activeTabRight === 'Subjekt Output'" class="tab-pane fade show active">
-              <p>Run the generation to produce an output.</p>
+              <p v-if="generationDone">Result</p>
+              <p v-else>Run the generation to produce an output.</p>
             </div>
             <div v-show="activeTabRight === 'Generation graph'" class="tab-pane fade show active">
-              <GraphViewer v-model="graphData"></GraphViewer>
+              <GraphViewer v-model="graphData" v-if="generationDone"></GraphViewer>
+              <p v-else>Run the generation to produce an output.</p>
             </div>
           </div>
         </div>
@@ -76,8 +88,19 @@ export default defineComponent({
     const suiteName = ref(route.params.suiteId);
     const activeTabLeft = ref('Suite Configuration');
     const activeTabRight = ref('Subjekt Output');
+    const loading = ref(false);
+    const generationDone = ref(false);
 
     const position = { x: 0, y: 0 }
+
+    function runRegeneration() {
+      loading.value = true;
+      setTimeout(() => {
+        loading.value = false;
+        generationDone.value = true;
+      }, 2000);
+    }
+
     const initialNodes = [
       {
         id: 'root',
@@ -125,6 +148,9 @@ export default defineComponent({
       activeTabLeft,
       activeTabRight,
       graphData,
+      loading,
+      runRegeneration,
+      generationDone,
     };
   }
 });
