@@ -7,12 +7,7 @@ import GraphViewer from "@/components/GraphViewer.vue";
 
 // TODO
 const initialYaml = `---
-name: Suite Name
-configuration:
-  - key: key1
-    value: value1
-  - key: key2
-    value: value2
+
 `
 
 const route = useRoute();
@@ -22,8 +17,15 @@ const activeTabRight = ref('Subjekt Output');
 const loading = ref(false);
 const generationDone = ref(false);
 const yamlText = ref(initialYaml);
+const suiteFormsRef = ref(null);
 
 const position = {x: 0, y: 0}
+
+watch(activeTabLeft, (newTab) => {
+  if (newTab === 'Suite YAML') {
+    yamlText.value = suiteFormsRef.value.generateYAML().yaml;
+  }
+})
 
 function runRegeneration() {
   loading.value = true;
@@ -113,7 +115,7 @@ const graphData = {
           </ul>
           <div class="tab-content">
             <div v-show="activeTabLeft === 'Suite Configuration'" class="tab-pane fade show active">
-              <SuiteForms></SuiteForms>
+              <SuiteForms ref="suiteFormsRef"></SuiteForms>
             </div>
             <div v-show="activeTabLeft === 'Suite YAML'" class="tab-pane fade show active">
               <YamlEditor v-model="yamlText"></YamlEditor>

@@ -1,11 +1,62 @@
 <script setup>
-import { ref, reactive } from 'vue';
+import {ref, reactive, computed} from 'vue';
+import yaml from "js-yaml";
 
 const suiteName = ref('');
 const configuration = ref([]);
 const parameters = ref([]);
 const macros = ref([]);
 const subjects = ref([{ name: 'Subject 1', pairs: [] }]);
+
+// to generate YAML from the forms
+const generateYAML = computed(() => {
+  const configObj = configuration.value.reduce((acc, item) => {
+    if (item.key && item.value) {
+      acc[item.key] = item.value;
+    }
+    return acc;
+  }, {});
+
+  const parametersArray = parameters.value.map(param => ({
+    name: param.name,
+    values: param.values.filter(v => v.trim() !== '')
+  })).filter(param => param.name && param.values.length > 0);
+
+  const macrosArray = macros.value.map(macro => ({
+    name: macro.name,
+    values: macro.values.filter(v => v.trim() !== '')
+  })).filter(macro => macro.name && macro.values.length > 0);
+
+  const subjectsArray = subjects.value.map(subject =>
+    subject.pairs.reduce((acc, pair) => {
+      if (pair.key && pair.value) {
+        acc[pair.key] = pair.value;
+      }
+      return acc;
+    }, {})
+  ).filter(subject => Object.keys(subject).length > 0);
+
+  const yamlObject = {
+    name: suiteName.value,
+    configuration: configObj,
+    parameters: parametersArray,
+    macros: macrosArray,
+    subjects: subjectsArray
+  };
+
+  return {
+    yaml: yaml.dump(yamlObject, {
+      skipInvalid: true,
+      // Ensure multi-line strings are properly formatted
+      forceQuotes: true
+    }),
+    object: yamlObject
+  }
+});
+
+defineExpose({
+  generateYAML: () => generateYAML.value
+});
 
 const addConfigPair = () => {
   configuration.value.push({ key: '', value: '' });
