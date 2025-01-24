@@ -9,7 +9,7 @@ export const AuthService = {
       setTimeout(() => {
         const token = 'fake-token'
         Cookies.set('auth_token', token, { expires: 7 })
-        localStorage.setItem('user', JSON.stringify(userData))
+        localStorage.setItem('user', JSON.stringify(username))
         resolve({ success: true })
       }, 1000)
     })

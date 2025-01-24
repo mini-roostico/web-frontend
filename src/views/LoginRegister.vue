@@ -3,6 +3,7 @@ import {inject, ref, watch} from 'vue';
 import {useRoute} from 'vue-router';
 import router from "@/router/index.js";
 import {AuthService} from "@/scripts/AuthService.js";
+import {EventBus} from "@/scripts/EventBus.js";
 
 const route = useRoute();
 const isLogin = ref(route.path !== '/register');
@@ -55,6 +56,7 @@ const handleSubmit = () => {
       const {success} = response
       loading.value = false;
       if (success === true) {
+        EventBus.$emit('refresh-navbar');
         router.push('/sources');
       } else {
         showAlert('Invalid credentials', 'alert-danger');

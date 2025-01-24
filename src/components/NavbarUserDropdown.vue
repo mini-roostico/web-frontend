@@ -1,51 +1,157 @@
-<template>
-    <div class="dropdown">
-        <a role="button" class=" text-decoration-none hideMobile" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="true">
-            <div>
-              <BootstrapIcon icon="bi bi-person-fill" size="2.3rem" color="black"></BootstrapIcon>
-            </div>
-        </a>
-      <a role="button" class="btn btn-light link-body-emphasis text-decoration-none hideDesktop" data-toggle="dropdown" data-bs-toggle="dropdown" aria-expanded="true">
-        <p class="d-inline mx-2 mb-0 text-truncate" ><small>{{ first_name }}</small></p>
-      </a>
-        <ul class="dropdown-menu text-small" data-popper-placement="bottom-end"
-            style="position: absolute; inset: 0 0 auto auto; margin: 0; transform: translate3d(0px, 34px, 0px);">
-            <li><router-link to="/whiteboards" class="dropdown-item">New Project</router-link></li>
-            <li><router-link to="/profile" class="dropdown-item">Settings</router-link></li>
-            <li><hr class="dropdown-divider active"></li>
-            <li><a class="dropdown-item  link-danger" role="button" @click="logout">Logout</a></li>
-        </ul>
-    </div>
-</template>
+<script setup>
+import { ref, computed } from 'vue'
+import {AuthService} from "@/scripts/AuthService.js";
 
-<script>
+const username = ref(AuthService.getCurrentUser())
+const emit = defineEmits(['logout'])
+console.log("AAAAAAAAAAA")
+console.log(username.value)
+const userInitials = computed(() =>
+  username.value.split(' ')
+    .map(name => name[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase()
+)
 
 
-import BootstrapIcon from "@/components/BootstrapIcon.vue";
-export default {
-  name: "NavbarUserDropdown",
-  props: ['first_name', 'username'],
-  emits: ['logout'],
-  components: {BootstrapIcon},
-  methods: {
-    logout() {
-      this.$emit("logout")
-    }
-  }
+const generateGradient = (username) => {
+  const hash = username.split('').reduce((acc, char) =>
+    char.charCodeAt(0) + ((acc << 5) - acc), 0)
+
+  const h1 = Math.abs(hash % 360)
+  const h2 = (h1 + 180) % 360
+
+  return `linear-gradient(135deg, hsl(${h1}, 70%, 60%), hsl(${h2}, 70%, 60%))`
+}
+
+const gradientBackground = computed(() =>
+  generateGradient(username.value)
+)
+
+const logout = () => {
+  emit('logout')
 }
 </script>
 
-<style scoped>
+<template>
+  <div class="user-avatar-dropdown">
+    <div
+      class="user-avatar"
+      :style="{ background: gradientBackground }"
+      id="dropdownMenuButton"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      <span class="user-initials">{{ userInitials }}</span>
+    </div>
 
-.hideMobile {
-  display: none;
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <div class="dropdown-header">
+        <div
+          class="dropdown-avatar"
+          :style="{ background: gradientBackground }"
+        >
+          <span class="user-initials">{{ userInitials }}</span>
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ username }}</div>
+        </div>
+      </div>
+      <div class="dropdown-divider"></div>
+      <div class="dropdown-items">
+        <router-link to="/profile" class="dropdown-item">
+          <i class="bi bi-person"></i> Profile
+        </router-link>
+        <router-link to="/settings" class="dropdown-item">
+          <i class="bi bi-gear"></i> Settings
+        </router-link>
+        <div class="dropdown-item" @click="logout">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<style scoped>
+.user-avatar-dropdown {
+  position: relative;
 }
-@media screen and (max-width: 930px) {
-  .hideDesktop {
-    display: none;
-  }
-  .hideMobile {
-    display: inline-block;
-  }
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-weight: bold;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 250px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 1000;
+  color: white;
+  border: 1px solid #333;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #333;
+}
+
+.dropdown-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  color: white;
+  font-weight: bold;
+}
+
+.user-info {
+  flex-grow: 1;
+}
+
+.user-name {
+  font-weight: bold;
+}
+
+.user-email {
+  color: #888;
+  font-size: 0.8em;
+}
+
+.dropdown-items {
+  padding: 10px 0;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.dropdown-item:hover {
+  background-color: #2a2a2a;
+}
+
+.dropdown-item i {
+  margin-right: 10px;
 }
 </style>

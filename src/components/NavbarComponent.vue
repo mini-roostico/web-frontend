@@ -1,8 +1,42 @@
+<script setup>
+import BootstrapIcon from "@/components/BootstrapIcon.vue";
+import NavbarUserDropdown from "@/components/NavbarUserDropdown.vue";
+import {onMounted, ref} from "vue";
+import {AuthService} from "@/scripts/AuthService.js";
+import router from "@/router/index.js";
+import {EventBus} from "@/scripts/EventBus.js";
+
+const isLogged = ref(AuthService.isAuthenticated())
+const links = ref([
+  {href: "/", name: "Home", loginNeeded: false},
+  {href: "/sources", name: "Sources", loginNeeded: true},
+  {href: "/about", name: "About", loginNeeded: false},
+])
+
+function reloadNavbar() {
+  isLogged.value = AuthService.isAuthenticated()
+}
+
+function logout() {
+  AuthService.logout()
+  router.push('/')
+  isLogged.value = false
+}
+
+onMounted(() => {
+  EventBus.$on('refresh-navbar', () => {
+    reloadNavbar()
+  })
+})
+
+defineExpose({reloadNavbar, logout})
+</script>
 <template>
     <nav class="row nav-container mb-4 no-gutters">
       <div class="col-3 menu-mobile">
-        <a class="menu-mobile-button" data-bs-toggle="collapse" href="#menuMobileCollapse"
-           role="button" aria-expanded="false" aria-controls="menuMobileCollapse" ref="mobileCollapseBtn">
+        <a class="menu-mobile-button" data-bs-toggle="collapse"
+           role="button" aria-expanded="false" aria-controls="menuMobileCollapse"
+           ref="mobileCollapseBtn" @click="$refs.mobileCollapse.toggleMobileMenu">
           <BootstrapIcon icon="bi bi-list" size="2.3rem" color="black"></BootstrapIcon>
         </a>
       </div>
@@ -13,8 +47,8 @@
       </div>
 
       <ul class="links-desktop nav nav-pills col text-center align-items-center justify-content-center ">
-        <li v-for="link in this.links">
-            <router-link v-if="(link.loginNeeded && this.isLogged) || (!link.loginNeeded)"
+        <li v-for="link in links">
+            <router-link v-if="(link.loginNeeded && isLogged) || (!link.loginNeeded)"
                       :to="link.href" class="nav-item nav-link px-2 navbar-links">{{link.name}}</router-link>
         </li>
 
@@ -25,102 +59,21 @@
                 <a role="button" class="btn btn-outline-primary" href="/register">Sign Up</a>
             </div>
             <div v-else>
-              <NavbarUserDropdown :username="this.username" :first_name="this.first_name" @logout="this.logout"></NavbarUserDropdown>
+              <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
             </div>
         </div>
       <div class="col-3 menu-mobile">
         <div v-if="!isLogged">
-          <a role="button" href="#/login">
+          <a role="button" href="/login">
             <BootstrapIcon icon="bi bi-box-arrow-in-right" size="1.8rem" color="black"></BootstrapIcon>
           </a>
         </div>
         <div v-else>
-          <NavbarUserDropdown :username="this.username" :first_name="this.first_name" @logout="this.logout"></NavbarUserDropdown>
-        </div>
-      </div>
-      <div class="collapse menu-mobile" id="menuMobileCollapse" ref="collapse">
-        <div class="collapse-body">
-          <ul>
-            <li v-for="link in this.links">
-              <div v-if="(link.loginNeeded && this.isLogged) || (!link.loginNeeded)">
-                <router-link :to="link.href" class="navbar-links" @click="this.collapse">{{ link.name }}</router-link>
-                <hr/>
-              </div>
-            </li>
-              <li>
-                  <div v-if="this.isLogged" class="position-relative">
-                      <router-link :to="this.linkToNotification" class="navbar-links" @click="this.collapse">{{ "Notifications" }}</router-link>
-                      <hr/>
-                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                {{this.unreadMessage}}
-              </span>
-                  </div>
-              </li>
-          </ul>
+          <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
         </div>
       </div>
     </nav>
 </template>
-<script>
-import BootstrapIcon from "@/components/BootstrapIcon.vue";
-import NavbarUserDropdown from "@/components/NavbarUserDropdown.vue";
-export default {
-    name: 'NavbarComponent',
-    props: ['loginStatus'],
-    components: {
-      NavbarUserDropdown,
-      BootstrapIcon,
-    },
-    data() {
-        return {
-            isLogged: false,
-            first_name: '',
-            defaultRefreshTimeoutMs: 5 * 60 * 1000,
-            username: '',
-            links: [
-              {href: "/", name: "Home", loginNeeded: false},
-              {href: "/sources", name: "Sources", loginNeeded: false},
-              {href: "/about", name: "About", loginNeeded: false},
-            ],
-            linkToNotification: '/notifications',
-            unreadMessage:  0
-        }
-    },
-    created() {
-        this.loadUnreadNotification();
-    },
-    methods: {
-        collapse() {
-            this.$refs.mobileCollapseBtn.click();
-
-        },
-        updateNotificationNumber(){
-          this.unreadMessage++;
-        },
-        loadUnreadNotification(){
-
-        },
-        reloadNavbar() {
-
-        },
-        logout() {
-
-        },
-        changeName(name) {
-            this.first_name = name;
-        }
-    },
-    updated: function() {
-      this.reloadNavbar();
-      this.loadUnreadNotification();
-    },
-    mounted: function() {
-        this.reloadNavbar();
-        this.loadUnreadNotification();
-    }
-}
-</script>
-
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
@@ -243,8 +196,5 @@ li {
     margin: 1em 0;
     padding: 0;
   }
-
-
 }
-
 </style>
