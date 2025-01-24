@@ -1,6 +1,87 @@
+<script setup>
+import {inject, ref, watch} from 'vue';
+import {useRoute} from 'vue-router';
+import router from "@/router/index.js";
+import {AuthService} from "@/scripts/AuthService.js";
+
+const route = useRoute();
+const isLogin = ref(route.path !== '/register');
+const username = ref('');
+const password = ref('');
+const confirmPassword = ref('');
+
+const alertText = ref('');
+const alertType = ref('alert-info');
+const submitBtn = ref(null);
+
+const loading = ref(false);
+
+const showAlert = (text, type = 'alert-info') => {
+  alertText.value = text;
+  alertType.value = type;
+};
+
+const clearAlert = () => {
+  alertText.value = '';
+};
+
+function checkPassword(newValue, refToCheck) {
+  if (isLogin.value === false) {
+    if (newValue !== refToCheck.value) {
+      showAlert('Passwords do not match', 'alert-danger');
+      submitBtn.value.disabled = true;
+    } else {
+      clearAlert();
+      submitBtn.value.disabled = false;
+    }
+  }
+}
+
+watch(password, (newPassword) => checkPassword(newPassword, confirmPassword));
+watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword, password));
+
+const toggleForm = () => {
+  isLogin.value = !isLogin.value;
+  clearAlert();
+  submitBtn.value.disabled = false;
+  confirmPassword.value = '';
+};
+
+const globalState = inject('globalState');
+const handleSubmit = () => {
+  if (isLogin.value) {
+    loading.value = true;
+    AuthService.login({username: username.value, password: password.value}).then((response) => {
+      const {success} = response
+      loading.value = false;
+      if (success === true) {
+        router.push('/sources');
+      } else {
+        showAlert('Invalid credentials', 'alert-danger');
+      }
+    });
+  } else {
+    // Handle registration
+    if (password.value === confirmPassword.value) {
+      console.log('Registering with', username.value, password.value);
+    } else {
+      console.error('Passwords do not match');
+    }
+  }
+};
+</script>
 <template>
   <div class="login-register-view container py-4">
     <h1 class="text-center mb-4">{{ isLogin ? 'Login' : 'Register' }}</h1>
+    <!-- Loading Spinner -->
+    <div v-if="loading">
+      <div
+        class="spinner-border"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <!-- Alert Component -->
     <div
       v-if="alertText"
@@ -44,67 +125,6 @@
     </p>
   </div>
 </template>
-
-<script setup>
-import {ref, watch} from 'vue';
-import {useRoute} from 'vue-router';
-
-const route = useRoute();
-const isLogin = ref(route.path !== '/register');
-const username = ref('');
-const password = ref('');
-const confirmPassword = ref('');
-
-const alertText = ref('');
-const alertType = ref('alert-info');
-const submitBtn = ref(null);
-
-const showAlert = (text, type = 'alert-info') => {
-  alertText.value = text;
-  alertType.value = type;
-};
-
-const clearAlert = () => {
-  alertText.value = '';
-};
-
-function checkPassword(newValue, refToCheck) {
-  if (isLogin.value === false) {
-    if (newValue !== refToCheck.value) {
-      showAlert('Passwords do not match', 'alert-danger');
-      submitBtn.value.disabled = true;
-    } else {
-      clearAlert();
-      submitBtn.value.disabled = false;
-    }
-  }
-}
-
-watch(password, (newPassword) => checkPassword(newPassword, confirmPassword));
-watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword, password));
-
-const toggleForm = () => {
-  isLogin.value = !isLogin.value;
-  clearAlert();
-  submitBtn.value.disabled = false;
-  confirmPassword.value = '';
-};
-
-const handleSubmit = () => {
-  if (isLogin.value) {
-    // Handle login
-    console.log('Logging in with', username.value, password.value);
-  } else {
-    // Handle registration
-    if (password.value === confirmPassword.value) {
-      console.log('Registering with', username.value, password.value);
-    } else {
-      console.error('Passwords do not match');
-    }
-  }
-};
-</script>
-
 <style scoped>
 .login-register-view {
   background-color: #19191C;

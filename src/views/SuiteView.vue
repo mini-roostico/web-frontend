@@ -1,10 +1,10 @@
 <script setup>
-import {ref, watch} from 'vue';
+import {inject, ref, watch} from 'vue';
 import {useRoute} from 'vue-router';
 import YamlEditor from "@/components/YamlEditor.vue";
 import SuiteForms from "@/components/SuiteForms.vue";
 import GraphViewer from "@/components/GraphViewer.vue";
-import ModalComponent from "@/components/ModalComponent.vue";
+import {AuthService} from "@/scripts/AuthService.js";
 
 // TODO
 const initialYaml = `---
@@ -63,7 +63,6 @@ watch(activeTabLeft, (newTab) => {
         'alert-danger'
       );
       activeTabLeft.value = 'Suite YAML';
-      console.log('Previous text:', previousText);
     }
   }
 })
@@ -117,9 +116,12 @@ const graphData = {
   nodes: initialNodes,
   edges: initialEdges,
 }
+
+const isLogged = ref(AuthService.isAuthenticated());
+
 </script>
 <template>
-  <div class="suite-view container py-4">
+  <div class="suite-view container py-4" v-if="isLogged">
     <!-- Alert Component -->
     <div
       v-if="alertText"
@@ -215,6 +217,9 @@ const graphData = {
         </div>
       </div>
     </div>
+  </div>
+  <div v-else>
+    <p class="text-white text-center mt-5">Please log in to view this page.</p>
   </div>
 </template>
 <style scoped>
