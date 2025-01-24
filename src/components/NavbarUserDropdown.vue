@@ -4,8 +4,6 @@ import {AuthService} from "@/scripts/AuthService.js";
 
 const username = ref(AuthService.getCurrentUser())
 const emit = defineEmits(['logout'])
-console.log("AAAAAAAAAAA")
-console.log(username.value)
 const userInitials = computed(() =>
   username.value.split(' ')
     .map(name => name[0])
@@ -60,11 +58,8 @@ const logout = () => {
       </div>
       <div class="dropdown-divider"></div>
       <div class="dropdown-items">
-        <router-link to="/profile" class="dropdown-item">
-          <i class="bi bi-person"></i> Profile
-        </router-link>
-        <router-link to="/settings" class="dropdown-item">
-          <i class="bi bi-gear"></i> Settings
+        <router-link to="/sources" class="dropdown-item">
+          <i class="bi bi-file"></i> Sources
         </router-link>
         <div class="dropdown-item" @click="logout">
           <i class="bi bi-box-arrow-right"></i> Logout
