@@ -48,7 +48,8 @@ const toggleForm = () => {
   confirmPassword.value = '';
 };
 
-const globalState = inject('globalState');
+const isLogged = ref(AuthService.isAuthenticated());
+
 const handleSubmit = () => {
   if (isLogin.value) {
     loading.value = true;
@@ -73,7 +74,7 @@ const handleSubmit = () => {
 };
 </script>
 <template>
-  <div class="login-register-view container py-4">
+  <div class="login-register-view container py-4" v-if="isLogged === false">
     <h1 class="text-center mb-4">{{ isLogin ? 'Login' : 'Register' }}</h1>
     <!-- Loading Spinner -->
     <div v-if="loading">
@@ -126,6 +127,10 @@ const handleSubmit = () => {
         }}</a>
     </p>
   </div>
+  <div v-else>
+    <h1 class="text-center">You are already logged in</h1>
+    <router-link to="/sources" class="btn btn-primary">Go to Sources</router-link>
+  </div>
 </template>
 <style scoped>
 .login-register-view {
@@ -156,6 +161,7 @@ a:hover {
 .btn-primary {
   background-color: #CE29AA;
   border: none;
+  color: white;
 }
 
 .btn-primary:hover {
