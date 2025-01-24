@@ -50,25 +50,42 @@ const toggleForm = () => {
 
 const isLogged = ref(AuthService.isAuthenticated());
 
+function login(username, password) {
+  AuthService.login({username: username, password: password}).then((response) => {
+    const {success} = response
+    loading.value = false;
+    if (success === true) {
+      EventBus.$emit('refresh-navbar');
+      router.push('/sources');
+    } else {
+      showAlert('Invalid credentials', 'alert-danger');
+    }
+  });
+}
+
+function register(username, password) {
+  // TODO add register login
+  AuthService.register({username: username, password: password}).then((response) => {
+    const {success} = response
+    if (success === true) {
+      login(username.value, password.value);
+    } else {
+      // TODO handle error
+    }
+  });
+}
+
 const handleSubmit = () => {
   if (isLogin.value) {
     loading.value = true;
-    AuthService.login({username: username.value, password: password.value}).then((response) => {
-      const {success} = response
-      loading.value = false;
-      if (success === true) {
-        EventBus.$emit('refresh-navbar');
-        router.push('/sources');
-      } else {
-        showAlert('Invalid credentials', 'alert-danger');
-      }
-    });
+    login(username.value, password.value);
   } else {
     // Handle registration
     if (password.value === confirmPassword.value) {
-      console.log('Registering with', username.value, password.value);
+      loading.value = true;
+      register(username.value, password.value);
     } else {
-      console.error('Passwords do not match');
+      // error
     }
   }
 };
