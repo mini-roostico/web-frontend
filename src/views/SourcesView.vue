@@ -3,6 +3,7 @@ import {ref, computed} from 'vue'
 import {useRouter} from 'vue-router'
 import SourceCard from '@/components/SourceCard.vue'
 import ModalComponent from "@/components/ModalComponent.vue";
+import {AuthService} from "@/scripts/AuthService.js";
 
 const mainColor = "#CE29AA"
 
@@ -92,9 +93,12 @@ const createNewFile = () => {
     })
   }
 }
+
+const isLogged = ref(AuthService.isAuthenticated());
+
 </script>
 <template>
-  <div class="sources-view container py-4">
+  <div class="sources-view container py-4" v-if="isLogged">
     <h1 class="text-center mb-4" :style="{ color: mainColor }">Sources</h1>
     <!-- Alert Component -->
     <div
@@ -174,6 +178,9 @@ const createNewFile = () => {
         />
       </div>
     </div>
+  </div>
+  <div v-else>
+    <p class="text-white text-center mt-5">Please log in to view this page.</p>
   </div>
 </template>
 <style scoped>
