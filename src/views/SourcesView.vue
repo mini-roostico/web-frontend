@@ -14,6 +14,18 @@ const renameInput = ref('')
 const modalAction = ref('rename') // 'rename' or 'delete'
 const loading = ref(false)
 
+const alertText = ref('');
+const alertType = ref('alert-info');
+
+const showAlert = (text, type = 'alert-info') => {
+  alertText.value = text;
+  alertType.value = type;
+};
+
+const clearAlert = () => {
+  alertText.value = '';
+};
+
 const handleModalOpen = (_) => {
   // do nothing
 }
@@ -25,9 +37,11 @@ const handleModalClose = (_) => {
 const handleConfirmation = () => {
   if (modalAction.value === 'rename') {
     console.log('User confirmed with input:', renameInput.value)
+    showAlert('Source renamed successfully!', 'alert-success');
     // Perform renaming logic
   } else if (modalAction.value === 'delete') {
     console.log('User confirmed deletion')
+    showAlert('Source deleted successfully!', 'alert-success');
     // Perform deletion logic
   }
 }
@@ -82,6 +96,21 @@ const createNewFile = () => {
 <template>
   <div class="sources-view container py-4">
     <h1 class="text-center mb-4" :style="{ color: mainColor }">Sources</h1>
+    <!-- Alert Component -->
+    <div
+      v-if="alertText"
+      class="alert alert-dismissible alert-dark fade show"
+      :class="alertType"
+      role="alert"
+    >
+      {{ alertText }}
+      <button
+        type="button"
+        class="btn-close"
+        @click="clearAlert"
+        aria-label="Close"
+      ></button>
+    </div>
     <!-- User Confirmation Modal -->
     <ModalComponent
       ref="userModal"

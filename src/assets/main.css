@@ -31,3 +31,54 @@
     background-color: #1e1e21;
     color: #666;
 }
+
+.alert-dark {
+    background-color: #2c2c2c;
+    color: #f4f4f4;
+    border-color: #1a1a1a;
+}
+
+.alert-dark hr {
+    border-top-color: #1a1a1a;
+}
+
+.alert-dark .alert-link {
+    color: #9ed9cc;
+}
+
+/* Variant Specific Dark Styles */
+.alert-dark.alert-primary {
+    background-color: #1e3a54;
+    border-color: #1a3245;
+    color: #bee1fc;
+}
+
+.alert-dark.alert-secondary {
+    background-color: #3a3a3a;
+    border-color: #2c2c2c;
+    color: #e0e0e0;
+}
+
+.alert-dark.alert-success {
+    background-color: #1e4a3c;
+    border-color: #163a2e;
+    color: #c3e6cb;
+}
+
+.alert-dark.alert-danger {
+    background-color: #4a1e1e;
+    border-color: #3a1515;
+    color: #f5c6cb;
+}
+
+.alert-dark.alert-warning {
+    background-color: #4a3a1e;
+    border-color: #3a2e15;
+    color: #ffeeba;
+}
+
+.alert-dark.alert-info {
+    background-color: #1e3a4a;
+    border-color: #1a2e3a;
+    color: #bee1fc;
+}
