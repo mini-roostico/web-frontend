@@ -25,6 +25,8 @@ const suiteFormsRef = ref(null);
 const alertText = ref('');
 const alertType = ref('alert-info');
 
+let previousText = undefined;
+
 const showAlert = (text, type = 'alert-info') => {
   alertText.value = text;
   alertType.value = type;
@@ -44,16 +46,23 @@ const position = {x: 0, y: 0}
 
 watch(activeTabLeft, (newTab) => {
   if (newTab === 'Suite YAML') {
-    yamlText.value = suiteFormsRef.value.generateYAML().yaml;
+    if (!previousText) {
+      yamlText.value = suiteFormsRef.value.generateYAML().yaml;
+    } else {
+      yamlText.value = previousText
+      previousText = undefined;
+    }
   } else if (newTab === 'Suite Configuration') {
     let result = suiteFormsRef.value.setFromYAML(yamlText.value);
     if (result.success === false) {
       console.log(result.error);
+      previousText = yamlText.value;
       showAlert(
         "There was an error parsing your YAML, please fix it before going back",
         'alert-danger'
       );
       activeTabLeft.value = 'Suite YAML';
+      console.log('Previous text:', previousText);
     }
   }
 })
