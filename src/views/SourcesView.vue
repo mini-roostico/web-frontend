@@ -11,12 +11,14 @@ const router = useRouter()
 
 const userModal = ref(null)
 const renameInput = ref('')
+const newFileInput = ref('')
 
 const modalAction = ref('rename') // 'rename' or 'delete'
 const loading = ref(false)
 
 const alertText = ref('');
 const alertType = ref('alert-info');
+
 
 const showAlert = (text, type = 'alert-info') => {
   alertText.value = text;
@@ -39,11 +41,20 @@ const handleConfirmation = () => {
   if (modalAction.value === 'rename') {
     console.log('User confirmed with input:', renameInput.value)
     showAlert('Source renamed successfully!', 'alert-success');
-    // Perform renaming logic
+    // TODO Perform renaming logic
   } else if (modalAction.value === 'delete') {
     console.log('User confirmed deletion')
     showAlert('Source deleted successfully!', 'alert-success');
-    // Perform deletion logic
+    // TODO Perform deletion logic
+  } else if (modalAction.value === 'create') {
+    if (newFileInput.value !== '') {
+      files.value.push({
+        title: newFileInput.value,
+        lastModified: new Date().toISOString().split("T")[0],
+      })
+    }
+    showAlert('New source created successfully!', 'alert-success');
+    // TODO Perform creation logic
   }
 }
 
@@ -85,13 +96,9 @@ const deleteFile = (file) => {
 }
 
 const createNewFile = () => {
-  const newFileName = prompt("Enter the name of the new source:")
-  if (newFileName) {
-    files.value.push({
-      title: newFileName,
-      lastModified: new Date().toISOString().split("T")[0],
-    })
-  }
+  modalAction.value = 'create'
+  newFileInput.value = ''
+  userModal.value.open({title: 'Create New Source'})
 }
 
 const isLogged = ref(AuthService.isAuthenticated());
@@ -131,6 +138,11 @@ const isLogged = ref(AuthService.isAuthenticated());
       </div>
       <div v-else-if="modalAction === 'delete'">
         <p class="text-start">Are you sure you want to delete this source?</p>
+      </div>
+      <div v-else-if="modalAction === 'create'">
+        <p class="text-start">Enter the name of the new source:</p>
+        <input class="form-control dark-input w-75 inline-block" v-model="newFileInput"
+               placeholder="Enter the name of the new source"/>
       </div>
       <div v-else>
         Unrecognized: {{ modalAction }}
