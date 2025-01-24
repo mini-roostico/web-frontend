@@ -19,6 +19,8 @@ import FooterComponent from "@/components/FooterComponent.vue";
 /* this contains the default theme, these are optional styles */
 @import '@vue-flow/core/dist/theme-default.css';
 
+@import '@/assets/main.css';
+
 html {
   background-color: #19191C;
 }

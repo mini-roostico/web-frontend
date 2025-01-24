@@ -4,6 +4,7 @@ import {useRoute} from 'vue-router';
 import YamlEditor from "@/components/YamlEditor.vue";
 import SuiteForms from "@/components/SuiteForms.vue";
 import GraphViewer from "@/components/GraphViewer.vue";
+import ModalComponent from "@/components/ModalComponent.vue";
 
 // TODO
 const initialYaml = `---

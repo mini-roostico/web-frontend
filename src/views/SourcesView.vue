@@ -1,7 +1,108 @@
+<script setup>
+import {ref, computed} from 'vue'
+import {useRouter} from 'vue-router'
+import SourceCard from '@/components/SourceCard.vue'
+import ModalComponent from "@/components/ModalComponent.vue";
+
+const mainColor = "#CE29AA"
+
+const router = useRouter()
+
+const userModal = ref(null)
+const renameInput = ref('')
+
+const modalAction = ref('rename') // 'rename' or 'delete'
+const loading = ref(false)
+
+const handleModalOpen = (_) => {
+  // do nothing
+}
+
+const handleModalClose = (_) => {
+  // do nothing
+}
+
+const handleConfirmation = () => {
+  if (modalAction.value === 'rename') {
+    console.log('User confirmed with input:', renameInput.value)
+    // Perform renaming logic
+  } else if (modalAction.value === 'delete') {
+    console.log('User confirmed deletion')
+    // Perform deletion logic
+  }
+}
+
+const handleCancellation = () => {
+  console.log('User cancelled the action')
+}
+
+
+// Example file data
+const files = ref([
+  {title: "Document 1", lastModified: "2025-01-15"},
+  {title: "Presentation", lastModified: "2025-01-10"},
+  {title: "Notes", lastModified: "2025-01-08"},
+  {title: "Budget Plan", lastModified: "2025-01-01"},
+])
+
+const searchQuery = ref("")
+
+const filteredFiles = computed(() => {
+  return files.value.filter((file) =>
+    file.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+const openFile = (file) => {
+  console.log("Opening file:", file)
+  router.push({path: `/suite/${file.title}`})
+}
+
+const renameFile = (file) => {
+  modalAction.value = 'rename'
+  renameInput.value = file.title
+  userModal.value.open({title: `Renaming: ${file.title}`})
+}
+
+const deleteFile = (file) => {
+  modalAction.value = 'delete'
+  userModal.value.open({title: `Deleting: ${file.title}`})
+}
+
+const createNewFile = () => {
+  const newFileName = prompt("Enter the name of the new source:")
+  if (newFileName) {
+    files.value.push({
+      title: newFileName,
+      lastModified: new Date().toISOString().split("T")[0],
+    })
+  }
+}
+</script>
 <template>
   <div class="sources-view container py-4">
     <h1 class="text-center mb-4" :style="{ color: mainColor }">Sources</h1>
-
+    <!-- User Confirmation Modal -->
+    <ModalComponent
+      ref="userModal"
+      title="User Confirmation"
+      @modal-opened="handleModalOpen"
+      @modal-closed="handleModalClose"
+      @modal-confirmed="handleConfirmation"
+      @modal-cancelled="handleCancellation"
+    >
+      <div v-if="modalAction === 'rename'">
+        <p class="text-start">Enter new name:</p>
+        <input class="form-control dark-input w-75 inline-block" v-model="renameInput"
+               placeholder="Enter additional details"/>
+      </div>
+      <div v-else-if="modalAction === 'delete'">
+        <p class="text-start">Are you sure you want to delete this source?</p>
+      </div>
+      <div v-else>
+        Unrecognized: {{ modalAction }}
+      </div>
+    </ModalComponent>
     <!-- Search and Add New Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <input
@@ -14,9 +115,16 @@
         <i class="fas fa-plus me-2"></i>New Source
       </button>
     </div>
-
+    <div v-if="loading">
+      <div
+        class="spinner-border"
+        role="status"
+      >
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
     <!-- If there are no files, show the placeholder -->
-    <div v-if="filteredFiles.length === 0" class="no-files text-center py-5">
+    <div v-else-if="filteredFiles.length === 0" class="no-files text-center py-5">
       <i class="fas fa-folder-open fa-4x mb-3" :style="{ color: mainColor }"></i>
       <p class="text-muted">Wow...it's empty here!</p>
     </div>
@@ -31,84 +139,14 @@
         <SourceCard
           :file="file"
           :mainColor="mainColor"
-          @open="openFile"
-          @rename="renameFile"
-          @delete="deleteFile(index)"
+          @open="openFile(file)"
+          @rename="renameFile(file)"
+          @delete="deleteFile(file)"
         />
       </div>
     </div>
   </div>
 </template>
-
-<script>
-import { ref, computed } from "vue";
-import SourceCard from "@/components/SourceCard.vue";
-import router from "@/router/index.js";
-
-export default {
-  name: "SourcesView",
-  components: {
-    SourceCard,
-  },
-  setup() {
-    const mainColor = "#CE29AA";
-
-    // Example file data
-    const files = ref([
-      { title: "Document 1", lastModified: "2025-01-15" },
-      { title: "Presentation", lastModified: "2025-01-10" },
-      { title: "Notes", lastModified: "2025-01-08" },
-      { title: "Budget Plan", lastModified: "2025-01-01" },
-    ]);
-
-    const searchQuery = ref("");
-
-    const filteredFiles = computed(() => {
-      return files.value.filter((file) =>
-        file.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-      );
-    });
-
-    const openFile = (file) => {
-      console.log("Opening file:", file);
-      router.push({ path: `/suite/${file.title}` })
-    };
-
-    const renameFile = (file) => {
-      const newName = prompt("Enter new name:", file.title);
-      if (newName) file.title = newName;
-    };
-
-    const deleteFile = (index) => {
-      if (confirm("Are you sure you want to delete this source?")) {
-        files.value.splice(index, 1);
-      }
-    };
-
-    const createNewFile = () => {
-      const newFileName = prompt("Enter the name of the new source:");
-      if (newFileName) {
-        files.value.push({
-          title: newFileName,
-          lastModified: new Date().toISOString().split("T")[0],
-        });
-      }
-    };
-
-    return {
-      mainColor,
-      files,
-      searchQuery,
-      filteredFiles,
-      openFile,
-      renameFile,
-      deleteFile,
-      createNewFile,
-    };
-  },
-};
-</script>
-
 <style scoped>
 .sources-view {
   background-color: #19191C;

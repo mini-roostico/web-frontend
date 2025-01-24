@@ -1,0 +1,33 @@
+.dark-card {
+    background-color: #242427;
+    border-color: #2d2d31;
+    color: #e1e1e1;
+}
+
+.dark-card .card-header {
+    background-color: #2d2d31;
+    border-bottom-color: #3a3a3e;
+    color: #e1e1e1;
+}
+
+.dark-input {
+    background-color: #2d2d31;
+    border-color: #3a3a3e;
+    color: #e1e1e1;
+}
+
+.dark-input:focus {
+    background-color: #2d2d31;
+    border-color: #4a4a4e;
+    color: #e1e1e1;
+    box-shadow: 0 0 0 0.25rem rgba(130, 138, 145, 0.15);
+}
+
+.dark-input::placeholder {
+    color: #8b8b8b;
+}
+
+.dark-input:disabled {
+    background-color: #1e1e21;
+    color: #666;
+}
