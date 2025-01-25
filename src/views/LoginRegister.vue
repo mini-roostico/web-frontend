@@ -65,10 +65,11 @@ function login(username, password) {
 
 function register(username, password) {
   // TODO add register login
+  console.log('Registering user with username:', username);
   AuthService.register({username: username, password: password}).then((response) => {
     const {success} = response
     if (success === true) {
-      login(username.value, password.value);
+      login(username, password);
     } else {
       // TODO handle error
     }
@@ -84,7 +85,6 @@ const handleSubmit = () => {
     if (password.value === confirmPassword.value) {
       loading.value = true;
       register(username.value, password.value);
-
     } else {
       // error
     }
