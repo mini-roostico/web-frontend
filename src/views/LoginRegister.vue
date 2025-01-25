@@ -84,6 +84,7 @@ const handleSubmit = () => {
     if (password.value === confirmPassword.value) {
       loading.value = true;
       register(username.value, password.value);
+
     } else {
       // error
     }
