@@ -1,198 +1,214 @@
-<template>
-    <div class="wrap">
-      <div class="headerWrap">
-        <header class="w-100 text-center mainHeader">
+<script setup>
+import CodeEditor from "simple-code-editor";
+import {onMounted, ref} from "vue";
+import 'highlight.js/styles/default.css';
+import yaml from 'highlight.js/lib/languages/yaml';
+import hljs from "highlight.js";
+import {EventBus} from "@/scripts/EventBus.js";
+import {AuthService} from "@/scripts/AuthService.js";
 
-          <img class="subjekt-logo" src="@/assets/logo.png" alt="Subjekt logo">
-          <div class="headerText">
+hljs.registerLanguage('yaml', yaml);
+const isLogged = ref(AuthService.isAuthenticated());
+const yamlText = ref(
+`name: "Home page suite"
+
+macros:
+  - def: my_macro(arg)
+    bodies:
+    - "Hello \${{ arg }}!"
+    - "Goodbye \${{ arg }}!"
+
+parameters:
+  - name: my_number
+    values:
+    - "1"
+    - "2"
+
+subjects:
+  - name: "MySubject-\${{ my_number }}"
+    code: |-
+      From subject MySubject
+      {{ my_macro(my_number) }}
+      End of subject`
+);
+
+const highlightCode = (code) => {
+  return hljs.highlight(code, {language: 'yaml'}).value;
+};
+
+function refreshButton() {
+  isLogged.value = AuthService.isAuthenticated()
+}
+
+onMounted(() => {
+  EventBus.$on('refresh-navbar', () => {
+    refreshButton()
+  })
+})
+</script>
+
+<template>
+  <div class="text-white min-h-screen flex flex-col items-center">
+    <header class="py-6 text-center mt-4">
+      <img
+        src="@/assets/logo.png"
+        alt="Subjekt logo"
+        class="logo mx-auto mb-5"
+        style="max-width: 450px;"
+      />
+    </header>
+
+    <main class="w-full px-4 md:px-8 flex-grow flex flex-col items-center">
+      <div class="card shadow-lg rounded-2xl w-full p-6">
+        <div class="row p-2">
+          <div class="p-4 col mb-3">
+            <h5 class="text-lg font-semibold mb-2 text-white">YAML Configuration</h5>
+            <CodeEditor
+              theme="vs2015"
+              :read-only="true"
+              :languages="[['yaml', 'YAML']]"
+              :wrap="false"
+              v-model="yamlText"
+              width="100%"
+              height="100%"
+              :highlight="highlightCode"
+            ></CodeEditor>
           </div>
-        </header>
+          <div class="p-4 col justify-center text-center">
+            <h5 class="text-lg font-semibold mb-2 text-white">Results</h5>
+
+            <div class="row m-4">
+              <div class="card rounded-2xl result-card">
+                <div class="card-body">
+                  <h5 class="card-title">MySubject-1</h5>
+                  <p class="card-text">
+                    From subject MySubject<br />
+                    Hello 1!<br />
+                    End of subject
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="row m-4">
+              <div class="card rounded-2xl result-card">
+                <div class="card-body">
+                  <h5 class="card-title">MySubject-2</h5>
+                  <p class="card-text">
+                    From subject MySubject<br />
+                    Hello 2!<br />
+                    End of subject
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="row m-4">
+              <div class="card rounded-2xl result-card">
+                <div class="card-body">
+                  <h5 class="card-title">MySubject-1</h5>
+                  <p class="card-text">
+                    From subject MySubject<br />
+                    Goodbye 1!<br />
+                    End of subject
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="row m-4">
+              <div class="card rounded-2xl result-card">
+                <div class="card-body">
+                  <h5 class="card-title">MySubject-2</h5>
+                  <p class="card-text">
+                    From subject MySubject<br />
+                    Goodbye 2!<br />
+                    End of subject
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <router-link
-            :to="isLogged ? '/whiteboards' : '/login'"
-            custom
-            v-slot="{ navigate }"
+          :to="isLogged ? '/whiteboards' : '/login'"
+          custom
+          v-slot="{ navigate }"
         >
-          <button
-              class="btn btn-primary shadow mt-5 mainBtn"
-              @click="navigate"
-              role="link">
-            {{ isLogged ? "Your Whiteboards" : "Sign In" }}
-          </button>
         </router-link>
       </div>
-
-    </div>
+    </main>
+    <footer class="w-full m-4 p-6">
+      <div class="card shadow-lg rounded-2xl w-full text-white text-start">
+        <h3 class="text-lg font-bold mt-3 mb-2 p-4">
+          {{ isLogged ? "Go generate now!" : "Join Subjekt now" }}</h3>
+        <div class="card-body flex justify-center space-x-4 p-6">
+          <a
+            v-if="!isLogged"
+            href="/register"
+            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            Sign Up
+          </a>
+          <a
+            v-if="!isLogged"
+            href="/login"
+            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            Sign In
+          </a>
+          <a
+            v-if="!isLogged"
+            href="/about"
+            class="btn btn-secondary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            Learn More
+          </a>
+          <a
+            v-else
+            href="/sources"
+            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            Generate
+          </a>
+        </div>
+      </div>
+    </footer>
+  </div>
 </template>
-<script>
 
-export default {
-    name: 'Homepage',
-    data() {
-       return {
-         isLogged: false
-       }
-    },
-    mounted() {
-    }
-}
-</script>
 <style scoped>
-
-.subjekt-logo {
-  width: 40%;
-  align-content: center;
-}
-
-.imgSvg{
-    width: 30vh;
-}
-
-.imgHomeDesktop{
-    width: 60%;
-}
-.canvasContainer{
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding-top: 1vh;
-}
-
 .btn-primary {
-  --bs-btn-bg: #CF29AB;
-  --bs-btn-border-color: #CF29AB;
-  --bs-btn-hover-bg: #c226a0;
-  --bs-btn-hover-border-color:  #CF29AB;
-  --bs-btn-focus-shadow-rgb: 49, 132, 253;
-  --bs-btn-active-bg: #CF29AB;
-  --bs-btn-active-border-color: #c226a0;
-  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-  --bs-btn-disabled-bg: #c226a0;
-  --bs-btn-disabled-border-color: #c226a0;
+  background-color: #CF29AB;
+  border-color: #CF29AB;
 }
 
-* {
-    transition: all 0.3s ease;
-    -webkit-animation-fill-mode: both;
+.btn-primary:hover {
+  background-color: #c226a0;
 }
 
-.wrap {
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  margin-top: 30px;
-  zoom: 150%;
+.btn-secondary {
+  background-color: #4a4a4a;
+  border-color: #4a4a4a;
+  color: #ffffff;
 }
 
-.headerWrap {
-  display: flex;
-  flex-direction: column;
+.btn-secondary:hover {
+  background-color: #5a5a5a;
 }
 
-.whiteboard-container {
-  display: flex;
-  width: 110px;
-  height: 90px;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-content: flex-end;
+.logo {
+  transition: transform 0.3s ease;
 }
 
-.whiteBoard {
-    width: 55px;
-    height: 55px;
-    border: 5px solid gray;
-    position: absolute;
-    transform: rotateX(30deg) rotateY(30deg);
-    margin-top: 25px;
+.logo:hover {
+  transform: scale(1.05);
 }
 
-.whiteBoard:before {
-    content: ' ';
-    width: 55px;
-    height: 55px;
-    border: 5px solid gray;
-    position: absolute;
-    transform: translateY(-15px) translateX(-23px) rotateZ(10deg);
-    animation: rotateLogoOne 0.75s ease 1;
-    -webkit-animation-fill-mode: both;
-    animation-delay: 0.2s;
+.card {
+  background-color: #1a1a1a;
+  border: none;
 }
 
-.whiteBoard:after {
-    content: ' ';
-    width: 55px;
-    height: 55px;
-    border: 5px solid gray;
-    position: absolute;
-    transform: translateY(-25px) translateX(-13px) rotateZ(20deg);
-    animation: rotateLogoTwo 1s ease 1;
-    -webkit-animation-fill-mode: both;
-    animation-delay: 0.2s;
+.result-card {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  color: rgba(255, 255, 255, 0.95);
 }
 
-h1, .realtime-container {
-    text-align: right;
-    font-weight: normal;
-    height: 30px;
-    font-family: 'Raleway', sans-serif;
-}
-
-h1 {
-  width: 100%;
-  text-align: right;
-  display: block;
-  font-size: 40px;
-  transform: translateX(-30px);
-  animation: rotate 0.3s ease 1;
-  -webkit-animation-fill-mode: both;
-  animation-delay: 0.3s;
-}
-
-.w {
-    font-family: 'Titillium Web', sans-serif;
-}
-
-.headerText {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-  text-align: center;
-  margin-top: 10px;
-  width: auto
-}
-
-.mainHeader {
-  display: flex;
-  justify-content: center;
-  align-content: center;
-}
-
-.mainBtn {
-  max-width: 500px;
-  width: 200px;
-  margin: 30px auto auto;
-}
-
-@media screen and (max-width: 500px) {
-
-  .wrap {
-    zoom: 100%;
-  }
-
-  h1 {
-    text-align: center;
-    font-size: 30px;
-    height: 20px;
-  }
-  .headerText {
-    width: auto;
-  }
-
-  .mainHeader {
-    display: block;
-
-  }
+footer {
+  min-height: 100px;
 }
 </style>
