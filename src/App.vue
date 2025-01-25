@@ -1,35 +1,48 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import {RouterView} from 'vue-router'
 import NavbarComponent from "@/components/NavbarComponent.vue";
 import FooterComponent from "@/components/FooterComponent.vue";
 </script>
 
 <template>
-  <NavbarComponent ref="navbar"></NavbarComponent>
-  <router-view v-on:onLogin="this.onLogin"
-               v-on:onBadToken="this.onBadToken"/>
-  <FooterComponent></FooterComponent>
+  <div class="app-container">
+    <NavbarComponent ref="navbar"></NavbarComponent>
+    <main class="content">
+      <router-view/>
+    </main>
+    <FooterComponent></FooterComponent>
+  </div>
 </template>
 
 <style>
-
 /* these are necessary styles for vue flow */
 @import '@vue-flow/core/dist/style.css';
-
-/* this contains the default theme, these are optional styles */
 @import '@vue-flow/core/dist/theme-default.css';
-
 @import '@/assets/main.css';
 
-html {
+html, body {
+  height: 100%;
+  margin: 0;
   background-color: #19191C;
 }
+
 #app {
   font-family: Poppins, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   background-color: #19191C;
+  min-height: 100%;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1 0 auto;
 }
 
 nav a {

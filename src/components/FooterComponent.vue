@@ -1,28 +1,65 @@
 <template>
-  <footer class="footer py-3">
-    <ul class="nav justify-content-center align-middle pb-3 mb-3">
-      <li class="nav-item"><a href="#" class="nav-link px-2 text-body-secondary">Home</a></li>
-      <li class="nav-item"><a class="link-dark nav-link px-2 text-body-secondary"
-                              href="https://github.com/mini-roostico/subjekt">
-        <i class="bi bi-github"></i>
-      </a>
-      </li>
-    </ul>
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-links">
+        <router-link to="/" class="footer-link">Home</router-link>
+        <a href="https://github.com/mini-roostico/subjekt" target="_blank" class="footer-link github-link">
+          <i class="bi bi-github"></i> GitHub
+        </a>
+      </div>
+      <div class="footer-copyright">
+        © {{ currentYear }} Your Project Name
+      </div>
+    </div>
   </footer>
 </template>
-<script>
-export default {
-  name: "FooterComponent"
-}
+
+<script setup>
+import { ref } from 'vue'
+
+const currentYear = ref(new Date().getFullYear())
 </script>
+
 <style scoped>
 .footer {
-  margin-top: 100px !important;
-  background-color: #303033 !important;
+  flex-shrink: 0;
+  background-color: #303033;
+  color: #a0a0a0;
+  padding: 1rem 0;
 }
 
-a, p {
-  color: #19191C !important;
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-link {
+  color: #a0a0a0;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: #D22BA8;
+}
+
+.github-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.footer-copyright {
+  font-size: 0.8rem;
+}
 </style>
