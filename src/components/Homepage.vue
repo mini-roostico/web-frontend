@@ -128,7 +128,7 @@ onMounted(() => {
           </div>
         </div>
         <router-link
-          :to="isLogged ? '/whiteboards' : '/login'"
+          :to="isLogged ? '/sources' : '/login'"
           custom
           v-slot="{ navigate }"
         >
