@@ -66,8 +66,10 @@ defineExpose({ reloadNavbar, logout })
     </ul>
     <div class="col loginButtons">
       <div v-if="!isLogged">
-        <a role="button" class="btn btn-light mx-2" href="/login">Sign In</a>
-        <a role="button" class="btn btn-outline-primary" href="/register">Sign Up</a>
+        <router-link role="button" class="btn btn-light mx-2" to="/login">Sign In</router-link>
+        <router-link role="button" class="btn btn-outline-primary" to="/register"
+          >Sign Up</router-link
+        >
       </div>
       <div v-else>
         <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
@@ -75,13 +77,13 @@ defineExpose({ reloadNavbar, logout })
     </div>
     <div class="col-3 menu-mobile">
       <div v-if="!isLogged">
-        <a role="button" href="/login">
+        <router-link role="button" to="/login">
           <BootstrapIcon
             icon="bi bi-box-arrow-in-right"
             size="1.8rem"
             color="black"
           ></BootstrapIcon>
-        </a>
+        </router-link>
       </div>
       <div v-else>
         <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
