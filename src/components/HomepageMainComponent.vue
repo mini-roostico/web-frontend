@@ -136,34 +136,34 @@ onMounted(() => {
           {{ isLogged ? 'Go generate now!' : 'Join Subjekt now' }}
         </h3>
         <div class="card-body flex justify-center space-x-4 p-6">
-          <a
+          <router-link
             v-if="!isLogged"
-            href="/register"
+            to="/register"
             class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
           >
             Sign Up
-          </a>
-          <a
+          </router-link>
+          <router-link
             v-if="!isLogged"
-            href="/login"
+            to="/login"
             class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
           >
             Sign In
-          </a>
-          <a
+          </router-link>
+          <router-link
             v-if="!isLogged"
-            href="/about"
+            to="/about"
             class="btn btn-secondary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
           >
             Learn More
-          </a>
-          <a
+          </router-link>
+          <router-link
             v-else
-            href="/sources"
+            to="/sources"
             class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
           >
             Generate
-          </a>
+          </router-link>
         </div>
       </div>
     </footer>
