@@ -81,6 +81,7 @@ jobs:
     needs:
       - check-secrets
       - check
+      - build
     if: |
       always() &&
       needs.check-secrets.outputs.run-with-secrets == 'true' &&
@@ -90,7 +91,6 @@ jobs:
         uses: actions/checkout@v4.2.2
         with:
           token: ${{ secrets.DEPLOYMENT_TOKEN }}
-          persist-credentials: false
       - uses: actions/setup-node@v4.1.0
         with:
           cache: npm
