@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router/index.js'
 import { AuthService } from '@/scripts/AuthService.js'

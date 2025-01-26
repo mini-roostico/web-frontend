@@ -72,7 +72,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue'])
+defineEmits(['update:modelValue'])
 
 const nodes = ref(props.modelValue.nodes)
 const edges = ref(props.modelValue.edges)

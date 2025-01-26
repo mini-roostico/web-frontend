@@ -27,7 +27,7 @@ const showAlert = (text, type = 'alert-info') => {
 const clearAlert = () => {
   alertText.value = ''
 }
-
+/* eslint-disable no-unused-vars */
 const handleModalOpen = (_) => {
   // do nothing
 }

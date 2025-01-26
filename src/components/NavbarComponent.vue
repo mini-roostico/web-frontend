@@ -55,7 +55,7 @@ defineExpose({ reloadNavbar, logout })
     <ul
       class="links-desktop nav nav-pills col text-center align-items-center justify-content-center"
     >
-      <li v-for="link in links">
+      <li v-for="link in links" v-bind:key="link">
         <router-link
           v-if="(link.loginNeeded && isLogged) || !link.loginNeeded"
           :to="link.href"

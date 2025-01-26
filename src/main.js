@@ -25,8 +25,8 @@ const initAuthService = async () => {
     }
   }
 }
-
-initAuthService().then((r) => console.log('Auth service initialized'))
+/* eslint-disable no-unused-vars */
+initAuthService().then((_) => console.log('Auth service initialized'))
 
 const app = createApp(App)
 app.provide('globalState', globalState)

@@ -3,9 +3,10 @@ import Cookies from 'js-cookie'
 export const AuthService = {
   login(userData) {
     // TODO handle login
-    const { username, password } = userData
+    /* eslint-disable no-unused-vars */
+    const { username, _ } = userData
     // TODO send request
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _) => { /* eslint-disable no-unused-vars */
       setTimeout(() => {
         const token = 'fake-token'
         Cookies.set('auth_token', token, { expires: 7 })
@@ -15,10 +16,10 @@ export const AuthService = {
     })
   },
 
-  register(userData) {
-    const { username, password } = userData
+  register(_) {
+    //const { username, password } = userData
     // TODO send request
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _) => {
       setTimeout(() => {
         resolve({ success: true })
       })

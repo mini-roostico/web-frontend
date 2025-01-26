@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
