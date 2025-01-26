@@ -100,8 +100,10 @@ jobs:
 
   deploy-to-registry:
     permissions:
-      contents: write
+      contents: read
       packages: write
+      attestations: write
+      id-token: write
     concurrency:
       group: deploy-to-registry-${{ github.event.number || github.ref }}
     runs-on: ubuntu-24.04
