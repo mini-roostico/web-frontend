@@ -25,7 +25,7 @@ jobs:
   precompute-next-version:
     runs-on: ubuntu-24.04
     outputs:
-      next-version: ${{ steps.compute-next-version.outputs.next-version }}
+      will-release: ${{ steps.compute-next-version.outputs.will-release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -107,7 +107,7 @@ jobs:
     needs:
       - precompute-next-version
       - release
-    if: "!cancelled() && !contains(needs.precompute-next-version.result, 'failure')"
+    if: "!cancelled() && !contains(needs.precompute-next-version.result, 'failure') && needs.precompute-next-version.outputs.will-release == 'true'"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
