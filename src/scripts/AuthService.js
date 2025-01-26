@@ -6,7 +6,8 @@ export const AuthService = {
     /* eslint-disable no-unused-vars */
     const { username, _ } = userData
     // TODO send request
-    return new Promise((resolve, _) => { /* eslint-disable no-unused-vars */
+    return new Promise((resolve, _) => {
+      /* eslint-disable no-unused-vars */
       setTimeout(() => {
         const token = 'fake-token'
         Cookies.set('auth_token', token, { expires: 7 })
