@@ -127,8 +127,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <router-link :to="isLogged ? '/sources' : '/login'" custom>
-        </router-link>
+        <router-link :to="isLogged ? '/sources' : '/login'" custom> </router-link>
       </div>
     </main>
     <footer class="w-full m-4 p-6">
