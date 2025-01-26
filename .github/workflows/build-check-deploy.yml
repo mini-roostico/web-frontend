@@ -76,9 +76,7 @@ jobs:
       # Only one release job at a time per branch, as only master releases.
       # Strictly sequential.
       group: release-${{ github.event.number || github.ref }}
-    permissions:
-      contents: write
-      packages: write
+    permissions: write-all
     runs-on: ubuntu-24.04
     needs:
       - check-secrets
