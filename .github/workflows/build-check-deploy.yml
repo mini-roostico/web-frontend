@@ -81,6 +81,7 @@ jobs:
       packages: write
     runs-on: ubuntu-24.04
     needs:
+      - check-secrets
       - check
     if: |
       always() &&
