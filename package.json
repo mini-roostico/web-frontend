@@ -7,8 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "lint:fix": "eslint src/ --fix",
+    "lint:check": "eslint src/",
+    "format:write": "prettier --write src/",
+    "format:check": "prettier --check src/"
   },
   "dependencies": {
     "@dagrejs/dagre": "^1.1.4",

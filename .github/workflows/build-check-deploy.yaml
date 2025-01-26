@@ -1,0 +1,147 @@
+name: CI/CD Process
+on:
+  workflow_call:
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: subjekt-${{ github.repository }}
+
+jobs:
+  check-secrets:
+    runs-on: ubuntu-24.04
+    outputs:
+      run-with-secrets: ${{ steps.require-secrets.outputs.run-with-secrets }}
+    steps:
+      - name: Find if secrets are available
+        id: detect-secrets
+        uses: DanySK/are-secrets-available@1.0.0
+        with:
+          secrets: ${{ toJson(secrets) }}
+      - name: Set condition
+        id: require-secrets
+        run: |
+          echo "run-with-secrets=${{ steps.detect-secrets.outputs.has-secrets == 'true' && !github.event.repository.fork }}" >> $GITHUB_OUTPUT
+
+  precompute-next-version:
+    runs-on: ubuntu-24.04
+    outputs:
+      next-version: ${{ steps.compute-next-version.outputs.next-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Compute next release version
+        id: compute-next-version
+        uses: nicolasfara/precompute-semantic-release-version-action@2.0.2
+        with:
+          github-token: ${{ github.token }}
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2022, macos-14, ubuntu-24.04 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: DanySK/action-checkout@0.2.22
+      - uses: actions/setup-node@v4.1.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+
+  check:
+    runs-on: ubuntu-24.04
+    needs:
+      - build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - uses: actions/setup-node@v4.1.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - run: npm clean-install
+      - run: npm run lint:check
+      - run: npm run format:check
+
+  release:
+    permissions:
+      contents: write
+      packages: write
+    if: ${{ needs.check-secrets.outputs.run-with-secrets == 'true' }}
+    runs-on: ubuntu-24.04
+    needs:
+      - build
+      - check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4.1.0
+        with:
+          cache: npm
+          node-version: lts/*
+      - name: Run semantic-release
+        id: release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm install
+          npm ci
+          npx semantic-release
+
+  deploy-to-registry:
+    permissions:
+      contents: write
+      packages: write
+    concurrency:
+      group: deploy-to-registry-${{ github.event.number || github.ref }}
+    runs-on: ubuntu-24.04
+    needs:
+      - precompute-next-version
+      - release
+    if: "!cancelled() && !contains(needs.precompute-next-version.result, 'failure')"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - name: Login to registry
+        uses: docker/login-action@327cd5a69de6c009b9ce71bce8395f28e651bf99
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get metadata for docker
+        id: metadata
+        uses: docker/metadata-action@8e1d5461f02b7886d3c1a774bfbd873650445aa2
+        with:
+          images: ghcr.io/${{ env.IMAGE_NAME }}
+      - name: Build image and deploy
+        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  success:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - check
+      - release
+      - deploy-to-registry
+    if: >-
+      always() && (
+        contains(join(needs.*.result, ','), 'failure')
+        || !contains(join(needs.*.result, ','), 'cancelled')
+      )
+    steps:
+      - name: Verify that there were no failures
+        run: ${{ !contains(join(needs.*.result, ','), 'failure') }}
