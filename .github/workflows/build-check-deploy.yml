@@ -89,6 +89,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4.2.2
         with:
+          token: ${{ secrets.DEPLOYMENT_TOKEN }}
           persist-credentials: false
       - uses: actions/setup-node@v4.1.0
         with:
@@ -97,6 +98,7 @@ jobs:
       - name: Run semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm install
           npm ci
