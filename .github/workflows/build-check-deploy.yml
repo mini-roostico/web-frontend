@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: subjekt-${{ github.repository }}
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   check-secrets:
@@ -110,25 +111,32 @@ jobs:
     if: "!cancelled() && !contains(needs.precompute-next-version.result, 'failure') && needs.precompute-next-version.outputs.will-release == 'true'"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4.2.2
-      - name: Login to registry
-        uses: docker/login-action@327cd5a69de6c009b9ce71bce8395f28e651bf99
+        uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get metadata for docker
-        id: metadata
-        uses: docker/metadata-action@8e1d5461f02b7886d3c1a774bfbd873650445aa2
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
         with:
-          images: ghcr.io/${{ env.IMAGE_NAME }}
-      - name: Build image and deploy
-        uses: docker/build-push-action@67a2d409c0a876cbe6b11854e3e25193efe4e62d
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
         with:
           context: .
           push: true
-          tags: ${{ steps.metadata.outputs.tags }}
-          labels: ${{ steps.metadata.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
 
   success:
     runs-on: ubuntu-latest
