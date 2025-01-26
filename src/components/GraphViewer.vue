@@ -1,9 +1,9 @@
 <script setup>
-import {nextTick, ref, watch} from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { VueFlow, useVueFlow, Position } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 
-import {Controls} from "@vue-flow/controls";
+import { Controls } from '@vue-flow/controls'
 import dagre from '@dagrejs/dagre'
 
 /**
@@ -34,7 +34,10 @@ function useLayout() {
       // if you need width+height of nodes for your layout, you can use the dimensions property of the internal node (`GraphNode` type)
       const graphNode = findNode(node.id)
 
-      dagreGraph.setNode(node.id, { width: graphNode.dimensions.width || 150, height: graphNode.dimensions.height || 50 })
+      dagreGraph.setNode(node.id, {
+        width: graphNode.dimensions.width || 150,
+        height: graphNode.dimensions.height || 50,
+      })
     }
 
     for (const edge of edges) {
@@ -67,21 +70,21 @@ const props = defineProps({
       edges: [],
     }),
   },
-});
+})
 
-const emit = defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue'])
 
-const nodes = ref(props.modelValue.nodes);
-const edges = ref(props.modelValue.edges);
+const nodes = ref(props.modelValue.nodes)
+const edges = ref(props.modelValue.edges)
 
 watch(
   () => props.modelValue,
   (newValue) => {
-    nodes.value = newValue.nodes;
-    edges.value = newValue.edges;
+    nodes.value = newValue.nodes
+    edges.value = newValue.edges
   },
-  { immediate: true }
-);
+  { immediate: true },
+)
 
 const { layout } = useLayout()
 
@@ -104,12 +107,8 @@ async function layoutGraph(direction) {
       @nodes-initialized="layoutGraph('TB')"
       :delete-key-code="null"
     >
-      <Background/>
-      <Controls
-        :show-zoom="false"
-        :show-fit="false"
-        :show-interactive="false"
-      />
+      <Background />
+      <Controls :show-zoom="false" :show-fit="false" :show-interactive="false" />
     </VueFlow>
   </div>
 </template>

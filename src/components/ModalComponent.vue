@@ -1,9 +1,9 @@
 <script setup>
-import {ref, useSlots} from 'vue'
+import { ref, useSlots } from 'vue'
 
 const emit = defineEmits(['modal-opened', 'modal-closed', 'modal-confirmed', 'modal-cancelled'])
 const slots = useSlots()
-const title = ref("")
+const title = ref('')
 
 const isVisible = ref(false)
 let resolveClose = null
@@ -41,11 +41,16 @@ const confirm = () => {
   close()
 }
 
-defineExpose({open, close, cancel})
+defineExpose({ open, close, cancel })
 </script>
 <template>
-  <div class="modal dark-modal" :class="{ 'show': isVisible }" tabindex="-1" role="dialog"
-       :style="{ display: isVisible ? 'block' : 'none' }">
+  <div
+    class="modal dark-modal"
+    :class="{ show: isVisible }"
+    tabindex="-1"
+    role="dialog"
+    :style="{ display: isVisible ? 'block' : 'none' }"
+  >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -71,19 +76,19 @@ defineExpose({open, close, cancel})
 .dark-modal .modal-content {
   background-color: #1e1e1e;
   color: #ffffff;
-  border: 1px solid #C226A0FF;
+  border: 1px solid #c226a0ff;
 }
 
 .dark-modal .modal-header {
-  border-bottom: 1px solid #C226A0FF;
+  border-bottom: 1px solid #c226a0ff;
 }
 
 .dark-modal .modal-footer {
-  border-top: 1px solid #C226A0FF;
+  border-top: 1px solid #c226a0ff;
 }
 
 .dark-modal .modal-title {
-  color: #C226A0FF;
+  color: #c226a0ff;
 }
 
 .dark-modal .close {
@@ -92,7 +97,7 @@ defineExpose({open, close, cancel})
 }
 
 .dark-modal .close:hover {
-  color: #C226A0FF;
+  color: #c226a0ff;
   opacity: 1;
 }
 
@@ -102,12 +107,12 @@ defineExpose({open, close, cancel})
 }
 
 .dark-modal .btn-primary {
-  background-color: #C226A0FF;
-  border-color: #C226A0FF;
+  background-color: #c226a0ff;
+  border-color: #c226a0ff;
 }
 
 .modal.show {
   display: block;
-  background-color: rgba(0,0,0,0.7);
+  background-color: rgba(0, 0, 0, 0.7);
 }
 </style>

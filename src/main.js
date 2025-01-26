@@ -1,11 +1,11 @@
-import "bootstrap/dist/css/bootstrap.min.css"
-import "bootstrap"
-import "@fortawesome/fontawesome-free"
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap'
+import '@fortawesome/fontawesome-free'
 
-import {createApp, reactive} from 'vue'
+import { createApp, reactive } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { AuthService } from "@/scripts/AuthService.js";
+import { AuthService } from '@/scripts/AuthService.js'
 
 const globalState = reactive({
   isLogged: false,
@@ -13,7 +13,7 @@ const globalState = reactive({
   setUser(userData) {
     this.user = userData
     this.isLogged = !!userData
-  }
+  },
 })
 
 const initAuthService = async () => {
@@ -26,9 +26,9 @@ const initAuthService = async () => {
   }
 }
 
-initAuthService().then(r => console.log('Auth service initialized'))
+initAuthService().then((r) => console.log('Auth service initialized'))
 
-const app= createApp(App)
+const app = createApp(App)
 app.provide('globalState', globalState)
 
 app.use(router)

@@ -1,16 +1,16 @@
 <script setup>
-import CodeEditor from "simple-code-editor";
-import {onMounted, ref} from "vue";
-import 'highlight.js/styles/default.css';
-import yaml from 'highlight.js/lib/languages/yaml';
-import hljs from "highlight.js";
-import {EventBus} from "@/scripts/EventBus.js";
-import {AuthService} from "@/scripts/AuthService.js";
+import CodeEditor from 'simple-code-editor'
+import { onMounted, ref } from 'vue'
+import 'highlight.js/styles/default.css'
+import yaml from 'highlight.js/lib/languages/yaml'
+import hljs from 'highlight.js'
+import { EventBus } from '@/scripts/EventBus.js'
+import { AuthService } from '@/scripts/AuthService.js'
 
-hljs.registerLanguage('yaml', yaml);
-const isLogged = ref(AuthService.isAuthenticated());
+hljs.registerLanguage('yaml', yaml)
+const isLogged = ref(AuthService.isAuthenticated())
 const yamlText = ref(
-`name: "Home page suite"
+  `name: "Home page suite"
 
 macros:
   - def: my_macro(arg)
@@ -29,12 +29,12 @@ subjects:
     code: |-
       From subject MySubject
       {{ my_macro(my_number) }}
-      End of subject`
-);
+      End of subject`,
+)
 
 const highlightCode = (code) => {
-  return hljs.highlight(code, {language: 'yaml'}).value;
-};
+  return hljs.highlight(code, { language: 'yaml' }).value
+}
 
 function refreshButton() {
   isLogged.value = AuthService.isAuthenticated()
@@ -54,7 +54,7 @@ onMounted(() => {
         src="@/assets/logo.png"
         alt="Subjekt logo"
         class="logo mx-auto mb-5"
-        style="max-width: 450px;"
+        style="max-width: 450px"
       />
     </header>
 
@@ -127,41 +127,42 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <router-link
-          :to="isLogged ? '/sources' : '/login'"
-          custom
-          v-slot="{ navigate }"
-        >
+        <router-link :to="isLogged ? '/sources' : '/login'" custom v-slot="{ navigate }">
         </router-link>
       </div>
     </main>
     <footer class="w-full m-4 p-6">
       <div class="card shadow-lg rounded-2xl w-full text-white text-start">
         <h3 class="text-lg font-bold mt-3 mb-2 p-4">
-          {{ isLogged ? "Go generate now!" : "Join Subjekt now" }}</h3>
+          {{ isLogged ? 'Go generate now!' : 'Join Subjekt now' }}
+        </h3>
         <div class="card-body flex justify-center space-x-4 p-6">
           <a
             v-if="!isLogged"
             href="/register"
-            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
+          >
             Sign Up
           </a>
           <a
             v-if="!isLogged"
             href="/login"
-            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
+          >
             Sign In
           </a>
           <a
             v-if="!isLogged"
             href="/about"
-            class="btn btn-secondary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            class="btn btn-secondary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
+          >
             Learn More
           </a>
           <a
             v-else
             href="/sources"
-            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition">
+            class="btn btn-primary px-6 m-2 rounded-lg shadow hover:shadow-lg transition"
+          >
             Generate
           </a>
         </div>
@@ -172,8 +173,8 @@ onMounted(() => {
 
 <style scoped>
 .btn-primary {
-  background-color: #CF29AB;
-  border-color: #CF29AB;
+  background-color: #cf29ab;
+  border-color: #cf29ab;
 }
 
 .btn-primary:hover {

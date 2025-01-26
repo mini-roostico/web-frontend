@@ -1,14 +1,14 @@
 <script setup>
-import {RouterView} from 'vue-router'
-import NavbarComponent from "@/components/NavbarComponent.vue";
-import FooterComponent from "@/components/FooterComponent.vue";
+import { RouterView } from 'vue-router'
+import NavbarComponent from '@/components/NavbarComponent.vue'
+import FooterComponent from '@/components/FooterComponent.vue'
 </script>
 
 <template>
   <div class="app-container">
     <NavbarComponent ref="navbar"></NavbarComponent>
     <main class="content">
-      <router-view/>
+      <router-view />
     </main>
     <FooterComponent></FooterComponent>
   </div>
@@ -20,10 +20,11 @@ import FooterComponent from "@/components/FooterComponent.vue";
 @import '@vue-flow/core/dist/theme-default.css';
 @import '@/assets/main.css';
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
-  background-color: #19191C;
+  background-color: #19191c;
 }
 
 #app {
@@ -31,7 +32,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  background-color: #19191C;
+  background-color: #19191c;
   min-height: 100%;
 }
 
@@ -50,6 +51,6 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #D22BA8;
+  color: #d22ba8;
 }
 </style>

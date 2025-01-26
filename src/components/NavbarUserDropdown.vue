@@ -1,21 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
-import {AuthService} from "@/scripts/AuthService.js";
+import { AuthService } from '@/scripts/AuthService.js'
 
 const username = ref(AuthService.getCurrentUser())
 const emit = defineEmits(['logout'])
 const userInitials = computed(() =>
-  username.value.split(' ')
-    .map(name => name[0])
+  username.value
+    .split(' ')
+    .map((name) => name[0])
     .slice(0, 2)
     .join('')
-    .toUpperCase()
+    .toUpperCase(),
 )
 
-
 const generateGradient = (username) => {
-  const hash = username.split('').reduce((acc, char) =>
-    char.charCodeAt(0) + ((acc << 5) - acc), 0)
+  const hash = username.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0)
 
   const h1 = Math.abs(hash % 360)
   const h2 = (h1 + 180) % 360
@@ -23,9 +22,7 @@ const generateGradient = (username) => {
   return `linear-gradient(135deg, hsl(${h1}, 70%, 60%), hsl(${h2}, 70%, 60%))`
 }
 
-const gradientBackground = computed(() =>
-  generateGradient(username.value)
-)
+const gradientBackground = computed(() => generateGradient(username.value))
 
 const logout = () => {
   emit('logout')
@@ -46,10 +43,7 @@ const logout = () => {
 
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
       <div class="dropdown-header">
-        <div
-          class="dropdown-avatar"
-          :style="{ background: gradientBackground }"
-        >
+        <div class="dropdown-avatar" :style="{ background: gradientBackground }">
           <span class="user-initials">{{ userInitials }}</span>
         </div>
         <div class="user-info">
@@ -92,7 +86,7 @@ const logout = () => {
   width: 250px;
   background-color: #1e1e1e;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   color: white;
   border: 1px solid #333;

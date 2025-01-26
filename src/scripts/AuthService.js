@@ -3,27 +3,26 @@ import Cookies from 'js-cookie'
 export const AuthService = {
   login(userData) {
     // TODO handle login
-    const {username, password} = userData
+    const { username, password } = userData
     // TODO send request
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         const token = 'fake-token'
-        Cookies.set('auth_token', token, {expires: 7})
+        Cookies.set('auth_token', token, { expires: 7 })
         localStorage.setItem('user', JSON.stringify(username))
-        resolve({success: true})
+        resolve({ success: true })
       }, 1000)
     })
   },
 
   register(userData) {
-    const {username, password} = userData
+    const { username, password } = userData
     // TODO send request
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve({success: true})
+        resolve({ success: true })
       })
     })
-
   },
 
   logout() {
@@ -50,5 +49,5 @@ export const AuthService = {
       this.logout()
       return false
     }
-  }
+  },
 }

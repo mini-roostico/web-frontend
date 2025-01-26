@@ -1,10 +1,10 @@
 <script setup>
-import {inject, ref, watch} from 'vue';
-import {useRoute} from 'vue-router';
-import YamlEditor from "@/components/YamlEditor.vue";
-import SuiteForms from "@/components/SuiteForms.vue";
-import GraphViewer from "@/components/GraphViewer.vue";
-import {AuthService} from "@/scripts/AuthService.js";
+import { inject, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import YamlEditor from '@/components/YamlEditor.vue'
+import SuiteForms from '@/components/SuiteForms.vue'
+import GraphViewer from '@/components/GraphViewer.vue'
+import { AuthService } from '@/scripts/AuthService.js'
 
 // TODO
 const initialYaml = `---
@@ -15,64 +15,63 @@ macros: []
 subjects: []
 `
 
-const route = useRoute();
-const suiteName = ref(route.params.suiteId);
-const activeTabLeft = ref('Suite Configuration');
-const activeTabRight = ref('Subjekt Output');
-const loading = ref(false);
-const generationDone = ref(false);
-const yamlText = ref(initialYaml);
-const suiteFormsRef = ref(null);
-const alertText = ref('');
-const alertType = ref('alert-info');
+const route = useRoute()
+const suiteName = ref(route.params.suiteId)
+const activeTabLeft = ref('Suite Configuration')
+const activeTabRight = ref('Subjekt Output')
+const loading = ref(false)
+const generationDone = ref(false)
+const yamlText = ref(initialYaml)
+const suiteFormsRef = ref(null)
+const alertText = ref('')
+const alertType = ref('alert-info')
 
-let previousText = undefined;
+let previousText = undefined
 
 const showAlert = (text, type = 'alert-info') => {
-  alertText.value = text;
-  alertType.value = type;
-};
+  alertText.value = text
+  alertType.value = type
+}
 
 const clearAlert = () => {
-  alertText.value = '';
-};
+  alertText.value = ''
+}
 
 const saveSuite = () => {
   // TODO Implement save logic
-  showAlert('Suite saved successfully!', 'alert-success');
-};
+  showAlert('Suite saved successfully!', 'alert-success')
+}
 
-
-const position = {x: 0, y: 0}
+const position = { x: 0, y: 0 }
 
 watch(activeTabLeft, (newTab) => {
   if (newTab === 'Suite YAML') {
     if (!previousText) {
-      yamlText.value = suiteFormsRef.value.generateYAML().yaml;
+      yamlText.value = suiteFormsRef.value.generateYAML().yaml
     } else {
       yamlText.value = previousText
-      previousText = undefined;
+      previousText = undefined
     }
   } else if (newTab === 'Suite Configuration') {
-    let result = suiteFormsRef.value.setFromYAML(yamlText.value);
+    let result = suiteFormsRef.value.setFromYAML(yamlText.value)
     if (result.success === false) {
-      console.log(result.error);
-      previousText = yamlText.value;
+      console.log(result.error)
+      previousText = yamlText.value
       showAlert(
-        "There was an error parsing your YAML, please fix it before going back",
-        'alert-danger'
-      );
-      activeTabLeft.value = 'Suite YAML';
+        'There was an error parsing your YAML, please fix it before going back',
+        'alert-danger',
+      )
+      activeTabLeft.value = 'Suite YAML'
     }
   }
 })
 
 function runRegeneration() {
-  loading.value = true;
+  loading.value = true
   setTimeout(() => {
-    loading.value = false;
-    generationDone.value = true;
-  }, 2000);
+    loading.value = false
+    generationDone.value = true
+  }, 2000)
 }
 
 const initialNodes = [
@@ -107,9 +106,9 @@ const initialNodes = [
 ]
 
 const initialEdges = [
-  {id: 'root-s1', source: 'root', target: 's1'},
-  {id: 'root-s2', source: 'root', target: 's2'},
-  {id: 's1-rs1', source: 's1', target: 'rs1'},
+  { id: 'root-s1', source: 'root', target: 's1' },
+  { id: 'root-s2', source: 'root', target: 's2' },
+  { id: 's1-rs1', source: 's1', target: 'rs1' },
 ]
 
 const graphData = {
@@ -117,8 +116,7 @@ const graphData = {
   edges: initialEdges,
 }
 
-const isLogged = ref(AuthService.isAuthenticated());
-
+const isLogged = ref(AuthService.isAuthenticated())
 </script>
 <template>
   <div class="suite-view container py-4" v-if="isLogged">
@@ -130,12 +128,7 @@ const isLogged = ref(AuthService.isAuthenticated());
       role="alert"
     >
       {{ alertText }}
-      <button
-        type="button"
-        class="btn-close"
-        @click="clearAlert"
-        aria-label="Close"
-      ></button>
+      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -168,8 +161,11 @@ const isLogged = ref(AuthService.isAuthenticated());
         <div class="tabs-container">
           <ul class="nav nav-tabs custom-tabs">
             <li class="nav-item" @click="activeTabLeft = 'Suite Configuration'">
-              <a class="nav-link" :class="{ active: activeTabLeft === 'Suite Configuration' }"
-                 href="#">
+              <a
+                class="nav-link"
+                :class="{ active: activeTabLeft === 'Suite Configuration' }"
+                href="#"
+              >
                 <i class="bi bi-gear-fill me-2"></i>Suite Configuration
               </a>
             </li>
@@ -198,8 +194,11 @@ const isLogged = ref(AuthService.isAuthenticated());
               </a>
             </li>
             <li class="nav-item" @click="activeTabRight = 'Generation graph'">
-              <a class="nav-link" :class="{ active: activeTabRight === 'Generation graph' }"
-                 href="#">
+              <a
+                class="nav-link"
+                :class="{ active: activeTabRight === 'Generation graph' }"
+                href="#"
+              >
                 <i class="bi bi-graph-up me-2"></i>Generation Graph
               </a>
             </li>
@@ -224,10 +223,10 @@ const isLogged = ref(AuthService.isAuthenticated());
 </template>
 <style scoped>
 .suite-view {
-  background-color: #19191C;
+  background-color: #19191c;
   border-radius: 8px;
   color: #fff;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .container {
@@ -259,12 +258,12 @@ const isLogged = ref(AuthService.isAuthenticated());
 }
 
 .nav-tabs .nav-link:hover {
-  color: #CE29AA;
+  color: #ce29aa;
   background-color: #2d2d31;
 }
 
 .nav-tabs .nav-link.active {
-  background-color: #CE29AA;
+  background-color: #ce29aa;
   color: #fff;
   border: none;
 }
@@ -276,7 +275,7 @@ const isLogged = ref(AuthService.isAuthenticated());
 
 /* Play button styling */
 .play-btn {
-  background-color: #CE29AA;
+  background-color: #ce29aa;
   color: white;
   border: none;
   padding: 0.5rem 1.25rem;

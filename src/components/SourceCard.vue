@@ -19,7 +19,9 @@
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" href="#" @click.prevent="openFile">Open</a></li>
             <li><a class="dropdown-item" href="#" @click.prevent="renameFile">Change Name</a></li>
-            <li><a class="dropdown-item text-danger" href="#" @click.prevent="deleteFile">Delete</a></li>
+            <li>
+              <a class="dropdown-item text-danger" href="#" @click.prevent="deleteFile">Delete</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -33,7 +35,7 @@
 
 <script>
 export default {
-  name: "SourceCard",
+  name: 'SourceCard',
   props: {
     file: {
       type: Object,
@@ -44,19 +46,19 @@ export default {
       required: true,
     },
   },
-  emits: ["open", "rename", "delete"],
+  emits: ['open', 'rename', 'delete'],
   methods: {
     openFile() {
-      this.$emit("open", this.file);
+      this.$emit('open', this.file)
     },
     renameFile() {
-      this.$emit("rename", this.file);
+      this.$emit('rename', this.file)
     },
     deleteFile() {
-      this.$emit("delete", this.file);
+      this.$emit('delete', this.file)
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -64,7 +66,9 @@ export default {
   background-color: #232329;
   border: none;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .card.file-card:hover {
@@ -73,7 +77,7 @@ export default {
 }
 
 .card-title {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .card-subtitle {

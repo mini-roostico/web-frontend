@@ -1,168 +1,174 @@
 <script setup>
-import {ref, reactive, computed} from 'vue';
-import yaml from "js-yaml";
+import { ref, reactive, computed } from 'vue'
+import yaml from 'js-yaml'
 
-const configuration = ref([]);
-const parameters = ref([]);
-const macros = ref([]);
-const subjects = ref([{name: 'Subject 1', pairs: []}]);
+const configuration = ref([])
+const parameters = ref([])
+const macros = ref([])
+const subjects = ref([{ name: 'Subject 1', pairs: [] }])
 
 // to generate YAML from the forms
 const generateYAML = computed(() => {
   const configObj = configuration.value.reduce((acc, item) => {
     if (item.key && item.value) {
-      acc[item.key] = item.value;
+      acc[item.key] = item.value
     }
-    return acc;
-  }, {});
+    return acc
+  }, {})
 
-  const parametersArray = parameters.value.map(param => ({
-    name: param.name,
-    values: param.values.filter(v => v.trim() !== '')
-  })).filter(param => param.name && param.values.length > 0);
+  const parametersArray = parameters.value
+    .map((param) => ({
+      name: param.name,
+      values: param.values.filter((v) => v.trim() !== ''),
+    }))
+    .filter((param) => param.name && param.values.length > 0)
 
-  const macrosArray = macros.value.map(macro => ({
-    name: macro.name,
-    values: macro.values.filter(v => v.trim() !== '')
-  })).filter(macro => macro.name && macro.values.length > 0);
+  const macrosArray = macros.value
+    .map((macro) => ({
+      name: macro.name,
+      values: macro.values.filter((v) => v.trim() !== ''),
+    }))
+    .filter((macro) => macro.name && macro.values.length > 0)
 
-  const subjectsArray = subjects.value.map(subject =>
-    subject.pairs.reduce((acc, pair) => {
-      if (pair.key && pair.value) {
-        acc[pair.key] = pair.value;
-      }
-      return acc;
-    }, {})
-  ).filter(subject => Object.keys(subject).length > 0);
+  const subjectsArray = subjects.value
+    .map((subject) =>
+      subject.pairs.reduce((acc, pair) => {
+        if (pair.key && pair.value) {
+          acc[pair.key] = pair.value
+        }
+        return acc
+      }, {}),
+    )
+    .filter((subject) => Object.keys(subject).length > 0)
 
   const yamlObject = {
     configuration: configObj,
     parameters: parametersArray,
     macros: macrosArray,
-    subjects: subjectsArray
-  };
+    subjects: subjectsArray,
+  }
 
   return {
     yaml: yaml.dump(yamlObject, {
       skipInvalid: true,
       // Ensure multi-line strings are properly formatted
-      forceQuotes: true
+      forceQuotes: true,
     }),
-    object: yamlObject
+    object: yamlObject,
   }
-});
+})
 
 const setFromYAML = (yamlString) => {
   try {
     // Parse the YAML
-    const parsedObject = yaml.load(yamlString);
+    const parsedObject = yaml.load(yamlString)
 
     // Configuration
     configuration.value = Object.entries(parsedObject.configuration || {}).map(([key, value]) => ({
       key,
-      value
-    }));
+      value,
+    }))
 
     // Parameters
-    parameters.value = (parsedObject.parameters || []).map(param => ({
+    parameters.value = (parsedObject.parameters || []).map((param) => ({
       name: param.name,
-      values: param.values || []
-    }));
+      values: param.values || [],
+    }))
 
     // Macros
-    macros.value = (parsedObject.macros || []).map(macro => ({
+    macros.value = (parsedObject.macros || []).map((macro) => ({
       name: macro.name,
-      values: macro.values || []
-    }));
+      values: macro.values || [],
+    }))
 
     // Subjects
-    subjects.value = (parsedObject.subjects || []).map(subject => ({
+    subjects.value = (parsedObject.subjects || []).map((subject) => ({
       name: `Subject ${subjects.value.length + 1}`,
       pairs: Object.entries(subject).map(([key, value]) => ({
         key,
-        value
-      }))
-    }));
+        value,
+      })),
+    }))
 
-    return { success: true };
+    return { success: true }
   } catch (error) {
     return {
       success: false,
-      error: error.message
-    };
+      error: error.message,
+    }
   }
-};
+}
 
 // Expose both methods
 defineExpose({
   generateYAML: () => generateYAML.value,
-  setFromYAML
-});
+  setFromYAML,
+})
 
 const addConfigPair = () => {
-  configuration.value.push({key: '', value: ''});
-};
+  configuration.value.push({ key: '', value: '' })
+}
 
 const removeConfigPair = (index) => {
-  configuration.value.splice(index, 1);
-};
+  configuration.value.splice(index, 1)
+}
 
 const addParameter = () => {
   parameters.value.push({
     name: '',
-    values: []
-  });
-};
+    values: [],
+  })
+}
 
 const addParameterValue = (paramIndex) => {
-  parameters.value[paramIndex].values.push('');
-};
+  parameters.value[paramIndex].values.push('')
+}
 
 const removeParameter = (index) => {
-  parameters.value.splice(index, 1);
-};
+  parameters.value.splice(index, 1)
+}
 
 const removeParameterValue = (paramIndex, valueIndex) => {
-  parameters.value[paramIndex].values.splice(valueIndex, 1);
-};
+  parameters.value[paramIndex].values.splice(valueIndex, 1)
+}
 
 const addMacro = () => {
   macros.value.push({
     name: '',
-    values: []
-  });
-};
+    values: [],
+  })
+}
 
 const addMacroValue = (macroIndex) => {
-  macros.value[macroIndex].values.push('');
-};
+  macros.value[macroIndex].values.push('')
+}
 
 const removeMacro = (index) => {
-  macros.value.splice(index, 1);
-};
+  macros.value.splice(index, 1)
+}
 
 const removeMacroValue = (macroIndex, valueIndex) => {
-  macros.value[macroIndex].values.splice(valueIndex, 1);
-};
+  macros.value[macroIndex].values.splice(valueIndex, 1)
+}
 
 const addSubject = () => {
   subjects.value.push({
     name: `Subject ${subjects.value.length + 1}`,
-    pairs: []
-  });
-};
+    pairs: [],
+  })
+}
 
 const removeSubject = (index) => {
-  subjects.value.splice(index, 1);
-};
+  subjects.value.splice(index, 1)
+}
 
 const addSubjectPair = (subjectIndex) => {
-  subjects.value[subjectIndex].pairs.push({key: '', value: ''});
-};
+  subjects.value[subjectIndex].pairs.push({ key: '', value: '' })
+}
 
 const removeSubjectPair = (subjectIndex, pairIndex) => {
-  subjects.value[subjectIndex].pairs.splice(pairIndex, 1);
-};
+  subjects.value[subjectIndex].pairs.splice(pairIndex, 1)
+}
 </script>
 
 <template>
@@ -178,11 +184,20 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
       <div class="card-body">
         <div v-for="(pair, index) in configuration" :key="index" class="row mb-2">
           <div class="col-5">
-            <input v-model="pair.key" type="text" class="form-control dark-input" placeholder="Key">
+            <input
+              v-model="pair.key"
+              type="text"
+              class="form-control dark-input"
+              placeholder="Key"
+            />
           </div>
           <div class="col-5">
-            <input v-model="pair.value" type="text" class="form-control dark-input"
-                   placeholder="Value">
+            <input
+              v-model="pair.value"
+              type="text"
+              class="form-control dark-input"
+              placeholder="Value"
+            />
           </div>
           <div class="col-2">
             <button @click="removeConfigPair(index)" class="btn btn-outline-danger btn-sm">
@@ -204,11 +219,17 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
       <div class="card-body">
         <div v-for="(param, paramIndex) in parameters" :key="paramIndex" class="mb-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <input v-model="param.name" type="text" class="form-control dark-input w-75"
-                   placeholder="Parameter name">
+            <input
+              v-model="param.name"
+              type="text"
+              class="form-control dark-input w-75"
+              placeholder="Parameter name"
+            />
             <div>
-              <button @click="addParameterValue(paramIndex)"
-                      class="btn btn-outline-success btn-sm me-2">
+              <button
+                @click="addParameterValue(paramIndex)"
+                class="btn btn-outline-success btn-sm me-2"
+              >
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
               <button @click="removeParameter(paramIndex)" class="btn btn-outline-danger btn-sm">
@@ -218,12 +239,18 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
           </div>
           <div v-for="(value, valueIndex) in param.values" :key="valueIndex" class="row mb-2">
             <div class="col-10">
-              <input v-model="param.values[valueIndex]" type="text" class="form-control dark-input"
-                     placeholder="Value">
+              <input
+                v-model="param.values[valueIndex]"
+                type="text"
+                class="form-control dark-input"
+                placeholder="Value"
+              />
             </div>
             <div class="col-2">
-              <button @click="removeParameterValue(paramIndex, valueIndex)"
-                      class="btn btn-outline-danger btn-sm">
+              <button
+                @click="removeParameterValue(paramIndex, valueIndex)"
+                class="btn btn-outline-danger btn-sm"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -243,11 +270,17 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
       <div class="card-body">
         <div v-for="(macro, macroIndex) in macros" :key="macroIndex" class="mb-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <input v-model="macro.name" type="text" class="form-control dark-input w-75"
-                   placeholder="Macro name">
+            <input
+              v-model="macro.name"
+              type="text"
+              class="form-control dark-input w-75"
+              placeholder="Macro name"
+            />
             <div>
-              <button @click="addMacroValue(macroIndex)"
-                      class="btn btn-outline-success btn-sm me-2">
+              <button
+                @click="addMacroValue(macroIndex)"
+                class="btn btn-outline-success btn-sm me-2"
+              >
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
               <button @click="removeMacro(macroIndex)" class="btn btn-outline-danger btn-sm">
@@ -257,12 +290,18 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
           </div>
           <div v-for="(value, valueIndex) in macro.values" :key="valueIndex" class="row mb-2">
             <div class="col-10">
-              <textarea v-model="macro.values[valueIndex]" class="form-control dark-input" rows="3"
-                        placeholder="Value"></textarea>
+              <textarea
+                v-model="macro.values[valueIndex]"
+                class="form-control dark-input"
+                rows="3"
+                placeholder="Value"
+              ></textarea>
             </div>
             <div class="col-2">
-              <button @click="removeMacroValue(macroIndex, valueIndex)"
-                      class="btn btn-outline-danger btn-sm">
+              <button
+                @click="removeMacroValue(macroIndex, valueIndex)"
+                class="btn btn-outline-danger btn-sm"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -283,11 +322,18 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
         <div v-for="(subject, subjectIndex) in subjects" :key="subjectIndex" class="mb-4">
           <div class="card dark-card">
             <div class="card-header bg-dark d-flex justify-content-between align-items-center">
-              <input v-model="subject.name" type="text" class="form-control dark-input w-75"
-                     :placeholder="`Subject ${subjectIndex + 1}`" disabled>
+              <input
+                v-model="subject.name"
+                type="text"
+                class="form-control dark-input w-75"
+                :placeholder="`Subject ${subjectIndex + 1}`"
+                disabled
+              />
               <div>
-                <button @click="addSubjectPair(subjectIndex)"
-                        class="btn btn-outline-success btn-sm me-2">
+                <button
+                  @click="addSubjectPair(subjectIndex)"
+                  class="btn btn-outline-success btn-sm me-2"
+                >
                   <i class="bi bi-plus-lg"></i> Add Pair
                 </button>
                 <button @click="removeSubject(subjectIndex)" class="btn btn-outline-danger btn-sm">
@@ -298,16 +344,26 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             <div class="card-body">
               <div v-for="(pair, pairIndex) in subject.pairs" :key="pairIndex" class="row mb-2">
                 <div class="col-5">
-                  <input v-model="pair.key" type="text" class="form-control dark-input"
-                         placeholder="Key">
+                  <input
+                    v-model="pair.key"
+                    type="text"
+                    class="form-control dark-input"
+                    placeholder="Key"
+                  />
                 </div>
                 <div class="col-5">
-                  <input v-model="pair.value" type="text" class="form-control dark-input"
-                         placeholder="Value">
+                  <input
+                    v-model="pair.value"
+                    type="text"
+                    class="form-control dark-input"
+                    placeholder="Value"
+                  />
                 </div>
                 <div class="col-2">
-                  <button @click="removeSubjectPair(subjectIndex, pairIndex)"
-                          class="btn btn-outline-danger btn-sm">
+                  <button
+                    @click="removeSubjectPair(subjectIndex, pairIndex)"
+                    class="btn btn-outline-danger btn-sm"
+                  >
                     <i class="bi bi-trash"></i>
                   </button>
                 </div>

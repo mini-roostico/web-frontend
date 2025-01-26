@@ -1,16 +1,16 @@
 <script setup>
-import BootstrapIcon from "@/components/BootstrapIcon.vue";
-import NavbarUserDropdown from "@/components/NavbarUserDropdown.vue";
-import {onMounted, ref} from "vue";
-import {AuthService} from "@/scripts/AuthService.js";
-import router from "@/router/index.js";
-import {EventBus} from "@/scripts/EventBus.js";
+import BootstrapIcon from '@/components/BootstrapIcon.vue'
+import NavbarUserDropdown from '@/components/NavbarUserDropdown.vue'
+import { onMounted, ref } from 'vue'
+import { AuthService } from '@/scripts/AuthService.js'
+import router from '@/router/index.js'
+import { EventBus } from '@/scripts/EventBus.js'
 
 const isLogged = ref(AuthService.isAuthenticated())
 const links = ref([
-  {href: "/", name: "Home", loginNeeded: false},
-  {href: "/sources", name: "Sources", loginNeeded: true},
-  {href: "/about", name: "About", loginNeeded: false},
+  { href: '/', name: 'Home', loginNeeded: false },
+  { href: '/sources', name: 'Sources', loginNeeded: true },
+  { href: '/about', name: 'About', loginNeeded: false },
 ])
 
 function reloadNavbar() {
@@ -29,50 +29,65 @@ onMounted(() => {
   })
 })
 
-defineExpose({reloadNavbar, logout})
+defineExpose({ reloadNavbar, logout })
 </script>
 <template>
-    <nav class="row nav-container mb-4 no-gutters">
-      <div class="col-3 menu-mobile">
-        <a class="menu-mobile-button" data-bs-toggle="collapse"
-           role="button" aria-expanded="false" aria-controls="menuMobileCollapse"
-           ref="mobileCollapseBtn" @click="$refs.mobileCollapse.toggleMobileMenu">
-          <BootstrapIcon icon="bi bi-list" size="2.3rem" color="black"></BootstrapIcon>
+  <nav class="row nav-container mb-4 no-gutters">
+    <div class="col-3 menu-mobile">
+      <a
+        class="menu-mobile-button"
+        data-bs-toggle="collapse"
+        role="button"
+        aria-expanded="false"
+        aria-controls="menuMobileCollapse"
+        ref="mobileCollapseBtn"
+        @click="$refs.mobileCollapse.toggleMobileMenu"
+      >
+        <BootstrapIcon icon="bi bi-list" size="2.3rem" color="black"></BootstrapIcon>
+      </a>
+    </div>
+    <div class="col logo-container">
+      <router-link to="/" class="col-md-3 mb-2 mb-md-0">
+        <img class="logo" src="@/assets/logo_small.png" alt="Site Logo" />
+      </router-link>
+    </div>
+
+    <ul
+      class="links-desktop nav nav-pills col text-center align-items-center justify-content-center"
+    >
+      <li v-for="link in links">
+        <router-link
+          v-if="(link.loginNeeded && isLogged) || !link.loginNeeded"
+          :to="link.href"
+          class="nav-item nav-link px-2 navbar-links"
+          >{{ link.name }}</router-link
+        >
+      </li>
+    </ul>
+    <div class="col loginButtons">
+      <div v-if="!isLogged">
+        <a role="button" class="btn btn-light mx-2" href="/login">Sign In</a>
+        <a role="button" class="btn btn-outline-primary" href="/register">Sign Up</a>
+      </div>
+      <div v-else>
+        <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
+      </div>
+    </div>
+    <div class="col-3 menu-mobile">
+      <div v-if="!isLogged">
+        <a role="button" href="/login">
+          <BootstrapIcon
+            icon="bi bi-box-arrow-in-right"
+            size="1.8rem"
+            color="black"
+          ></BootstrapIcon>
         </a>
       </div>
-      <div class="col logo-container">
-        <router-link to="/" class="col-md-3 mb-2 mb-md-0">
-          <img class="logo" src="@/assets/logo_small.png" alt="Site Logo">
-        </router-link>
+      <div v-else>
+        <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
       </div>
-
-      <ul class="links-desktop nav nav-pills col text-center align-items-center justify-content-center ">
-        <li v-for="link in links">
-            <router-link v-if="(link.loginNeeded && isLogged) || (!link.loginNeeded)"
-                      :to="link.href" class="nav-item nav-link px-2 navbar-links">{{link.name}}</router-link>
-        </li>
-
-      </ul>
-        <div class="col loginButtons">
-            <div v-if="!isLogged">
-                <a role="button" class="btn btn-light mx-2"  href="/login">Sign In</a>
-                <a role="button" class="btn btn-outline-primary" href="/register">Sign Up</a>
-            </div>
-            <div v-else>
-              <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
-            </div>
-        </div>
-      <div class="col-3 menu-mobile">
-        <div v-if="!isLogged">
-          <a role="button" href="/login">
-            <BootstrapIcon icon="bi bi-box-arrow-in-right" size="1.8rem" color="black"></BootstrapIcon>
-          </a>
-        </div>
-        <div v-else>
-          <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
-        </div>
-      </div>
-    </nav>
+    </div>
+  </nav>
 </template>
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
@@ -99,7 +114,7 @@ defineExpose({reloadNavbar, logout})
   margin-left: 0;
 
   > .col,
-  > [class*="col-"] {
+  > [class*='col-'] {
     padding-right: 0;
     padding-left: 0;
   }
@@ -142,7 +157,6 @@ li {
 }
 
 @media (max-width: 1002px) {
-
   .menu-mobile {
     display: flex;
     justify-content: center;
@@ -171,7 +185,6 @@ li {
   }
   .logo {
     display: inline-block;
-
   }
   .collapse-body {
     padding: 10px;

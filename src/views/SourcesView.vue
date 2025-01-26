@@ -1,11 +1,11 @@
 <script setup>
-import {ref, computed} from 'vue'
-import {useRouter} from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import SourceCard from '@/components/SourceCard.vue'
-import ModalComponent from "@/components/ModalComponent.vue";
-import {AuthService} from "@/scripts/AuthService.js";
+import ModalComponent from '@/components/ModalComponent.vue'
+import { AuthService } from '@/scripts/AuthService.js'
 
-const mainColor = "#CE29AA"
+const mainColor = '#CE29AA'
 
 const router = useRouter()
 
@@ -16,18 +16,17 @@ const newFileInput = ref('')
 const modalAction = ref('rename') // 'rename' or 'delete'
 const loading = ref(false)
 
-const alertText = ref('');
-const alertType = ref('alert-info');
-
+const alertText = ref('')
+const alertType = ref('alert-info')
 
 const showAlert = (text, type = 'alert-info') => {
-  alertText.value = text;
-  alertType.value = type;
-};
+  alertText.value = text
+  alertType.value = type
+}
 
 const clearAlert = () => {
-  alertText.value = '';
-};
+  alertText.value = ''
+}
 
 const handleModalOpen = (_) => {
   // do nothing
@@ -40,20 +39,20 @@ const handleModalClose = (_) => {
 const handleConfirmation = () => {
   if (modalAction.value === 'rename') {
     console.log('User confirmed with input:', renameInput.value)
-    showAlert('Source renamed successfully!', 'alert-success');
+    showAlert('Source renamed successfully!', 'alert-success')
     // TODO Perform renaming logic
   } else if (modalAction.value === 'delete') {
     console.log('User confirmed deletion')
-    showAlert('Source deleted successfully!', 'alert-success');
+    showAlert('Source deleted successfully!', 'alert-success')
     // TODO Perform deletion logic
   } else if (modalAction.value === 'create') {
     if (newFileInput.value !== '') {
       files.value.push({
         title: newFileInput.value,
-        lastModified: new Date().toISOString().split("T")[0],
+        lastModified: new Date().toISOString().split('T')[0],
       })
     }
-    showAlert('New source created successfully!', 'alert-success');
+    showAlert('New source created successfully!', 'alert-success')
     // TODO Perform creation logic
   }
 }
@@ -62,47 +61,45 @@ const handleCancellation = () => {
   console.log('User cancelled the action')
 }
 
-
 // Example file data
 const files = ref([
-  {title: "Document 1", lastModified: "2025-01-15"},
-  {title: "Presentation", lastModified: "2025-01-10"},
-  {title: "Notes", lastModified: "2025-01-08"},
-  {title: "Budget Plan", lastModified: "2025-01-01"},
+  { title: 'Document 1', lastModified: '2025-01-15' },
+  { title: 'Presentation', lastModified: '2025-01-10' },
+  { title: 'Notes', lastModified: '2025-01-08' },
+  { title: 'Budget Plan', lastModified: '2025-01-01' },
 ])
 
-const searchQuery = ref("")
+const searchQuery = ref('')
 
 const filteredFiles = computed(() => {
   return files.value.filter((file) =>
-    file.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+    file.title.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 
 const openFile = (file) => {
-  console.log("Opening file:", file)
-  router.push({path: `/suite/${file.title}`})
+  console.log('Opening file:', file)
+  router.push({ path: `/suite/${file.title}` })
 }
 
 const renameFile = (file) => {
   modalAction.value = 'rename'
   renameInput.value = file.title
-  userModal.value.open({title: `Renaming: ${file.title}`})
+  userModal.value.open({ title: `Renaming: ${file.title}` })
 }
 
 const deleteFile = (file) => {
   modalAction.value = 'delete'
-  userModal.value.open({title: `Deleting: ${file.title}`})
+  userModal.value.open({ title: `Deleting: ${file.title}` })
 }
 
 const createNewFile = () => {
   modalAction.value = 'create'
   newFileInput.value = ''
-  userModal.value.open({title: 'Create New Source'})
+  userModal.value.open({ title: 'Create New Source' })
 }
 
-const isLogged = ref(AuthService.isAuthenticated());
-
+const isLogged = ref(AuthService.isAuthenticated())
 </script>
 <template>
   <div class="sources-view container py-4" v-if="isLogged">
@@ -115,12 +112,7 @@ const isLogged = ref(AuthService.isAuthenticated());
       role="alert"
     >
       {{ alertText }}
-      <button
-        type="button"
-        class="btn-close"
-        @click="clearAlert"
-        aria-label="Close"
-      ></button>
+      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
     </div>
     <!-- User Confirmation Modal -->
     <ModalComponent
@@ -133,20 +125,24 @@ const isLogged = ref(AuthService.isAuthenticated());
     >
       <div v-if="modalAction === 'rename'">
         <p class="text-start">Enter new name:</p>
-        <input class="form-control dark-input w-75 inline-block" v-model="renameInput"
-               placeholder="Enter additional details"/>
+        <input
+          class="form-control dark-input w-75 inline-block"
+          v-model="renameInput"
+          placeholder="Enter additional details"
+        />
       </div>
       <div v-else-if="modalAction === 'delete'">
         <p class="text-start">Are you sure you want to delete this source?</p>
       </div>
       <div v-else-if="modalAction === 'create'">
         <p class="text-start">Enter the name of the new source:</p>
-        <input class="form-control dark-input w-75 inline-block" v-model="newFileInput"
-               placeholder="Enter the name of the new source"/>
+        <input
+          class="form-control dark-input w-75 inline-block"
+          v-model="newFileInput"
+          placeholder="Enter the name of the new source"
+        />
       </div>
-      <div v-else>
-        Unrecognized: {{ modalAction }}
-      </div>
+      <div v-else>Unrecognized: {{ modalAction }}</div>
     </ModalComponent>
     <!-- Search and Add New Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -161,10 +157,7 @@ const isLogged = ref(AuthService.isAuthenticated());
       </button>
     </div>
     <div v-if="loading">
-      <div
-        class="spinner-border"
-        role="status"
-      >
+      <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
@@ -197,13 +190,13 @@ const isLogged = ref(AuthService.isAuthenticated());
 </template>
 <style scoped>
 .sources-view {
-  background-color: #19191C;
+  background-color: #19191c;
   border-radius: 8px;
   color: #fff;
 }
 
 .no-files {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .no-files i {
@@ -217,7 +210,7 @@ const isLogged = ref(AuthService.isAuthenticated());
 input.form-control {
   background-color: #232329;
   color: #fff;
-  border: 1px solid #CE29AA;
+  border: 1px solid #ce29aa;
 }
 
 input.form-control::placeholder {
@@ -225,11 +218,11 @@ input.form-control::placeholder {
 }
 
 input.form-control:focus {
-  box-shadow: 0 0 5px #CE29AA;
+  box-shadow: 0 0 5px #ce29aa;
 }
 
 button.btn-success {
-  background-color: #CE29AA;
+  background-color: #ce29aa;
   border: none;
 }
 

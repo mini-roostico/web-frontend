@@ -3,13 +3,15 @@
     <div class="footer-content">
       <div class="footer-links">
         <router-link to="/" class="footer-link">Home</router-link>
-        <a href="https://github.com/mini-roostico/subjekt" target="_blank" class="footer-link github-link">
+        <a
+          href="https://github.com/mini-roostico/subjekt"
+          target="_blank"
+          class="footer-link github-link"
+        >
           <i class="bi bi-github"></i> GitHub
         </a>
       </div>
-      <div class="footer-copyright">
-        © {{ currentYear }} Your Project Name
-      </div>
+      <div class="footer-copyright">© {{ currentYear }} Your Project Name</div>
     </div>
   </footer>
 </template>
@@ -50,7 +52,7 @@ const currentYear = ref(new Date().getFullYear())
 }
 
 .footer-link:hover {
-  color: #D22BA8;
+  color: #d22ba8;
 }
 
 .github-link {

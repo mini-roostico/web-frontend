@@ -1,105 +1,102 @@
 <script setup>
-import {inject, ref, watch} from 'vue';
-import {useRoute} from 'vue-router';
-import router from "@/router/index.js";
-import {AuthService} from "@/scripts/AuthService.js";
-import {EventBus} from "@/scripts/EventBus.js";
+import { inject, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+import router from '@/router/index.js'
+import { AuthService } from '@/scripts/AuthService.js'
+import { EventBus } from '@/scripts/EventBus.js'
 
-const route = useRoute();
-const isLogin = ref(route.path !== '/register');
-const username = ref('');
-const password = ref('');
-const confirmPassword = ref('');
+const route = useRoute()
+const isLogin = ref(route.path !== '/register')
+const username = ref('')
+const password = ref('')
+const confirmPassword = ref('')
 
-const alertText = ref('');
-const alertType = ref('alert-info');
-const submitBtn = ref(null);
+const alertText = ref('')
+const alertType = ref('alert-info')
+const submitBtn = ref(null)
 
-const loading = ref(false);
+const loading = ref(false)
 
 const showAlert = (text, type = 'alert-info') => {
-  alertText.value = text;
-  alertType.value = type;
-};
+  alertText.value = text
+  alertType.value = type
+}
 
 const clearAlert = () => {
-  alertText.value = '';
-};
+  alertText.value = ''
+}
 
 function checkPassword(newValue, refToCheck) {
   if (isLogin.value === false) {
     if (newValue !== refToCheck.value) {
-      showAlert('Passwords do not match', 'alert-danger');
-      submitBtn.value.disabled = true;
+      showAlert('Passwords do not match', 'alert-danger')
+      submitBtn.value.disabled = true
     } else {
-      clearAlert();
-      submitBtn.value.disabled = false;
+      clearAlert()
+      submitBtn.value.disabled = false
     }
   }
 }
 
-watch(password, (newPassword) => checkPassword(newPassword, confirmPassword));
-watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword, password));
+watch(password, (newPassword) => checkPassword(newPassword, confirmPassword))
+watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword, password))
 
 const toggleForm = () => {
-  isLogin.value = !isLogin.value;
-  clearAlert();
-  submitBtn.value.disabled = false;
-  confirmPassword.value = '';
-};
+  isLogin.value = !isLogin.value
+  clearAlert()
+  submitBtn.value.disabled = false
+  confirmPassword.value = ''
+}
 
-const isLogged = ref(AuthService.isAuthenticated());
+const isLogged = ref(AuthService.isAuthenticated())
 
 function login(username, password) {
-  AuthService.login({username: username, password: password}).then((response) => {
-    const {success} = response
-    loading.value = false;
+  AuthService.login({ username: username, password: password }).then((response) => {
+    const { success } = response
+    loading.value = false
     if (success === true) {
-      EventBus.$emit('refresh-navbar');
-      router.push('/sources');
+      EventBus.$emit('refresh-navbar')
+      router.push('/sources')
     } else {
-      showAlert('Invalid credentials', 'alert-danger');
+      showAlert('Invalid credentials', 'alert-danger')
     }
-  });
+  })
 }
 
 function register(username, password) {
   // TODO add register login
-  console.log('Registering user with username:', username);
-  AuthService.register({username: username, password: password}).then((response) => {
-    const {success} = response
+  console.log('Registering user with username:', username)
+  AuthService.register({ username: username, password: password }).then((response) => {
+    const { success } = response
     if (success === true) {
-      login(username, password);
+      login(username, password)
     } else {
       // TODO handle error
     }
-  });
+  })
 }
 
 const handleSubmit = () => {
   if (isLogin.value) {
-    loading.value = true;
-    login(username.value, password.value);
+    loading.value = true
+    login(username.value, password.value)
   } else {
     // Handle registration
     if (password.value === confirmPassword.value) {
-      loading.value = true;
-      register(username.value, password.value);
+      loading.value = true
+      register(username.value, password.value)
     } else {
       // error
     }
   }
-};
+}
 </script>
 <template>
   <div class="login-register-view container py-4" v-if="isLogged === false">
     <h1 class="text-center mb-4">{{ isLogin ? 'Login' : 'Register' }}</h1>
     <!-- Loading Spinner -->
     <div v-if="loading">
-      <div
-        class="spinner-border"
-        role="status"
-      >
+      <div class="spinner-border" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
@@ -111,38 +108,47 @@ const handleSubmit = () => {
       role="alert"
     >
       {{ alertText }}
-      <button
-        type="button"
-        class="btn-close"
-        @click="clearAlert"
-        aria-label="Close"
-      ></button>
+      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
     </div>
     <form @submit.prevent="handleSubmit" class="form-container">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
-        <input type="text" class="form-control dark-input" id="username" v-model="username"
-               required>
+        <input
+          type="text"
+          class="form-control dark-input"
+          id="username"
+          v-model="username"
+          required
+        />
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control dark-input" id="password" v-model="password"
-               required>
+        <input
+          type="password"
+          class="form-control dark-input"
+          id="password"
+          v-model="password"
+          required
+        />
       </div>
       <div v-if="!isLogin" class="mb-3">
         <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control dark-input" id="confirmPassword"
-               v-model="confirmPassword" required>
+        <input
+          type="password"
+          class="form-control dark-input"
+          id="confirmPassword"
+          v-model="confirmPassword"
+          required
+        />
       </div>
-      <button ref="submitBtn" type="submit" class="btn btn-primary w-100">{{
-          isLogin ? 'Login' : 'Register'
-        }}
+      <button ref="submitBtn" type="submit" class="btn btn-primary w-100">
+        {{ isLogin ? 'Login' : 'Register' }}
       </button>
     </form>
     <p class="text-center mt-3">
       <a href="#" @click.prevent="toggleForm">{{
-          isLogin ? 'Create an account' : 'Already have an account? Login'
-        }}</a>
+        isLogin ? 'Create an account' : 'Already have an account? Login'
+      }}</a>
     </p>
   </div>
   <div v-else>
@@ -152,10 +158,10 @@ const handleSubmit = () => {
 </template>
 <style scoped>
 .login-register-view {
-  background-color: #19191C;
+  background-color: #19191c;
   border-radius: 8px;
   color: #fff;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 .form-container {
@@ -164,11 +170,11 @@ const handleSubmit = () => {
 }
 
 h1 {
-  color: #CE29AA;
+  color: #ce29aa;
 }
 
 a {
-  color: #CE29AA;
+  color: #ce29aa;
   cursor: pointer;
 }
 
@@ -177,7 +183,7 @@ a:hover {
 }
 
 .btn-primary {
-  background-color: #CE29AA;
+  background-color: #ce29aa;
   border: none;
   color: white;
 }
