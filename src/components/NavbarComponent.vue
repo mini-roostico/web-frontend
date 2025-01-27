@@ -35,12 +35,12 @@ defineExpose({ reloadNavbar, logout })
   <nav class="row nav-container mb-4 no-gutters">
     <div class="col-3 menu-mobile">
       <a
+        ref="mobileCollapseBtn"
         class="menu-mobile-button"
         data-bs-toggle="collapse"
         role="button"
         aria-expanded="false"
         aria-controls="menuMobileCollapse"
-        ref="mobileCollapseBtn"
         @click="$refs.mobileCollapse.toggleMobileMenu"
       >
         <BootstrapIcon icon="bi bi-list" size="2.3rem" color="black"></BootstrapIcon>
@@ -55,7 +55,7 @@ defineExpose({ reloadNavbar, logout })
     <ul
       class="links-desktop nav nav-pills col text-center align-items-center justify-content-center"
     >
-      <li v-for="link in links" v-bind:key="link">
+      <li v-for="link in links" :key="link">
         <router-link
           v-if="(link.loginNeeded && isLogged) || !link.loginNeeded"
           :to="link.href"

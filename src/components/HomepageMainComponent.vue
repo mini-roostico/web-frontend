@@ -64,11 +64,11 @@ onMounted(() => {
           <div class="p-4 col mb-3">
             <h5 class="text-lg font-semibold mb-2 text-white">YAML Configuration</h5>
             <CodeEditor
+              v-model="yamlText"
               theme="vs2015"
               :read-only="true"
               :languages="[['yaml', 'YAML']]"
               :wrap="false"
-              v-model="yamlText"
               width="100%"
               height="100%"
               :highlight="highlightCode"

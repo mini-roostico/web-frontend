@@ -8,9 +8,9 @@
         <!-- Three-dot menu -->
         <div class="dropdown" @click.stop>
           <button
+            id="dropdownMenuButton"
             class="btn btn-link text-white dropdown-toggle p-0"
             type="button"
-            id="dropdownMenuButton"
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >

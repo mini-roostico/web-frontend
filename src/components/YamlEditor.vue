@@ -40,11 +40,11 @@ const highlightCode = (code) => {
 <template>
   <div>
     <CodeEditor
+      v-model="text"
       theme="androidstudio"
       :read-only="false"
       :languages="[['yaml', 'YAML']]"
       :wrap="false"
-      v-model="text"
       width="100%"
       height="700px"
       :highlight="highlightCode"

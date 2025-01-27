@@ -1,46 +1,50 @@
 <template>
   <div>
     <i
-      :class="`${this.icon} icon`"
-      :style="`font-size: ${size}; color: ${color};`"
-      @click="this.click"
       ref="icon"
+      :class="`${icon} icon`"
+      :style="`font-size: ${size}; color: ${color};`"
+      @click="click"
     ></i>
   </div>
 </template>
-<script>
+<script setup lang="ts">
 import 'bootstrap-icons/font/bootstrap-icons.css'
-export default {
-  name: 'BootstrapIcon',
-  props: {
-    icon: String,
-    size: {
-      default: '1rem',
-      type: String,
-    },
-    color: {
-      default: 'black',
-      type: String,
-    },
-    toggleable: {
-      default: false,
-      type: Boolean,
-    },
-    toggleColor: {
-      default: 'black',
-      type: String,
-    },
+import { onMounted, Ref, ref } from 'vue'
+
+const iconI: Ref<HTMLElement> = ref(null)
+
+const props = defineProps({
+  icon: {
+    default: 'bi bi-alarm',
+    type: String,
   },
-  methods: {
-    click() {
-      this.$refs.icon.classList.toggle('selected')
-    },
+  size: {
+    default: '1rem',
+    type: String,
   },
-  mounted() {
-    if (this.toggleable) {
-      this.$refs.icon.classList.remove('icon')
-    }
+  color: {
+    default: 'black',
+    type: String,
   },
+  toggleable: {
+    default: false,
+    type: Boolean,
+  },
+  toggleColor: {
+    default: 'black',
+    type: String,
+  },
+})
+
+onMounted(() => {
+  if (props.toggleable) {
+    iconI.value.classList.remove('icon')
+  }
+})
+
+function click() {
+  iconI.value.classList.toggle('selected')
 }
 </script>
 <style scoped>

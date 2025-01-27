@@ -177,7 +177,7 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Configuration</h5>
-        <button @click="addConfigPair" class="btn btn-outline-primary btn-sm">
+        <button class="btn btn-outline-primary btn-sm" @click="addConfigPair">
           <i class="bi bi-plus-lg"></i> Add Key-Value Pair
         </button>
       </div>
@@ -200,7 +200,7 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             />
           </div>
           <div class="col-2">
-            <button @click="removeConfigPair(index)" class="btn btn-outline-danger btn-sm">
+            <button class="btn btn-outline-danger btn-sm" @click="removeConfigPair(index)">
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -212,7 +212,7 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Parameters</h5>
-        <button @click="addParameter" class="btn btn-outline-primary btn-sm">
+        <button class="btn btn-outline-primary btn-sm" @click="addParameter">
           <i class="bi bi-plus-lg"></i> Add Parameter
         </button>
       </div>
@@ -227,12 +227,12 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             />
             <div>
               <button
-                @click="addParameterValue(paramIndex)"
                 class="btn btn-outline-success btn-sm me-2"
+                @click="addParameterValue(paramIndex)"
               >
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
-              <button @click="removeParameter(paramIndex)" class="btn btn-outline-danger btn-sm">
+              <button class="btn btn-outline-danger btn-sm" @click="removeParameter(paramIndex)">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -248,8 +248,8 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             </div>
             <div class="col-2">
               <button
-                @click="removeParameterValue(paramIndex, valueIndex)"
                 class="btn btn-outline-danger btn-sm"
+                @click="removeParameterValue(paramIndex, valueIndex)"
               >
                 <i class="bi bi-trash"></i>
               </button>
@@ -263,7 +263,7 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Macros</h5>
-        <button @click="addMacro" class="btn btn-outline-primary btn-sm">
+        <button class="btn btn-outline-primary btn-sm" @click="addMacro">
           <i class="bi bi-plus-lg"></i> Add Macro
         </button>
       </div>
@@ -278,12 +278,12 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             />
             <div>
               <button
-                @click="addMacroValue(macroIndex)"
                 class="btn btn-outline-success btn-sm me-2"
+                @click="addMacroValue(macroIndex)"
               >
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
-              <button @click="removeMacro(macroIndex)" class="btn btn-outline-danger btn-sm">
+              <button class="btn btn-outline-danger btn-sm" @click="removeMacro(macroIndex)">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -299,8 +299,8 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
             </div>
             <div class="col-2">
               <button
-                @click="removeMacroValue(macroIndex, valueIndex)"
                 class="btn btn-outline-danger btn-sm"
+                @click="removeMacroValue(macroIndex, valueIndex)"
               >
                 <i class="bi bi-trash"></i>
               </button>
@@ -314,7 +314,7 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Subjects</h5>
-        <button @click="addSubject" class="btn btn-outline-primary btn-sm">
+        <button class="btn btn-outline-primary btn-sm" @click="addSubject">
           <i class="bi bi-plus-lg"></i> Add Subject
         </button>
       </div>
@@ -331,12 +331,12 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
               />
               <div>
                 <button
-                  @click="addSubjectPair(subjectIndex)"
                   class="btn btn-outline-success btn-sm me-2"
+                  @click="addSubjectPair(subjectIndex)"
                 >
                   <i class="bi bi-plus-lg"></i> Add Pair
                 </button>
-                <button @click="removeSubject(subjectIndex)" class="btn btn-outline-danger btn-sm">
+                <button class="btn btn-outline-danger btn-sm" @click="removeSubject(subjectIndex)">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
@@ -361,8 +361,8 @@ const removeSubjectPair = (subjectIndex, pairIndex) => {
                 </div>
                 <div class="col-2">
                   <button
-                    @click="removeSubjectPair(subjectIndex, pairIndex)"
                     class="btn btn-outline-danger btn-sm"
+                    @click="removeSubjectPair(subjectIndex, pairIndex)"
                   >
                     <i class="bi bi-trash"></i>
                   </button>
