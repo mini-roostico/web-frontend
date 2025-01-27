@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { AuthService } from '@/scripts/AuthService.js'
+import { AuthService } from '@/scripts/AuthService.ts'
 
 const username = ref(AuthService.getCurrentUser())
 const emit = defineEmits(['logout'])

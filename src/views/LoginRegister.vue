@@ -1,9 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import router from '@/router/index.js'
-import { AuthService } from '@/scripts/AuthService.js'
-import { EventBus } from '@/scripts/EventBus.js'
+import router from '@/router/index.ts'
+import { AuthService } from '@/scripts/AuthService.ts'
+import { EventBus } from '@/scripts/EventBus.ts'
 
 const route = useRoute()
 const isLogin = ref(route.path !== '/register')

@@ -4,8 +4,8 @@ import { onMounted, ref } from 'vue'
 import 'highlight.js/styles/default.css'
 import yaml from 'highlight.js/lib/languages/yaml'
 import hljs from 'highlight.js'
-import { EventBus } from '@/scripts/EventBus.js'
-import { AuthService } from '@/scripts/AuthService.js'
+import { EventBus } from '@/scripts/EventBus.ts'
+import { AuthService } from '@/scripts/AuthService.ts'
 
 hljs.registerLanguage('yaml', yaml)
 const isLogged = ref(AuthService.isAuthenticated())
