@@ -32,9 +32,9 @@ const logout = () => {
 <template>
   <div class="user-avatar-dropdown">
     <div
+      id="dropdownMenuButton"
       class="user-avatar"
       :style="{ background: gradientBackground }"
-      id="dropdownMenuButton"
       data-bs-toggle="dropdown"
       aria-expanded="false"
     >
