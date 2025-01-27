@@ -9,14 +9,11 @@ import { AuthService } from './scripts/AuthService'
 
 const initAuthService = async () => {
   if (AuthService.isAuthenticated()) {
-    const isValid = await AuthService.verifyToken()
-    if (isValid) {
-      const user = AuthService.getCurrentUser()
-    }
+    await AuthService.verifyToken()
   }
 }
-/* eslint-disable no-unused-vars */
-initAuthService().then((_) => console.log('Auth service initialized'))
+
+initAuthService().then((_) => console.log('Auth service initialized')) // eslint-disable-line @typescript-eslint/no-unused-vars
 
 const app = createApp(App)
 

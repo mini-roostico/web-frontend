@@ -5,6 +5,7 @@
     "types": ["vite/client"],
     "moduleResolution": "node",
     "importHelpers": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "noEmit": true
   }

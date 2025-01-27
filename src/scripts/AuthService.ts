@@ -18,11 +18,11 @@ interface AuthService {
 export const AuthService: AuthService = {
   login(userData) {
     // TODO handle login
-    /* eslint-disable no-unused-vars */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { username, password } = userData
     // TODO send request
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return new Promise((resolve, _) => {
-      /* eslint-disable no-unused-vars */
       setTimeout(() => {
         const token = 'fake-token'
         Cookies.set('auth_token', token, { expires: 7 })
@@ -32,9 +32,11 @@ export const AuthService: AuthService = {
     })
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   register(_) {
     //const { username, password } = userData
     // TODO send request
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return new Promise((resolve, _) => {
       setTimeout(() => {
         resolve({ success: true })

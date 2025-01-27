@@ -1,108 +1,122 @@
-<script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+<script setup lang="ts">
+import { ref, computed, Ref, ComputedRef } from 'vue'
+import { Router, useRouter } from 'vue-router'
 import SourceCard from '@/components/SourceCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
-import { AuthService } from '@/scripts/AuthService.ts'
+import { AuthService } from '../scripts/AuthService.ts'
 
-const mainColor = '#CE29AA'
+type ModalAction = 'rename' | 'delete' | 'create'
+type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
+type Source = { title: string; lastModified: string }
 
-const router = useRouter()
+const mainColor: string = '#CE29AA'
+
+const router: Router = useRouter()
 
 const userModal = ref(null)
-const renameInput = ref('')
-const newFileInput = ref('')
+const renameInput: Ref<string> = ref('')
+const newFileInput: Ref<string> = ref('')
 
-const modalAction = ref('rename') // 'rename' or 'delete'
-const loading = ref(false)
+const modalAction: Ref<ModalAction> = ref('rename')
 
 const alertText = ref('')
-const alertType = ref('alert-info')
+const alertType: Ref<AlertType> = ref('alert-info')
 
-const showAlert = (text, type = 'alert-info') => {
-  alertText.value = text
-  alertType.value = type
-}
+const loading: Ref<boolean> = ref(false)
+const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
 
-const clearAlert = () => {
-  alertText.value = ''
-}
-/* eslint-disable no-unused-vars */
-const handleModalOpen = (_) => {
-  // do nothing
-}
-
-const handleModalClose = (_) => {
-  // do nothing
-}
-
-const handleConfirmation = () => {
-  if (modalAction.value === 'rename') {
-    console.log('User confirmed with input:', renameInput.value)
-    showAlert('Source renamed successfully!', 'alert-success')
-    // TODO Perform renaming logic
-  } else if (modalAction.value === 'delete') {
-    console.log('User confirmed deletion')
-    showAlert('Source deleted successfully!', 'alert-success')
-    // TODO Perform deletion logic
-  } else if (modalAction.value === 'create') {
-    if (newFileInput.value !== '') {
-      files.value.push({
-        title: newFileInput.value,
-        lastModified: new Date().toISOString().split('T')[0],
-      })
-    }
-    showAlert('New source created successfully!', 'alert-success')
-    // TODO Perform creation logic
-  }
-}
-
-const handleCancellation = () => {
-  console.log('User cancelled the action')
-}
-
-// Example file data
-const files = ref([
+// temporary placeholder
+const sources: Ref<Source[], Source[]> = ref([
   { title: 'Document 1', lastModified: '2025-01-15' },
   { title: 'Presentation', lastModified: '2025-01-10' },
   { title: 'Notes', lastModified: '2025-01-08' },
   { title: 'Budget Plan', lastModified: '2025-01-01' },
 ])
 
-const searchQuery = ref('')
+const searchQuery: Ref<string, string> = ref('')
 
-const filteredFiles = computed(() => {
-  return files.value.filter((file) =>
+const filteredFiles: ComputedRef<Source[]> = computed(() => {
+  return sources.value.filter((file) =>
     file.title.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 
-const openFile = (file) => {
-  console.log('Opening file:', file)
-  router.push({ path: `/suite/${file.title}` })
+function showAlert(text: string, type: AlertType = 'alert-info') {
+  alertText.value = text
+  alertType.value = type
 }
 
-const renameFile = (file) => {
+function clearAlert() {
+  alertText.value = ''
+}
+
+function handleModalOpen() {
+  // do nothing
+}
+
+function handleModalClose() {
+  // do nothing
+}
+
+function handleConfirmation() {
+  switch (modalAction.value) {
+    case 'create':
+      if (newFileInput.value !== '') {
+        sources.value.push({
+          title: newFileInput.value,
+          lastModified: new Date().toISOString().split('T')[0],
+        })
+      }
+      showAlert('New source created successfully!', 'alert-success')
+      // TODO Perform creation logic
+      break
+
+    case 'delete':
+      console.log('User confirmed deletion')
+      showAlert('Source deleted successfully!', 'alert-success')
+      // TODO Perform deletion logic
+      break
+
+    case 'rename':
+      console.log('User confirmed with input:', renameInput.value)
+      showAlert('Source renamed successfully!', 'alert-success')
+      // TODO Perform renaming logic
+      break
+  }
+}
+
+function handleCancellation() {
+  console.log('User cancelled the action')
+}
+
+function openFile(source: Source) {
+  // TODO
+  console.log('Opening file:', source)
+  router.push({ path: `/suite/${source.title}` })
+}
+
+function renameFile(source: Source) {
+  // TODO
   modalAction.value = 'rename'
-  renameInput.value = file.title
-  userModal.value.open({ title: `Renaming: ${file.title}` })
+  renameInput.value = source.title
+  userModal.value.open({ title: `Renaming: ${source.title}` })
 }
 
-const deleteFile = (file) => {
+function deleteFile(source: Source) {
+  // TODO
   modalAction.value = 'delete'
-  userModal.value.open({ title: `Deleting: ${file.title}` })
+  userModal.value.open({ title: `Deleting: ${source.title}` })
 }
 
-const createNewFile = () => {
+function createNewFile() {
+  // TODO
   modalAction.value = 'create'
   newFileInput.value = ''
   userModal.value.open({ title: 'Create New Source' })
 }
-
-const isLogged = ref(AuthService.isAuthenticated())
 </script>
 <template>
-  <div class="sources-view container py-4" v-if="isLogged">
+  <div v-if="isLogged" class="sources-view container py-4">
     <h1 class="text-center mb-4" :style="{ color: mainColor }">Sources</h1>
     <!-- Alert Component -->
     <div
@@ -112,7 +126,7 @@ const isLogged = ref(AuthService.isAuthenticated())
       role="alert"
     >
       {{ alertText }}
-      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
+      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
     </div>
     <!-- User Confirmation Modal -->
     <ModalComponent
@@ -126,8 +140,8 @@ const isLogged = ref(AuthService.isAuthenticated())
       <div v-if="modalAction === 'rename'">
         <p class="text-start">Enter new name:</p>
         <input
-          class="form-control dark-input w-75 inline-block"
           v-model="renameInput"
+          class="form-control dark-input w-75 inline-block"
           placeholder="Enter additional details"
         />
       </div>
@@ -137,8 +151,8 @@ const isLogged = ref(AuthService.isAuthenticated())
       <div v-else-if="modalAction === 'create'">
         <p class="text-start">Enter the name of the new source:</p>
         <input
-          class="form-control dark-input w-75 inline-block"
           v-model="newFileInput"
+          class="form-control dark-input w-75 inline-block"
           placeholder="Enter the name of the new source"
         />
       </div>
@@ -147,10 +161,10 @@ const isLogged = ref(AuthService.isAuthenticated())
     <!-- Search and Add New Button -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <input
+        v-model="searchQuery"
         type="text"
         class="form-control w-75 me-3"
         placeholder="Search sources..."
-        v-model="searchQuery"
       />
       <button class="btn btn-success" @click="createNewFile">
         <i class="fas fa-plus me-2"></i>New Source
@@ -176,7 +190,7 @@ const isLogged = ref(AuthService.isAuthenticated())
       >
         <SourceCard
           :file="file"
-          :mainColor="mainColor"
+          :main-color="mainColor"
           @open="openFile(file)"
           @rename="renameFile(file)"
           @delete="deleteFile(file)"
