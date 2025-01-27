@@ -3,7 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import SourceCard from '@/components/SourceCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
-import { AuthService } from '@/scripts/AuthService.js'
+import { AuthService } from '@/scripts/AuthService.ts'
 
 const mainColor = '#CE29AA'
 

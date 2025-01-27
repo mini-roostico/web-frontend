@@ -2,9 +2,9 @@
 import BootstrapIcon from '@/components/BootstrapIcon.vue'
 import NavbarUserDropdown from '@/components/NavbarUserDropdown.vue'
 import { onMounted, ref } from 'vue'
-import { AuthService } from '@/scripts/AuthService.js'
-import router from '@/router/index.js'
-import { EventBus } from '@/scripts/EventBus.js'
+import { AuthService } from '@/scripts/AuthService.ts'
+import router from '@/router/index.ts'
+import { EventBus } from '@/scripts/EventBus.ts'
 
 const isLogged = ref(AuthService.isAuthenticated())
 const links = ref([

@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
-import { AuthService } from '@/scripts/AuthService.js'
+import { AuthService } from '@/scripts/AuthService.ts'
 
 // TODO
 const initialYaml = `---

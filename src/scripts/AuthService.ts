@@ -1,10 +1,25 @@
 import Cookies from 'js-cookie'
 
-export const AuthService = {
+interface AuthService {
+  login(userData: {
+    username: string
+    password: string
+  }): Promise<{ success: boolean; error?: string }>
+  register(userData: {
+    username: string
+    password: string
+  }): Promise<{ success: boolean; error?: string }>
+  logout(): void
+  getCurrentUser(): string | null
+  isAuthenticated(): boolean
+  verifyToken(): Promise<boolean>
+}
+
+export const AuthService: AuthService = {
   login(userData) {
     // TODO handle login
     /* eslint-disable no-unused-vars */
-    const { username, _ } = userData
+    const { username, password } = userData
     // TODO send request
     return new Promise((resolve, _) => {
       /* eslint-disable no-unused-vars */
