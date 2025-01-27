@@ -1,32 +1,35 @@
-<script setup>
-import { ref, watch } from 'vue'
+<script setup lang="ts">
+import { Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import router from '@/router/index.ts'
-import { AuthService } from '@/scripts/AuthService.ts'
-import { EventBus } from '@/scripts/EventBus.ts'
+import router from '../router/index.ts'
+import { AuthService } from '../scripts/AuthService.ts'
+import { EventBus } from '../scripts/EventBus.ts'
+
+type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 
 const route = useRoute()
-const isLogin = ref(route.path !== '/register')
-const username = ref('')
-const password = ref('')
-const confirmPassword = ref('')
+const isLogin: Ref<boolean> = ref(route.path !== '/register')
+const username: Ref<string> = ref('')
+const password: Ref<string> = ref('')
+const confirmPassword: Ref<string> = ref('')
 
-const alertText = ref('')
-const alertType = ref('alert-info')
+const alertText: Ref<string> = ref('')
+const alertType: Ref<AlertType> = ref('alert-info')
 const submitBtn = ref(null)
 
-const loading = ref(false)
+const loading: Ref<boolean> = ref(false)
+const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
 
-const showAlert = (text, type = 'alert-info') => {
+function showAlert(text: string, type: AlertType = 'alert-info') {
   alertText.value = text
   alertType.value = type
 }
 
-const clearAlert = () => {
+function clearAlert() {
   alertText.value = ''
 }
 
-function checkPassword(newValue, refToCheck) {
+function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
   if (isLogin.value === false) {
     if (newValue !== refToCheck.value) {
       showAlert('Passwords do not match', 'alert-danger')
@@ -38,19 +41,7 @@ function checkPassword(newValue, refToCheck) {
   }
 }
 
-watch(password, (newPassword) => checkPassword(newPassword, confirmPassword))
-watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword, password))
-
-const toggleForm = () => {
-  isLogin.value = !isLogin.value
-  clearAlert()
-  submitBtn.value.disabled = false
-  confirmPassword.value = ''
-}
-
-const isLogged = ref(AuthService.isAuthenticated())
-
-function login(username, password) {
+function login(username: string, password: string) {
   AuthService.login({ username: username, password: password }).then((response) => {
     const { success } = response
     loading.value = false
@@ -63,7 +54,7 @@ function login(username, password) {
   })
 }
 
-function register(username, password) {
+function register(username: string, password: string) {
   // TODO add register login
   console.log('Registering user with username:', username)
   AuthService.register({ username: username, password: password }).then((response) => {
@@ -76,7 +67,7 @@ function register(username, password) {
   })
 }
 
-const handleSubmit = () => {
+function handleSubmit() {
   if (isLogin.value) {
     loading.value = true
     login(username.value, password.value)
@@ -90,9 +81,19 @@ const handleSubmit = () => {
     }
   }
 }
+
+function toggleForm() {
+  isLogin.value = !isLogin.value
+  clearAlert()
+  submitBtn.value.disabled = false
+  confirmPassword.value = ''
+}
+
+watch(password, (newPassword) => checkPassword(newPassword, confirmPassword))
+watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword, password))
 </script>
 <template>
-  <div class="login-register-view container py-4" v-if="isLogged === false">
+  <div v-if="isLogged === false" class="login-register-view container py-4">
     <h1 class="text-center mb-4">{{ isLogin ? 'Login' : 'Register' }}</h1>
     <!-- Loading Spinner -->
     <div v-if="loading">
@@ -108,36 +109,36 @@ const handleSubmit = () => {
       role="alert"
     >
       {{ alertText }}
-      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
+      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
     </div>
-    <form @submit.prevent="handleSubmit" class="form-container">
+    <form class="form-container" @submit.prevent="handleSubmit">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input
-          type="text"
-          class="form-control dark-input"
           id="username"
           v-model="username"
+          type="text"
+          class="form-control dark-input"
           required
         />
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
         <input
-          type="password"
-          class="form-control dark-input"
           id="password"
           v-model="password"
+          type="password"
+          class="form-control dark-input"
           required
         />
       </div>
       <div v-if="!isLogin" class="mb-3">
         <label for="confirmPassword" class="form-label">Confirm Password</label>
         <input
-          type="password"
-          class="form-control dark-input"
           id="confirmPassword"
           v-model="confirmPassword"
+          type="password"
+          class="form-control dark-input"
           required
         />
       </div>

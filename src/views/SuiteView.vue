@@ -1,13 +1,21 @@
-<script setup>
-import { ref, watch } from 'vue'
+<script setup lang="ts">
+import { Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
-import { AuthService } from '@/scripts/AuthService.ts'
+import { AuthService } from '../scripts/AuthService.ts'
+
+type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
+type TabLeft = 'Suite Configuration' | 'Suite YAML'
+type TabRight = 'Subjekt Output' | 'Generation graph'
+type Point = { x: number; y: number }
+type TreeNode = { id: string; position: Point; data: { label: string } }
+type Edge = { id: string; source: string; target: string }
+type GraphData = { nodes: TreeNode[]; edges: Edge[] }
 
 // TODO
-const initialYaml = `---
+const initialYaml: string = `---
 name: ''
 configuration: {}
 parameters: []
@@ -16,65 +24,21 @@ subjects: []
 `
 
 const route = useRoute()
-const suiteName = ref(route.params.suiteId)
-const activeTabLeft = ref('Suite Configuration')
-const activeTabRight = ref('Subjekt Output')
-const loading = ref(false)
-const generationDone = ref(false)
-const yamlText = ref(initialYaml)
+const suiteName: Ref<string | string[]> = ref(route.params.suiteId)
+const activeTabLeft: Ref<TabLeft> = ref('Suite Configuration')
+const activeTabRight: Ref<TabRight> = ref('Subjekt Output')
+const loading: Ref<boolean> = ref(false)
+const generationDone: Ref<boolean> = ref(false)
+const yamlText: Ref<string> = ref(initialYaml)
 const suiteFormsRef = ref(null)
-const alertText = ref('')
-const alertType = ref('alert-info')
+const alertText: Ref<string> = ref('')
+const alertType: Ref<AlertType> = ref('alert-info')
+const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
 
-let previousText = undefined
+let previousText: string = null
 
-const showAlert = (text, type = 'alert-info') => {
-  alertText.value = text
-  alertType.value = type
-}
-
-const clearAlert = () => {
-  alertText.value = ''
-}
-
-const saveSuite = () => {
-  // TODO Implement save logic
-  showAlert('Suite saved successfully!', 'alert-success')
-}
-
-const position = { x: 0, y: 0 }
-
-watch(activeTabLeft, (newTab) => {
-  if (newTab === 'Suite YAML') {
-    if (!previousText) {
-      yamlText.value = suiteFormsRef.value.generateYAML().yaml
-    } else {
-      yamlText.value = previousText
-      previousText = undefined
-    }
-  } else if (newTab === 'Suite Configuration') {
-    let result = suiteFormsRef.value.setFromYAML(yamlText.value)
-    if (result.success === false) {
-      console.log(result.error)
-      previousText = yamlText.value
-      showAlert(
-        'There was an error parsing your YAML, please fix it before going back',
-        'alert-danger',
-      )
-      activeTabLeft.value = 'Suite YAML'
-    }
-  }
-})
-
-function runRegeneration() {
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-    generationDone.value = true
-  }, 2000)
-}
-
-const initialNodes = [
+const position: Point = { x: 0, y: 0 }
+const initialNodes: TreeNode[] = [
   {
     id: 'root',
     position,
@@ -105,21 +69,69 @@ const initialNodes = [
   },
 ]
 
-const initialEdges = [
+const initialEdges: Edge[] = [
   { id: 'root-s1', source: 'root', target: 's1' },
   { id: 'root-s2', source: 'root', target: 's2' },
   { id: 's1-rs1', source: 's1', target: 'rs1' },
 ]
 
-const graphData = {
+const graphData: GraphData = {
   nodes: initialNodes,
   edges: initialEdges,
 }
 
-const isLogged = ref(AuthService.isAuthenticated())
+function showAlert(text: string, type: AlertType = 'alert-info') {
+  alertText.value = text
+  alertType.value = type
+}
+
+function clearAlert() {
+  alertText.value = ''
+}
+
+function saveSuite() {
+  // TODO Implement save logic
+  showAlert('Suite saved successfully!', 'alert-success')
+}
+
+watch(activeTabLeft, (newTab) => {
+  switch (newTab) {
+    case 'Suite Configuration': {
+      const result = suiteFormsRef.value.setFromYAML(yamlText.value)
+      if (result.success === false) {
+        console.log(result.error)
+        previousText = yamlText.value
+        showAlert(
+          'There was an error parsing your YAML, please fix it before going back',
+          'alert-danger',
+        )
+        activeTabLeft.value = 'Suite YAML'
+      }
+      break
+    }
+    case 'Suite YAML': {
+      if (!previousText) {
+        yamlText.value = suiteFormsRef.value.generateYAML().yaml
+      } else {
+        yamlText.value = previousText
+        previousText = undefined
+      }
+      break
+    }
+  }
+})
+
+function runRegeneration() {
+  // TODO
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+    generationDone.value = true
+  }, 2000)
+}
 </script>
 <template>
-  <div class="suite-view container py-4" v-if="isLogged">
+  <div v-if="isLogged" class="suite-view container py-4">
     <!-- Alert Component -->
     <div
       v-if="alertText"
@@ -128,7 +140,7 @@ const isLogged = ref(AuthService.isAuthenticated())
       role="alert"
     >
       {{ alertText }}
-      <button type="button" class="btn-close" @click="clearAlert" aria-label="Close"></button>
+      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
     </div>
 
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -209,7 +221,7 @@ const isLogged = ref(AuthService.isAuthenticated())
               <p v-else>Run the generation to produce an output.</p>
             </div>
             <div v-show="activeTabRight === 'Generation graph'" class="tab-pane fade show active">
-              <GraphViewer v-model="graphData" v-if="generationDone"></GraphViewer>
+              <GraphViewer v-if="generationDone" v-model="graphData"></GraphViewer>
               <p v-else>Run the generation to produce an output.</p>
             </div>
           </div>
