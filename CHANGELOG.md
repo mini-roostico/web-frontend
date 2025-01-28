@@ -1,3 +1,28 @@
+## [1.0.1](https://github.com/mini-roostico/web-frontend/compare/1.0.0...1.0.1) (2025-01-28)
+
+### Bug Fixes
+
+* fixed suite name not being correlated between editors in SuiteView.vue ([b88b12c](https://github.com/mini-roostico/web-frontend/commit/b88b12cc68fd1ae802211c14a25f99612c5cf124))
+
+### Build and continuous integration
+
+* added typescript ([583de1c](https://github.com/mini-roostico/web-frontend/commit/583de1c7890b4362d2c9b0289276723458b93923))
+* configured eslint for typescript and vue ([5ff4866](https://github.com/mini-roostico/web-frontend/commit/5ff48661f39280709e0211b857fa67669d10769a))
+
+### General maintenance
+
+* deleted unused components ([1f9bd09](https://github.com/mini-roostico/web-frontend/commit/1f9bd09c4182800892dcfc56e70839b0d37293f8))
+
+### Style improvements
+
+* fixed style issues inside components ([e6df98e](https://github.com/mini-roostico/web-frontend/commit/e6df98e0545c6f4a49a21a9879d67be59a9b0315))
+
+### Refactoring
+
+* converted main components to typescript ([1658de9](https://github.com/mini-roostico/web-frontend/commit/1658de952d9c7682138edfb2338a34460b4c8d2a))
+* converted main js files to ts ([4604da7](https://github.com/mini-roostico/web-frontend/commit/4604da7da1eb68d1a680c7a37aa4001e077fe4b4))
+* converted view files to TypeScript ([8933ae8](https://github.com/mini-roostico/web-frontend/commit/8933ae8f4470967fde115d8339375891603f2814))
+
 ## 1.0.0 (2025-01-26)
 
 ### Features
