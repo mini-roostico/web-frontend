@@ -88,27 +88,38 @@ function clearAlert() {
 
 function saveSuite() {
   // TODO Implement save logic
-  showAlert('Suite saved successfully!', 'alert-success')
+  const success = setFormsFromYaml(yamlText.value)
+  if (success === true) {
+    showAlert('Suite saved successfully!', 'alert-success')
+  }
+}
+
+function setFormsFromYaml(yaml: string): boolean {
+  const result = suiteFormsRef.value.setFromYAML(yaml)
+  if (result.success === false) {
+    console.log(result.error)
+    previousText = yaml
+    showAlert(
+      'There was an error parsing your YAML, please fix it before going back',
+      'alert-danger',
+    )
+    activeTabLeft.value = 'Suite YAML'
+  } else {
+    suiteName.value = result.suiteName
+  }
+  return result.success
 }
 
 watch(activeTabLeft, (newTab) => {
   switch (newTab) {
     case 'Suite Configuration': {
-      const result = suiteFormsRef.value.setFromYAML(yamlText.value)
-      if (result.success === false) {
-        console.log(result.error)
-        previousText = yamlText.value
-        showAlert(
-          'There was an error parsing your YAML, please fix it before going back',
-          'alert-danger',
-        )
-        activeTabLeft.value = 'Suite YAML'
-      }
+      setFormsFromYaml(yamlText.value)
       break
     }
     case 'Suite YAML': {
       if (!previousText) {
-        yamlText.value = suiteFormsRef.value.generateYAML().yaml
+        console.log(suiteFormsRef.value.generateYAML(suiteName.value).yaml)
+        yamlText.value = suiteFormsRef.value.generateYAML(suiteName.value).yaml
       } else {
         yamlText.value = previousText
         previousText = undefined
