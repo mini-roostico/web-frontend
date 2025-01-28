@@ -1,3 +1,14 @@
+## [1.1.0](https://github.com/mini-roostico/web-frontend/compare/1.0.1...1.1.0) (2025-01-28)
+
+### Features
+
+* imported files from old project ([9daa2fe](https://github.com/mini-roostico/web-frontend/commit/9daa2fe98894aee26fc51d4c2b0a834cdba50dc3))
+* switched to new authentication system using stores ([068c265](https://github.com/mini-roostico/web-frontend/commit/068c2659b93132f51713bc0019efe1a6c67ab6b0))
+
+### Build and continuous integration
+
+* added pinia and axios ([c544c8b](https://github.com/mini-roostico/web-frontend/commit/c544c8bcd85aafefa833dd99a1bc588e41c4898b))
+
 ## [1.0.1](https://github.com/mini-roostico/web-frontend/compare/1.0.0...1.0.1) (2025-01-28)
 
 ### Bug Fixes
