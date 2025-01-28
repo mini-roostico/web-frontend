@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import CodeEditor from 'simple-code-editor'
 import { onMounted, ref } from 'vue'
 import 'highlight.js/styles/default.css'
 import yaml from 'highlight.js/lib/languages/yaml'
 import hljs from 'highlight.js'
 import { EventBus } from '@/scripts/EventBus.ts'
-import { AuthService } from '@/scripts/AuthService.ts'
+import { useAuthStore } from '@/stores/auth.js'
 
 hljs.registerLanguage('yaml', yaml)
-const isLogged = ref(AuthService.isAuthenticated())
+const authStore = useAuthStore()
+const isLogged = ref(authStore.isLogged)
 const yamlText = ref(
   `name: "Home page suite"
 
@@ -32,12 +33,12 @@ subjects:
       End of subject`,
 )
 
-const highlightCode = (code) => {
+const highlightCode = (code: string) => {
   return hljs.highlight(code, { language: 'yaml' }).value
 }
 
 function refreshButton() {
-  isLogged.value = AuthService.isAuthenticated()
+  isLogged.value = authStore.isLogged
 }
 
 onMounted(() => {

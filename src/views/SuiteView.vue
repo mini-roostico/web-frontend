@@ -4,12 +4,15 @@ import { useRoute } from 'vue-router'
 import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
-import { AuthService } from '../scripts/AuthService.ts'
-import { GraphData, Point, TreeNode, Edge } from '../graph/Graph.ts'
+import { useAuthStore } from '@/stores/auth.ts'
 
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
 type TabRight = 'Subjekt Output' | 'Generation graph'
+type Point = { x: number; y: number }
+type TreeNode = { id: string; position: Point; data: { label: string } }
+type Edge = { id: string; source: string; target: string }
+type GraphData = { nodes: TreeNode[]; edges: Edge[] }
 
 // TODO
 const initialYaml: string = `---
@@ -21,6 +24,7 @@ subjects: []
 `
 
 const route = useRoute()
+const authStore = useAuthStore()
 const suiteName: Ref<string | string[]> = ref(route.params.suiteId)
 const activeTabLeft: Ref<TabLeft> = ref('Suite Configuration')
 const activeTabRight: Ref<TabRight> = ref('Subjekt Output')
@@ -30,7 +34,7 @@ const yamlText: Ref<string> = ref(initialYaml)
 const suiteFormsRef = ref(null)
 const alertText: Ref<string> = ref('')
 const alertType: Ref<AlertType> = ref('alert-info')
-const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
+const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
 let previousText: string = null
 

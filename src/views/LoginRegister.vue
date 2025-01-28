@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import router from '../router/index.ts'
-import { AuthService } from '../scripts/AuthService.ts'
-import { EventBus } from '../scripts/EventBus.ts'
+import router from '@/router/index.ts'
+import { EventBus } from '@/scripts/EventBus.ts'
+import { useAuthStore } from '@/stores/auth.ts'
+import { Role } from '@/commons/utils.ts'
 
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 
@@ -17,8 +18,9 @@ const alertText: Ref<string> = ref('')
 const alertType: Ref<AlertType> = ref('alert-info')
 const submitBtn = ref(null)
 
+const authStore = useAuthStore()
 const loading: Ref<boolean> = ref(false)
-const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
+const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
 function showAlert(text: string, type: AlertType = 'alert-info') {
   alertText.value = text
@@ -42,29 +44,30 @@ function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
 }
 
 function login(username: string, password: string) {
-  AuthService.login({ username: username, password: password }).then((response) => {
-    const { success } = response
-    loading.value = false
-    if (success === true) {
+  authStore
+    .login(Role.User, username, password)
+    .then(() => {
+      loading.value = false
       EventBus.$emit('refresh-navbar')
       router.push('/sources')
-    } else {
+    })
+    .catch((e) => {
+      console.log(e)
+      loading.value = false
       showAlert('Invalid credentials', 'alert-danger')
-    }
-  })
+    })
 }
 
 function register(username: string, password: string) {
-  // TODO add register login
-  console.log('Registering user with username:', username)
-  AuthService.register({ username: username, password: password }).then((response) => {
-    const { success } = response
-    if (success === true) {
+  authStore
+    .register(username, password)
+    .then(() => {
       login(username, password)
-    } else {
-      // TODO handle error
-    }
-  })
+    })
+    .catch(() => {
+      loading.value = false
+      showAlert('Username already exists', 'alert-danger')
+    })
 }
 
 function handleSubmit() {
@@ -142,7 +145,7 @@ watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword,
           required
         />
       </div>
-      <button ref="submitBtn" type="submit" class="btn btn-primary w-100">
+      <button ref="submitBtn" type="submit" class="btn btn-primary w-100" :disabled="loading">
         {{ isLogin ? 'Login' : 'Register' }}
       </button>
     </form>
