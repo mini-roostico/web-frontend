@@ -1,14 +1,15 @@
-<script setup>
-import { ref, useSlots } from 'vue'
+<script setup lang="ts">
+import { Ref, ref, useSlots } from 'vue'
 
 const emit = defineEmits(['modal-opened', 'modal-closed', 'modal-confirmed', 'modal-cancelled'])
 const slots = useSlots()
-const title = ref('')
+const title: Ref<string> = ref('')
 
-const isVisible = ref(false)
+const isVisible: Ref<boolean> = ref(false)
 let resolveClose = null
 let rejectClose = null
-const open = (data = null) => {
+
+function open(data = null) {
   isVisible.value = true
   if (data && data.title) {
     title.value = data.title
@@ -20,7 +21,7 @@ const open = (data = null) => {
   })
 }
 
-const close = (result = null) => {
+function close(result = null) {
   isVisible.value = false
   emit('modal-closed', result)
   if (resolveClose) {
@@ -28,7 +29,7 @@ const close = (result = null) => {
   }
 }
 
-const cancel = () => {
+function cancel() {
   isVisible.value = false
   emit('modal-cancelled')
   if (rejectClose) {
@@ -36,7 +37,7 @@ const cancel = () => {
   }
 }
 
-const confirm = () => {
+function confirm() {
   emit('modal-confirmed')
   close()
 }

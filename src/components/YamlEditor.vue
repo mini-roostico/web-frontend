@@ -1,14 +1,14 @@
-<script setup>
+<script setup lang="ts">
 import hljs from 'highlight.js'
 import CodeEditor from 'simple-code-editor'
-import { ref, watch } from 'vue'
+import { Ref, ref, watch } from 'vue'
 import 'highlight.js/styles/default.css'
 import yaml from 'highlight.js/lib/languages/yaml'
 
 hljs.registerLanguage('yaml', yaml)
 
 const props = defineProps({
-  modelValue: {
+  editorContent: {
     type: String,
     default: () => '',
   },
@@ -16,23 +16,22 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const text = ref(props.modelValue.text)
+const text: Ref<string> = ref(props.editorContent)
 
 // changes in model
 watch(
-  () => props.modelValue,
+  () => props.editorContent,
   (newValue) => {
     text.value = newValue
   },
   { immediate: true },
 )
 
-// local changes propagated
-watch(text, (newText) => {
+watch(text, (newText: string) => {
   emit('update:modelValue', newText)
 })
 
-const highlightCode = (code) => {
+function highlightCode(code: string) {
   return hljs.highlight(code, { language: 'yaml' }).value
 }
 </script>

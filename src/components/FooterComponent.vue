@@ -1,3 +1,9 @@
+<script setup lang="ts">
+import { ref } from 'vue'
+import { Ref } from 'vue'
+
+const currentYear: Ref<number> = ref(new Date().getFullYear())
+</script>
 <template>
   <footer class="footer">
     <div class="footer-content">
@@ -15,13 +21,6 @@
     </div>
   </footer>
 </template>
-
-<script setup>
-import { ref } from 'vue'
-
-const currentYear = ref(new Date().getFullYear())
-</script>
-
 <style scoped>
 .footer {
   flex-shrink: 0;
