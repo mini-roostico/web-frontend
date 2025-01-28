@@ -5,14 +5,11 @@ import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
 import { AuthService } from '../scripts/AuthService.ts'
+import { GraphData, Point, TreeNode, Edge } from '../graph/Graph.ts'
 
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
 type TabRight = 'Subjekt Output' | 'Generation graph'
-type Point = { x: number; y: number }
-type TreeNode = { id: string; position: Point; data: { label: string } }
-type Edge = { id: string; source: string; target: string }
-type GraphData = { nodes: TreeNode[]; edges: Edge[] }
 
 // TODO
 const initialYaml: string = `---

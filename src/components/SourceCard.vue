@@ -1,9 +1,35 @@
+<script setup lang="ts">
+const props = defineProps({
+  file: {
+    type: Object,
+    required: true,
+  },
+  mainColor: {
+    type: String,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['open', 'rename', 'delete'])
+
+function openFile() {
+  emit('open', props.file)
+}
+
+function renameFile() {
+  emit('rename', props.file)
+}
+
+function deleteFile() {
+  emit('delete', props.file)
+}
+</script>
 <template>
   <div class="card file-card shadow-sm" @click="openFile">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <!-- File Icon -->
-        <i class="fas fa-file-alt fa-3x" :style="{ color: mainColor }"></i>
+        <i class="fas fa-file-alt fa-3x" :style="{ color: props.mainColor }"></i>
 
         <!-- Three-dot menu -->
         <div class="dropdown" @click.stop>
@@ -27,40 +53,13 @@
       </div>
 
       <!-- File title and subtitle -->
-      <h5 class="card-title text-white text-truncate">{{ file.title }}</h5>
-      <p class="card-subtitle text-muted text-truncate">Last modified: {{ file.lastModified }}</p>
+      <h5 class="card-title text-white text-truncate">{{ props.file.title }}</h5>
+      <p class="card-subtitle text-muted text-truncate">
+        Last modified: {{ props.file.lastModified }}
+      </p>
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  name: 'SourceCard',
-  props: {
-    file: {
-      type: Object,
-      required: true,
-    },
-    mainColor: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['open', 'rename', 'delete'],
-  methods: {
-    openFile() {
-      this.$emit('open', this.file)
-    },
-    renameFile() {
-      this.$emit('rename', this.file)
-    },
-    deleteFile() {
-      this.$emit('delete', this.file)
-    },
-  },
-}
-</script>
-
 <style scoped>
 .card.file-card {
   background-color: #232329;

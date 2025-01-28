@@ -1,5 +1,5 @@
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed, ComputedRef } from 'vue'
 import yaml from 'js-yaml'
 
 const configuration = ref([])
@@ -7,30 +7,62 @@ const parameters = ref([])
 const macros = ref([])
 const subjects = ref([{ name: 'Subject 1', pairs: [] }])
 
+interface Configuration {
+  pairs: { key: string; value: string }[]
+}
+
+interface Parameter {
+  name: string
+  values: string[]
+}
+
+interface Macro {
+  name: string
+  values: string[]
+}
+
+interface Subject {
+  name: string
+  pairs: { key: string; value: string }[]
+}
+
+interface Suite {
+  name: string
+  configuration: Configuration
+  parameters: Parameter[]
+  macros: Macro[]
+  subjects: Subject[]
+}
+
+interface SubjektConfig {
+  yaml: string
+  suite: Suite
+}
+
 // to generate YAML from the forms
-const generateYAML = computed(() => {
-  const configObj = configuration.value.reduce((acc, item) => {
+const generateYAML: ComputedRef<SubjektConfig> = computed(() => {
+  const configObj: Configuration = configuration.value.reduce((acc, item) => {
     if (item.key && item.value) {
       acc[item.key] = item.value
     }
     return acc
   }, {})
 
-  const parametersArray = parameters.value
+  const parametersArray: Parameter[] = parameters.value
     .map((param) => ({
       name: param.name,
       values: param.values.filter((v) => v.trim() !== ''),
     }))
     .filter((param) => param.name && param.values.length > 0)
 
-  const macrosArray = macros.value
+  const macrosArray: Macro[] = macros.value
     .map((macro) => ({
       name: macro.name,
       values: macro.values.filter((v) => v.trim() !== ''),
     }))
     .filter((macro) => macro.name && macro.values.length > 0)
 
-  const subjectsArray = subjects.value
+  const subjectsArray: Subject[] = subjects.value
     .map((subject) =>
       subject.pairs.reduce((acc, pair) => {
         if (pair.key && pair.value) {
@@ -41,7 +73,8 @@ const generateYAML = computed(() => {
     )
     .filter((subject) => Object.keys(subject).length > 0)
 
-  const yamlObject = {
+  const suite = {
+    name: '', // TODO
     configuration: configObj,
     parameters: parametersArray,
     macros: macrosArray,
@@ -49,19 +82,19 @@ const generateYAML = computed(() => {
   }
 
   return {
-    yaml: yaml.dump(yamlObject, {
+    yaml: yaml.dump(suite, {
       skipInvalid: true,
       // Ensure multi-line strings are properly formatted
       forceQuotes: true,
     }),
-    object: yamlObject,
+    suite: suite,
   }
 })
 
 const setFromYAML = (yamlString) => {
   try {
     // Parse the YAML
-    const parsedObject = yaml.load(yamlString)
+    const parsedObject: Suite = yaml.load(yamlString) as Suite
 
     // Configuration
     configuration.value = Object.entries(parsedObject.configuration || {}).map(([key, value]) => ({
@@ -105,68 +138,68 @@ defineExpose({
   setFromYAML,
 })
 
-const addConfigPair = () => {
+function addConfigPair() {
   configuration.value.push({ key: '', value: '' })
 }
 
-const removeConfigPair = (index) => {
+function removeConfigPair(index: number) {
   configuration.value.splice(index, 1)
 }
 
-const addParameter = () => {
+function addParameter() {
   parameters.value.push({
     name: '',
     values: [],
   })
 }
 
-const addParameterValue = (paramIndex) => {
+function addParameterValue(paramIndex: number) {
   parameters.value[paramIndex].values.push('')
 }
 
-const removeParameter = (index) => {
+function removeParameter(index: number) {
   parameters.value.splice(index, 1)
 }
 
-const removeParameterValue = (paramIndex, valueIndex) => {
+function removeParameterValue(paramIndex: number, valueIndex: number) {
   parameters.value[paramIndex].values.splice(valueIndex, 1)
 }
 
-const addMacro = () => {
+function addMacro() {
   macros.value.push({
     name: '',
     values: [],
   })
 }
 
-const addMacroValue = (macroIndex) => {
+function addMacroValue(macroIndex: number) {
   macros.value[macroIndex].values.push('')
 }
 
-const removeMacro = (index) => {
+function removeMacro(index: number) {
   macros.value.splice(index, 1)
 }
 
-const removeMacroValue = (macroIndex, valueIndex) => {
+function removeMacroValue(macroIndex: number, valueIndex: number) {
   macros.value[macroIndex].values.splice(valueIndex, 1)
 }
 
-const addSubject = () => {
+function addSubject() {
   subjects.value.push({
     name: `Subject ${subjects.value.length + 1}`,
     pairs: [],
   })
 }
 
-const removeSubject = (index) => {
+function removeSubject(index: number) {
   subjects.value.splice(index, 1)
 }
 
-const addSubjectPair = (subjectIndex) => {
+function addSubjectPair(subjectIndex: number) {
   subjects.value[subjectIndex].pairs.push({ key: '', value: '' })
 }
 
-const removeSubjectPair = (subjectIndex, pairIndex) => {
+function removeSubjectPair(subjectIndex: number, pairIndex: number) {
   subjects.value[subjectIndex].pairs.splice(pairIndex, 1)
 }
 </script>

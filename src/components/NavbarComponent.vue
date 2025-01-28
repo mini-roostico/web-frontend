@@ -1,13 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import BootstrapIcon from '@/components/BootstrapIcon.vue'
 import NavbarUserDropdown from '@/components/NavbarUserDropdown.vue'
-import { onMounted, ref } from 'vue'
-import { AuthService } from '@/scripts/AuthService.ts'
-import router from '@/router/index.ts'
-import { EventBus } from '@/scripts/EventBus.ts'
+import { onMounted, Ref, ref } from 'vue'
+import { AuthService } from '../scripts/AuthService.ts'
+import router from '../router/index.ts'
+import { EventBus } from '../scripts/EventBus.ts'
 
-const isLogged = ref(AuthService.isAuthenticated())
-const links = ref([
+interface Link {
+  href: string
+  name: string
+  loginNeeded: boolean
+}
+
+const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
+const links: Ref<Link[]> = ref([
   { href: '/', name: 'Home', loginNeeded: false },
   { href: '/sources', name: 'Sources', loginNeeded: true },
   { href: '/about', name: 'About', loginNeeded: false },
@@ -41,7 +47,6 @@ defineExpose({ reloadNavbar, logout })
         role="button"
         aria-expanded="false"
         aria-controls="menuMobileCollapse"
-        @click="$refs.mobileCollapse.toggleMobileMenu"
       >
         <BootstrapIcon icon="bi bi-list" size="2.3rem" color="black"></BootstrapIcon>
       </a>
@@ -55,7 +60,7 @@ defineExpose({ reloadNavbar, logout })
     <ul
       class="links-desktop nav nav-pills col text-center align-items-center justify-content-center"
     >
-      <li v-for="link in links" :key="link">
+      <li v-for="link in links" :key="link.href">
         <router-link
           v-if="(link.loginNeeded && isLogged) || !link.loginNeeded"
           :to="link.href"

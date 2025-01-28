@@ -1,8 +1,8 @@
-<script setup>
-import { ref, computed } from 'vue'
-import { AuthService } from '@/scripts/AuthService.ts'
+<script setup lang="ts">
+import { ref, computed, Ref } from 'vue'
+import { AuthService } from '../scripts/AuthService.ts'
 
-const username = ref(AuthService.getCurrentUser())
+const username: Ref<string> = ref(AuthService.getCurrentUser())
 const emit = defineEmits(['logout'])
 const userInitials = computed(() =>
   username.value
@@ -13,7 +13,7 @@ const userInitials = computed(() =>
     .toUpperCase(),
 )
 
-const generateGradient = (username) => {
+function generateGradient(username: string): string {
   const hash = username.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0)
 
   const h1 = Math.abs(hash % 360)
@@ -24,11 +24,10 @@ const generateGradient = (username) => {
 
 const gradientBackground = computed(() => generateGradient(username.value))
 
-const logout = () => {
+function logout(): void {
   emit('logout')
 }
 </script>
-
 <template>
   <div class="user-avatar-dropdown">
     <div
@@ -117,11 +116,6 @@ const logout = () => {
 
 .user-name {
   font-weight: bold;
-}
-
-.user-email {
-  color: #888;
-  font-size: 0.8em;
 }
 
 .dropdown-items {

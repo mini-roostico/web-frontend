@@ -1,13 +1,3 @@
-<template>
-  <div>
-    <i
-      ref="icon"
-      :class="`${icon} icon`"
-      :style="`font-size: ${size}; color: ${color};`"
-      @click="click"
-    ></i>
-  </div>
-</template>
 <script setup lang="ts">
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { onMounted, Ref, ref } from 'vue'
@@ -47,6 +37,16 @@ function click() {
   iconI.value.classList.toggle('selected')
 }
 </script>
+<template>
+  <div>
+    <i
+      ref="icon"
+      :class="`${icon} icon`"
+      :style="`font-size: ${size}; color: ${color};`"
+      @click="click"
+    ></i>
+  </div>
+</template>
 <style scoped>
 .icon:hover {
   filter: brightness(50%);
