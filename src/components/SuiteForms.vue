@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, ComputedRef } from 'vue'
+import { ref } from 'vue'
 import yaml from 'js-yaml'
 
 const configuration = ref([])
@@ -40,7 +40,7 @@ interface SubjektConfig {
 }
 
 // to generate YAML from the forms
-const generateYAML: ComputedRef<SubjektConfig> = computed(() => {
+function generateYAML(suiteName: string): SubjektConfig {
   const configObj: Configuration = configuration.value.reduce((acc, item) => {
     if (item.key && item.value) {
       acc[item.key] = item.value
@@ -74,7 +74,7 @@ const generateYAML: ComputedRef<SubjektConfig> = computed(() => {
     .filter((subject) => Object.keys(subject).length > 0)
 
   const suite = {
-    name: '', // TODO
+    name: suiteName,
     configuration: configObj,
     parameters: parametersArray,
     macros: macrosArray,
@@ -89,33 +89,32 @@ const generateYAML: ComputedRef<SubjektConfig> = computed(() => {
     }),
     suite: suite,
   }
-})
+}
 
-const setFromYAML = (yamlString) => {
+function setFromYAML(yamlString: string): { success: boolean; suiteName?: string; error?: string } {
   try {
-    // Parse the YAML
-    const parsedObject: Suite = yaml.load(yamlString) as Suite
+    const suite: Suite = yaml.load(yamlString) as Suite
 
     // Configuration
-    configuration.value = Object.entries(parsedObject.configuration || {}).map(([key, value]) => ({
+    configuration.value = Object.entries(suite.configuration || {}).map(([key, value]) => ({
       key,
       value,
     }))
 
     // Parameters
-    parameters.value = (parsedObject.parameters || []).map((param) => ({
+    parameters.value = (suite.parameters || []).map((param) => ({
       name: param.name,
       values: param.values || [],
     }))
 
     // Macros
-    macros.value = (parsedObject.macros || []).map((macro) => ({
+    macros.value = (suite.macros || []).map((macro) => ({
       name: macro.name,
       values: macro.values || [],
     }))
 
     // Subjects
-    subjects.value = (parsedObject.subjects || []).map((subject) => ({
+    subjects.value = (suite.subjects || []).map((subject) => ({
       name: `Subject ${subjects.value.length + 1}`,
       pairs: Object.entries(subject).map(([key, value]) => ({
         key,
@@ -123,7 +122,7 @@ const setFromYAML = (yamlString) => {
       })),
     }))
 
-    return { success: true }
+    return { success: true, suiteName: suite.name }
   } catch (error) {
     return {
       success: false,
@@ -134,7 +133,7 @@ const setFromYAML = (yamlString) => {
 
 // Expose both methods
 defineExpose({
-  generateYAML: () => generateYAML.value,
+  generateYAML,
   setFromYAML,
 })
 

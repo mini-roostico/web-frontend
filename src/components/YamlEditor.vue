@@ -8,7 +8,7 @@ import yaml from 'highlight.js/lib/languages/yaml'
 hljs.registerLanguage('yaml', yaml)
 
 const props = defineProps({
-  editorContent: {
+  modelValue: {
     type: String,
     default: () => '',
   },
@@ -16,11 +16,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const text: Ref<string> = ref(props.editorContent)
+const text: Ref<string> = ref(props.modelValue)
 
 // changes in model
 watch(
-  () => props.editorContent,
+  () => props.modelValue,
   (newValue) => {
     text.value = newValue
   },
