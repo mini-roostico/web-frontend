@@ -2,9 +2,9 @@
 import BootstrapIcon from '@/components/BootstrapIcon.vue'
 import NavbarUserDropdown from '@/components/NavbarUserDropdown.vue'
 import { onMounted, Ref, ref } from 'vue'
-import { AuthService } from '../scripts/AuthService.ts'
-import router from '../router/index.ts'
-import { EventBus } from '../scripts/EventBus.ts'
+import router from '@/router/index.ts'
+import { EventBus } from '@/scripts/EventBus.ts'
+import { useAuthStore } from '@/stores/auth.ts'
 
 interface Link {
   href: string
@@ -12,7 +12,8 @@ interface Link {
   loginNeeded: boolean
 }
 
-const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
+const authStore = useAuthStore()
+const isLogged: Ref<boolean> = ref(authStore.isLogged)
 const links: Ref<Link[]> = ref([
   { href: '/', name: 'Home', loginNeeded: false },
   { href: '/sources', name: 'Sources', loginNeeded: true },
@@ -20,11 +21,11 @@ const links: Ref<Link[]> = ref([
 ])
 
 function reloadNavbar() {
-  isLogged.value = AuthService.isAuthenticated()
+  isLogged.value = authStore.isLogged
 }
 
 function logout() {
-  AuthService.logout()
+  authStore.logout()
   router.push('/')
   isLogged.value = false
 }
@@ -65,16 +66,16 @@ defineExpose({ reloadNavbar, logout })
           v-if="(link.loginNeeded && isLogged) || !link.loginNeeded"
           :to="link.href"
           class="nav-item nav-link px-2 navbar-links"
-          >{{ link.name }}</router-link
-        >
+          >{{ link.name }}
+        </router-link>
       </li>
     </ul>
     <div class="col loginButtons">
       <div v-if="!isLogged">
         <router-link role="button" class="btn btn-light mx-2" to="/login">Sign In</router-link>
         <router-link role="button" class="btn btn-outline-primary" to="/register"
-          >Sign Up</router-link
-        >
+          >Sign Up
+        </router-link>
       </div>
       <div v-else>
         <NavbarUserDropdown @logout="logout"></NavbarUserDropdown>
@@ -169,15 +170,19 @@ li {
     justify-content: center;
     align-items: center;
   }
+
   .loginButtons {
     display: none;
   }
+
   .menu-mobile-button {
     transition: all 300ms ease;
   }
+
   .menu-mobile-button:active {
     filter: brightness(50%);
   }
+
   .links-desktop {
     display: none;
   }
@@ -187,12 +192,15 @@ li {
     justify-content: center;
     align-items: center;
   }
+
   .nav-container {
     min-height: 80px;
   }
+
   .logo {
     display: inline-block;
   }
+
   .collapse-body {
     padding: 10px;
   }
@@ -203,11 +211,13 @@ li {
     margin: 15px;
     text-decoration: none;
   }
+
   ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
   }
+
   hr {
     display: block;
     height: 1px;

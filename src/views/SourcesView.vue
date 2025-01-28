@@ -3,7 +3,7 @@ import { ref, computed, Ref, ComputedRef } from 'vue'
 import { Router, useRouter } from 'vue-router'
 import SourceCard from '@/components/SourceCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
-import { AuthService } from '../scripts/AuthService.ts'
+import { useAuthStore } from '@/stores/auth.ts'
 
 type ModalAction = 'rename' | 'delete' | 'create'
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
@@ -23,7 +23,8 @@ const alertText = ref('')
 const alertType: Ref<AlertType> = ref('alert-info')
 
 const loading: Ref<boolean> = ref(false)
-const isLogged: Ref<boolean> = ref(AuthService.isAuthenticated())
+const authStore = useAuthStore()
+const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
 // temporary placeholder
 const sources: Ref<Source[], Source[]> = ref([
