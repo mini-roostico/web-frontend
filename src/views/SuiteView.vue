@@ -1,85 +1,61 @@
 <script setup lang="ts">
-import { Ref, ref, watch } from 'vue'
+import { onMounted, Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
 import { useAuthStore } from '@/stores/auth.ts'
+import { Source, useSourceStore } from '@/stores/sources.ts'
+import { useSuiteStore } from '@/stores/suite.ts'
+import { GraphData } from '@/scripts/graph.ts'
 
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
 type TabRight = 'Subjekt Output' | 'Generation graph'
-type Point = { x: number; y: number }
-type TreeNode = { id: string; position: Point; data: { label: string } }
-type Edge = { id: string; source: string; target: string }
-type GraphData = { nodes: TreeNode[]; edges: Edge[] }
-
-// TODO
-const initialYaml: string = `---
-name: ''
-configuration: {}
-parameters: []
-macros: []
-subjects: []
-`
 
 const route = useRoute()
 const authStore = useAuthStore()
-const suiteName: Ref<string | string[]> = ref(route.params.suiteId)
+const sourceStore = useSourceStore()
+const suiteStore = useSuiteStore()
+
+const suiteId: string | string[] = route.params.suiteId
+
+const source: Ref<Source> = ref(null)
+
 const activeTabLeft: Ref<TabLeft> = ref('Suite Configuration')
 const activeTabRight: Ref<TabRight> = ref('Subjekt Output')
 const loading: Ref<boolean> = ref(false)
 const generationDone: Ref<boolean> = ref(false)
-const yamlText: Ref<string> = ref(initialYaml)
+const yamlText: Ref<string> = ref('')
 const suiteFormsRef = ref(null)
 const alertText: Ref<string> = ref('')
 const alertType: Ref<AlertType> = ref('alert-info')
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
+const suiteNameInput: Ref<string> = ref('')
+const generationLoading: Ref<boolean> = ref(false)
+const criticalError: Ref<boolean> = ref(false)
+const graphData: Ref<GraphData> = ref({ nodes: [], edges: [] })
 
 let previousText: string = null
 
-const position: Point = { x: 0, y: 0 }
-const initialNodes: TreeNode[] = [
-  {
-    id: 'root',
-    position,
-    data: {
-      label: 'Root',
-    },
-  },
-  {
-    id: 's1',
-    position,
-    data: {
-      label: 'Subject 1',
-    },
-  },
-  {
-    id: 's2',
-    position,
-    data: {
-      label: 'Subject 2',
-    },
-  },
-  {
-    id: 'rs1',
-    position,
-    data: {
-      label: 'Resolved Subject 1',
-    },
-  },
-]
-
-const initialEdges: Edge[] = [
-  { id: 'root-s1', source: 'root', target: 's1' },
-  { id: 'root-s2', source: 'root', target: 's2' },
-  { id: 's1-rs1', source: 's1', target: 'rs1' },
-]
-
-const graphData: GraphData = {
-  nodes: initialNodes,
-  edges: initialEdges,
-}
+onMounted(() => {
+  loading.value = true
+  sourceStore
+    .getSource(suiteId as string)
+    .then(async (data) => {
+      source.value = data
+      yamlText.value = data.yaml
+      setFormsFromYaml(data.yaml)
+    })
+    .catch((error) => {
+      showAlert('Error fetching suite. Please try again later.', 'alert-danger')
+      criticalError.value = true
+      console.error(error)
+    })
+    .finally(() => {
+      loading.value = false
+    })
+})
 
 function showAlert(text: string, type: AlertType = 'alert-info') {
   alertText.value = text
@@ -90,11 +66,29 @@ function clearAlert() {
   alertText.value = ''
 }
 
+function saveYamlToStore(name: string, yaml: string) {
+  sourceStore
+    .saveSource(source.value.id, name, yaml)
+    .then((source) => {
+      showAlert('Suite saved successfully!', 'alert-success')
+      console.log(source.yaml)
+      setFormsFromYaml(source.yaml)
+    })
+    .catch((error) => {
+      console.error('Error saving suite:', error)
+      showAlert('Error saving suite. Please try again later.', 'alert-danger')
+    })
+}
+
 function saveSuite() {
-  // TODO Implement save logic
-  const success = setFormsFromYaml(yamlText.value)
-  if (success === true) {
-    showAlert('Suite saved successfully!', 'alert-success')
+  const name = suiteNameInput.value
+  if (activeTabLeft.value === 'Suite Configuration') {
+    const { yaml } = suiteFormsRef.value.generateYAML(name)
+    saveYamlToStore(name, yaml)
+  } else {
+    if (setFormsFromYaml(yamlText.value) === true) {
+      saveYamlToStore(name, yamlText.value)
+    }
   }
 }
 
@@ -109,7 +103,7 @@ function setFormsFromYaml(yaml: string): boolean {
     )
     activeTabLeft.value = 'Suite YAML'
   } else {
-    suiteName.value = result.suiteName
+    suiteNameInput.value = result.suiteName
   }
   return result.success
 }
@@ -122,8 +116,8 @@ watch(activeTabLeft, (newTab) => {
     }
     case 'Suite YAML': {
       if (!previousText) {
-        console.log(suiteFormsRef.value.generateYAML(suiteName.value).yaml)
-        yamlText.value = suiteFormsRef.value.generateYAML(suiteName.value).yaml
+        console.log(suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml)
+        yamlText.value = suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml
       } else {
         yamlText.value = previousText
         previousText = undefined
@@ -134,47 +128,66 @@ watch(activeTabLeft, (newTab) => {
 })
 
 function runRegeneration() {
-  // TODO
-  loading.value = true
-  setTimeout(() => {
-    loading.value = false
-    generationDone.value = true
-  }, 2000)
+  generationLoading.value = true
+  if (activeTabLeft.value === 'Suite Configuration') {
+    yamlText.value = suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml
+  }
+  suiteStore
+    .generate(yamlText.value)
+    .then((data) => {
+      const { result, generationGraph } = data
+      console.log(result)
+      generationDone.value = true
+      generationLoading.value = false
+      graphData.value = generationGraph
+      // TODO show result
+    })
+    .catch((error) => {
+      console.error('Error generating suite:', error)
+      showAlert(`Error generating suite: ${error}`, 'alert-danger')
+      generationLoading.value = false
+    })
 }
 </script>
 <template>
-  <div v-if="isLogged" class="suite-view container py-4">
-    <!-- Alert Component -->
-    <div
-      v-if="alertText"
-      class="alert alert-dismissible alert-dark fade show"
-      :class="alertType"
-      role="alert"
-    >
-      {{ alertText }}
-      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
+  <!-- Alert Component -->
+  <div
+    v-if="alertText"
+    class="alert alert-dismissible alert-dark fade show m-4"
+    :class="alertType"
+    role="alert"
+  >
+    {{ alertText }}
+    <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
+  </div>
+  <div v-if="loading">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
-
+  </div>
+  <div v-if="isLogged && !criticalError" class="suite-view container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="d-flex align-items-center">
         <input
-          v-model="suiteName"
+          v-model="suiteNameInput"
           class="form-control form-control dark-input me-2"
           placeholder="Enter Suite Name"
+          :disabled="loading"
         />
-        <button class="btn btn-outline-secondary" @click="saveSuite">
+        <button class="btn btn-outline-secondary" :disabled="loading" @click="saveSuite">
           <i class="bi bi-save me-1"></i>Save
         </button>
       </div>
       <div class="d-flex align-items-center">
-        <button class="btn play-btn me-2" @click="runRegeneration">
+        <button
+          v-if="!generationLoading"
+          class="btn play-btn me-2"
+          :disabled="loading"
+          @click="runRegeneration"
+        >
           <i class="bi bi-play-fill"></i> Run Suite
         </button>
-        <div
-          class="spinner-border"
-          role="status"
-          :style="{ visibility: loading ? 'visible' : 'hidden' }"
-        >
+        <div v-else class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -201,7 +214,7 @@ function runRegeneration() {
           </ul>
           <div class="tab-content">
             <div v-show="activeTabLeft === 'Suite Configuration'" class="tab-pane fade show active">
-              <SuiteForms ref="suiteFormsRef"></SuiteForms>
+              <SuiteForms ref="suiteFormsRef" :disabled="loading"></SuiteForms>
             </div>
             <div v-show="activeTabLeft === 'Suite YAML'" class="tab-pane fade show active">
               <YamlEditor v-model="yamlText"></YamlEditor>
@@ -241,7 +254,7 @@ function runRegeneration() {
       </div>
     </div>
   </div>
-  <div v-else>
+  <div v-else-if="!criticalError">
     <p class="text-white text-center mt-5">Please log in to view this page.</p>
   </div>
 </template>

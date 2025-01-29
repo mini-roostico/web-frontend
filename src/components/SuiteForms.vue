@@ -2,6 +2,13 @@
 import { ref } from 'vue'
 import yaml from 'js-yaml'
 
+defineProps({
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
+
 const configuration = ref([])
 const parameters = ref([])
 const macros = ref([])
@@ -209,7 +216,11 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Configuration</h5>
-        <button class="btn btn-outline-primary btn-sm" @click="addConfigPair">
+        <button
+          class="btn btn-outline-primary btn-sm"
+          :disabled="$props.disabled"
+          @click="addConfigPair"
+        >
           <i class="bi bi-plus-lg"></i> Add Key-Value Pair
         </button>
       </div>
@@ -221,6 +232,7 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
               type="text"
               class="form-control dark-input"
               placeholder="Key"
+              :disabled="$props.disabled"
             />
           </div>
           <div class="col-5">
@@ -229,10 +241,15 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
               type="text"
               class="form-control dark-input"
               placeholder="Value"
+              :disabled="$props.disabled"
             />
           </div>
           <div class="col-2">
-            <button class="btn btn-outline-danger btn-sm" @click="removeConfigPair(index)">
+            <button
+              class="btn btn-outline-danger btn-sm"
+              :disabled="$props.disabled"
+              @click="removeConfigPair(index)"
+            >
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -244,7 +261,11 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Parameters</h5>
-        <button class="btn btn-outline-primary btn-sm" @click="addParameter">
+        <button
+          class="btn btn-outline-primary btn-sm"
+          :disabled="$props.disabled"
+          @click="addParameter"
+        >
           <i class="bi bi-plus-lg"></i> Add Parameter
         </button>
       </div>
@@ -256,15 +277,21 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
               type="text"
               class="form-control dark-input w-75"
               placeholder="Parameter name"
+              :disabled="$props.disabled"
             />
             <div>
               <button
                 class="btn btn-outline-success btn-sm me-2"
+                :disabled="$props.disabled"
                 @click="addParameterValue(paramIndex)"
               >
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
-              <button class="btn btn-outline-danger btn-sm" @click="removeParameter(paramIndex)">
+              <button
+                class="btn btn-outline-danger btn-sm"
+                :disabled="$props.disabled"
+                @click="removeParameter(paramIndex)"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -276,11 +303,13 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
                 type="text"
                 class="form-control dark-input"
                 placeholder="Value"
+                :disabled="$props.disabled"
               />
             </div>
             <div class="col-2">
               <button
                 class="btn btn-outline-danger btn-sm"
+                :disabled="$props.disabled"
                 @click="removeParameterValue(paramIndex, valueIndex)"
               >
                 <i class="bi bi-trash"></i>
@@ -295,7 +324,11 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
     <div class="card dark-card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Macros</h5>
-        <button class="btn btn-outline-primary btn-sm" @click="addMacro">
+        <button
+          class="btn btn-outline-primary btn-sm"
+          :disabled="$props.disabled"
+          @click="addMacro"
+        >
           <i class="bi bi-plus-lg"></i> Add Macro
         </button>
       </div>
@@ -307,15 +340,21 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
               type="text"
               class="form-control dark-input w-75"
               placeholder="Macro name"
+              :disabled="$props.disabled"
             />
             <div>
               <button
                 class="btn btn-outline-success btn-sm me-2"
+                :disabled="$props.disabled"
                 @click="addMacroValue(macroIndex)"
               >
                 <i class="bi bi-plus-lg"></i> Add Value
               </button>
-              <button class="btn btn-outline-danger btn-sm" @click="removeMacro(macroIndex)">
+              <button
+                class="btn btn-outline-danger btn-sm"
+                :disabled="$props.disabled"
+                @click="removeMacro(macroIndex)"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
@@ -327,11 +366,13 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
                 class="form-control dark-input"
                 rows="3"
                 placeholder="Value"
+                :disabled="$props.disabled"
               ></textarea>
             </div>
             <div class="col-2">
               <button
                 class="btn btn-outline-danger btn-sm"
+                :disabled="$props.disabled"
                 @click="removeMacroValue(macroIndex, valueIndex)"
               >
                 <i class="bi bi-trash"></i>
@@ -375,7 +416,7 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
             </div>
             <div class="card-body">
               <div v-for="(pair, pairIndex) in subject.pairs" :key="pairIndex" class="row mb-2">
-                <div class="col-5">
+                <div class="row m-1">
                   <input
                     v-model="pair.key"
                     type="text"
@@ -383,15 +424,15 @@ function removeSubjectPair(subjectIndex: number, pairIndex: number) {
                     placeholder="Key"
                   />
                 </div>
-                <div class="col-5">
-                  <input
+                <div class="row m-1">
+                  <textarea
                     v-model="pair.value"
-                    type="text"
+                    rows="3"
                     class="form-control dark-input"
                     placeholder="Value"
-                  />
+                  ></textarea>
                 </div>
-                <div class="col-2">
+                <div class="mt-1">
                   <button
                     class="btn btn-outline-danger btn-sm"
                     @click="removeSubjectPair(subjectIndex, pairIndex)"
