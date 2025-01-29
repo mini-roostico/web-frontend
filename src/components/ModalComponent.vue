@@ -45,12 +45,12 @@ function confirm() {
 defineExpose({ open, close, cancel })
 </script>
 <template>
-  <div
+  <form
     class="modal dark-modal"
     :class="{ show: isVisible }"
     tabindex="-1"
-    role="dialog"
     :style="{ display: isVisible ? 'block' : 'none' }"
+    @submit.prevent="confirm"
   >
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -66,12 +66,12 @@ defineExpose({ open, close, cancel })
         <div class="modal-footer">
           <slot name="footer">
             <button type="button" class="btn btn-secondary" @click="close">Close</button>
-            <button type="button" class="btn btn-primary" @click="confirm">Confirm</button>
+            <button type="submit" class="btn btn-primary">Confirm</button>
           </slot>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </template>
 <style scoped>
 .dark-modal .modal-content {
