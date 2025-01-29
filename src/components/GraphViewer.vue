@@ -104,8 +104,13 @@ async function layoutGraph(direction) {
     <VueFlow
       :nodes="nodes"
       :edges="edges"
-      :delete-key-code="null"
-      @nodes-initialized="layoutGraph('TB')"
+      :nodes-draggable="false"
+      :nodes-connectable="false"
+      :elements-selectable="false"
+      :zoom-on-scroll="false"
+      :zoom-on-double-click="false"
+      :pan-on-drag="false"
+      @nodes-initialized="layoutGraph('LR')"
     >
       <Background />
       <Controls :show-zoom="false" :show-fit="false" :show-interactive="false" />
