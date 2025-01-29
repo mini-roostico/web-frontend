@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { ref, computed, Ref, ComputedRef } from 'vue'
+import { ref, computed, Ref, ComputedRef, onMounted } from 'vue'
 import { Router, useRouter } from 'vue-router'
 import SourceCard from '@/components/SourceCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { useAuthStore } from '@/stores/auth.ts'
+import { Source, useSourceStore } from '@/stores/sources.ts'
 
 type ModalAction = 'rename' | 'delete' | 'create'
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
-type Source = { title: string; lastModified: string }
-
 const mainColor: string = '#CE29AA'
 
 const router: Router = useRouter()
+const sourceStore = useSourceStore()
 
 const userModal = ref(null)
 const renameInput: Ref<string> = ref('')
@@ -26,19 +26,35 @@ const loading: Ref<boolean> = ref(false)
 const authStore = useAuthStore()
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
-// temporary placeholder
-const sources: Ref<Source[], Source[]> = ref([
-  { title: 'Document 1', lastModified: '2025-01-15' },
-  { title: 'Presentation', lastModified: '2025-01-10' },
-  { title: 'Notes', lastModified: '2025-01-08' },
-  { title: 'Budget Plan', lastModified: '2025-01-01' },
-])
+const sources: Ref<Source[]> = ref([])
+const selectedSource: Ref<Source | null> = ref(null)
 
 const searchQuery: Ref<string, string> = ref('')
 
-const filteredFiles: ComputedRef<Source[]> = computed(() => {
-  return sources.value.filter((file) =>
-    file.title.toLowerCase().includes(searchQuery.value.toLowerCase()),
+function refreshSources() {
+  loading.value = true
+  sourceStore
+    .getSources()
+    .then((data) => {
+      sources.value.length = 0
+      sources.value.push(...data)
+    })
+    .catch((error) => {
+      console.error('Error fetching sources:', error)
+      showAlert('Error fetching sources. Please try again later.', 'alert-danger')
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+onMounted(() => {
+  refreshSources()
+})
+
+const filteredSources: ComputedRef<Source[]> = computed(() => {
+  return sources.value.filter((source) =>
+    source.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 
@@ -59,31 +75,83 @@ function handleModalClose() {
   // do nothing
 }
 
+function createSource() {
+  loading.value = true
+  sourceStore
+    .createSource(newFileInput.value)
+    .then((source: Source) => {
+      showAlert(`Source "${source.name}" created successfully!`, 'alert-success')
+      refreshSources()
+    })
+    .catch((error) => {
+      console.error('Error creating source:', error)
+      showAlert('Error creating source. Please try again later.', 'alert-danger')
+    })
+    .finally(() => {
+      loading.value = false
+    })
+}
+
+function deleteSource() {
+  if (selectedSource.value) {
+    loading.value = true
+    sourceStore
+      .deleteSource(selectedSource.value.id)
+      .then(() => {
+        showAlert('Source deleted successfully!', 'alert-success')
+        refreshSources()
+      })
+      .catch((error) => {
+        console.error('Error deleting source:', error)
+        showAlert('Error deleting source. Please try again later.', 'alert-danger')
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
+}
+
+function renameSource(newName: string) {
+  if (selectedSource.value && newName) {
+    loading.value = true
+    sourceStore
+      .renameSource(selectedSource.value.id, newName)
+      .then(() => {
+        showAlert('Source renamed successfully!', 'alert-success')
+        refreshSources()
+      })
+      .catch((error) => {
+        console.error('Error renaming source:', error)
+        showAlert('Error renaming source. Please try again later.', 'alert-danger')
+      })
+      .finally(() => {
+        loading.value = false
+      })
+  }
+}
+
 function handleConfirmation() {
   switch (modalAction.value) {
     case 'create':
       if (newFileInput.value !== '') {
-        sources.value.push({
-          title: newFileInput.value,
-          lastModified: new Date().toISOString().split('T')[0],
-        })
+        createSource()
+      } else {
+        showAlert('Please enter a name for the new source.', 'alert-danger')
+        return
       }
-      showAlert('New source created successfully!', 'alert-success')
-      // TODO Perform creation logic
       break
 
     case 'delete':
-      console.log('User confirmed deletion')
+      deleteSource()
       showAlert('Source deleted successfully!', 'alert-success')
-      // TODO Perform deletion logic
       break
 
     case 'rename':
-      console.log('User confirmed with input:', renameInput.value)
+      renameSource(renameInput.value)
       showAlert('Source renamed successfully!', 'alert-success')
-      // TODO Perform renaming logic
       break
   }
+  selectedSource.value = null
 }
 
 function handleCancellation() {
@@ -91,26 +159,25 @@ function handleCancellation() {
 }
 
 function openFile(source: Source) {
-  // TODO
+  selectedSource.value = source
   console.log('Opening file:', source)
-  router.push({ path: `/suite/${source.title}` })
+  router.push({ path: `/suite/${source.id}` })
 }
 
-function renameFile(source: Source) {
-  // TODO
+function renameFileModal(source: Source) {
+  selectedSource.value = source
   modalAction.value = 'rename'
-  renameInput.value = source.title
-  userModal.value.open({ title: `Renaming: ${source.title}` })
+  renameInput.value = source.name
+  userModal.value.open({ title: `Renaming: ${source.name}` })
 }
 
-function deleteFile(source: Source) {
-  // TODO
+function deleteFileModal(source: Source) {
+  selectedSource.value = source
   modalAction.value = 'delete'
-  userModal.value.open({ title: `Deleting: ${source.title}` })
+  userModal.value.open({ title: `Deleting: ${source.name}` })
 }
 
-function createNewFile() {
-  // TODO
+function createNewFileModal() {
   modalAction.value = 'create'
   newFileInput.value = ''
   userModal.value.open({ title: 'Create New Source' })
@@ -155,6 +222,7 @@ function createNewFile() {
           v-model="newFileInput"
           class="form-control dark-input w-75 inline-block"
           placeholder="Enter the name of the new source"
+          required
         />
       </div>
       <div v-else>Unrecognized: {{ modalAction }}</div>
@@ -167,7 +235,7 @@ function createNewFile() {
         class="form-control w-75 me-3"
         placeholder="Search sources..."
       />
-      <button class="btn btn-success" @click="createNewFile">
+      <button class="btn btn-success" @click="createNewFileModal">
         <i class="fas fa-plus me-2"></i>New Source
       </button>
     </div>
@@ -177,7 +245,7 @@ function createNewFile() {
       </div>
     </div>
     <!-- If there are no files, show the placeholder -->
-    <div v-else-if="filteredFiles.length === 0" class="no-files text-center py-5">
+    <div v-else-if="filteredSources.length === 0" class="no-files text-center py-5">
       <i class="fas fa-folder-open fa-4x mb-3" :style="{ color: mainColor }"></i>
       <p class="text-muted">Wow...it's empty here!</p>
     </div>
@@ -185,16 +253,16 @@ function createNewFile() {
     <!-- Source cards -->
     <div v-else class="row g-3">
       <div
-        v-for="(file, index) in filteredFiles"
+        v-for="(source, index) in filteredSources"
         :key="index"
         class="col-12 col-sm-6 col-md-4 col-lg-3"
       >
         <SourceCard
-          :file="file"
+          :source="source"
           :main-color="mainColor"
-          @open="openFile(file)"
-          @rename="renameFile(file)"
-          @delete="deleteFile(file)"
+          @open="openFile(source)"
+          @rename="renameFileModal(source)"
+          @delete="deleteFileModal(source)"
         />
       </div>
     </div>

@@ -1,27 +1,26 @@
 <script setup lang="ts">
-const props = defineProps({
-  file: {
-    type: Object,
-    required: true,
-  },
-  mainColor: {
-    type: String,
-    required: true,
-  },
-})
+import { type Source } from '@/stores/sources.ts'
+import { formatDate } from '../commons/utils.ts'
+
+interface Props {
+  source: Source
+  mainColor: string
+}
+
+const props = defineProps<Props>()
 
 const emit = defineEmits(['open', 'rename', 'delete'])
 
 function openFile() {
-  emit('open', props.file)
+  emit('open', props.source)
 }
 
 function renameFile() {
-  emit('rename', props.file)
+  emit('rename', props.source)
 }
 
 function deleteFile() {
-  emit('delete', props.file)
+  emit('delete', props.source)
 }
 </script>
 <template>
@@ -53,9 +52,9 @@ function deleteFile() {
       </div>
 
       <!-- File title and subtitle -->
-      <h5 class="card-title text-white text-truncate">{{ props.file.title }}</h5>
+      <h5 class="card-title text-white text-truncate">{{ props.source.name }}</h5>
       <p class="card-subtitle text-muted text-truncate">
-        Last modified: {{ props.file.lastModified }}
+        Last modified: {{ formatDate(props.source.lastModified) }}
       </p>
     </div>
   </div>
