@@ -1,23 +1,41 @@
 import { defineStore } from 'pinia'
 
 export interface Source {
-  id: number
+  id: string
   name: string
   lastModified: Date
+  yaml: string
 }
 
 export const useSourceStore = defineStore('source', () => {
   // TODO remove
   const dummySources: Source[] = [
     {
-      id: 1,
+      id: '1',
       name: 'Source 1',
       lastModified: new Date(),
+      yaml: `
+      name: "Source 1"
+      parameters:
+        - name: "param1"
+          values:
+          - "value1"
+          - "value2"
+        - name: "param2"
+          values:
+          - "value3"
+          - "value3"
+      subjects:
+        - name: "Subject Awesome"
+          score: 10
+        - name: "Subject Bad"
+      `,
     },
     {
-      id: 2,
+      id: '2',
       name: 'Source 2',
       lastModified: new Date(),
+      yaml: `name: "Source 2"`,
     },
   ]
 
@@ -30,7 +48,7 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
-  async function getSource(id: number): Promise<Source> {
+  async function getSource(id: string): Promise<Source> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
     //return (await axios.get(url)).data.data
@@ -45,16 +63,17 @@ export const useSourceStore = defineStore('source', () => {
     //return (await axios.post(url, { name })).data.data
     return new Promise((resolve) => {
       const newSource = {
-        id: dummySources.length + 1,
+        id: (dummySources.length + 1).toString(),
         name,
         lastModified: new Date(),
+        yaml: '',
       }
       dummySources.push(newSource)
       resolve(newSource)
     })
   }
 
-  async function renameSource(id: number, name: string): Promise<Source> {
+  async function renameSource(id: string, name: string): Promise<Source> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
     //return (await axios.put(url, { name })).data.data
@@ -68,7 +87,7 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
-  async function deleteSource(id: number): Promise<void> {
+  async function deleteSource(id: string): Promise<void> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
     //await axios.delete(url)
@@ -81,11 +100,25 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
+  async function saveSource(id: string, name: string, yaml: string): Promise<Source> {
+    // TODO uncomment
+    //const url = `${apiEndpoints.API_SERVER}/suite/${id}`
+    //return (await axios.put(url, { name, yaml })).data.data
+    return new Promise((resolve) => {
+      const source = dummySources.find((source) => source.id === id)!
+      source.yaml = yaml
+      source.name = name
+      source.lastModified = new Date()
+      resolve({ id, name, lastModified: new Date(), yaml })
+    })
+  }
+
   return {
     getSources,
     getSource,
     createSource,
     renameSource,
     deleteSource,
+    saveSource,
   }
 })
