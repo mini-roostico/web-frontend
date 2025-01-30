@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, Ref, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { onBeforeRouteLeave, useRoute } from 'vue-router'
 import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
@@ -36,7 +36,22 @@ const generationLoading: Ref<boolean> = ref(false)
 const criticalError: Ref<boolean> = ref(false)
 const graphData: Ref<GraphData> = ref({ nodes: [], edges: [] })
 
+const isSaved: Ref<boolean> = ref(true)
+
 let previousText: string = null
+
+onBeforeRouteLeave(() => {
+  if (!isSaved.value) {
+    const answer = window.confirm('You have unsaved changes. Do you really want to leave?')
+    if (!answer) {
+      return false
+    }
+  }
+})
+
+function keyPressed() {
+  isSaved.value = false
+}
 
 onMounted(() => {
   loading.value = true
@@ -73,6 +88,7 @@ function saveYamlToStore(name: string, yaml: string) {
       showAlert('Suite saved successfully!', 'alert-success')
       console.log(source.yaml)
       setFormsFromYaml(source.yaml)
+      isSaved.value = true
     })
     .catch((error) => {
       console.error('Error saving suite:', error)
@@ -173,8 +189,14 @@ function runRegeneration() {
           class="form-control form-control dark-input me-2"
           placeholder="Enter Suite Name"
           :disabled="loading"
+          @keyup="keyPressed"
         />
-        <button class="btn btn-outline-secondary" :disabled="loading" @click="saveSuite">
+        <button
+          v-if="!isSaved"
+          class="btn btn-outline-secondary"
+          :disabled="loading"
+          @click="saveSuite"
+        >
           <i class="bi bi-save me-1"></i>Save
         </button>
       </div>
@@ -214,10 +236,10 @@ function runRegeneration() {
           </ul>
           <div class="tab-content">
             <div v-show="activeTabLeft === 'Suite Configuration'" class="tab-pane fade show active">
-              <SuiteForms ref="suiteFormsRef" :disabled="loading"></SuiteForms>
+              <SuiteForms ref="suiteFormsRef" :disabled="loading" @keyup="keyPressed"></SuiteForms>
             </div>
             <div v-show="activeTabLeft === 'Suite YAML'" class="tab-pane fade show active">
-              <YamlEditor v-model="yamlText"></YamlEditor>
+              <YamlEditor v-model="yamlText" @keyup="keyPressed"></YamlEditor>
             </div>
           </div>
         </div>
