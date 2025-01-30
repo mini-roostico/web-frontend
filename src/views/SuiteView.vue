@@ -155,7 +155,6 @@ function runRegeneration() {
     .generate(yamlText.value)
     .then((data) => {
       const { result, generationGraph } = data
-      console.log(result)
       generationDone.value = true
       generationLoading.value = false
       graphData.value = generationGraph
