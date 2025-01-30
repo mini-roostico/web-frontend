@@ -12,6 +12,22 @@ const props = defineProps({
     type: String,
     default: () => '',
   },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
+  theme: {
+    type: String,
+    default: 'androidstudio',
+  },
+  wrap: {
+    type: Boolean,
+    default: true,
+  },
+  language: {
+    type: Array,
+    default: () => ['yaml', 'YAML'],
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -40,12 +56,11 @@ function highlightCode(code: string) {
   <div>
     <CodeEditor
       v-model="text"
-      theme="androidstudio"
-      :read-only="false"
-      :languages="[['yaml', 'YAML']]"
-      :wrap="false"
+      :theme="props.theme"
+      :read-only="props.readOnly"
+      :languages="[props.language]"
+      :wrap="props.wrap"
       width="100%"
-      height="700px"
       :highlight="highlightCode"
     >
     </CodeEditor>

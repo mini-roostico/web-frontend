@@ -2,13 +2,14 @@ import { defineStore } from 'pinia'
 import { io } from '@mini-roostico/subjekt'
 import subjekt = io.github.subjekt.Subjekt
 import { convertGraph, GraphData } from '@/scripts/graph.ts'
+import { convertToSubjects } from '@/commons/utils.ts'
 
-interface ResolvedSubject {
+export interface ResolvedSubject {
   name: string
   values: { key: string; value: string }[]
 }
 
-interface GenerationResult {
+export interface GenerationResult {
   generationGraph: GraphData
   result: ResolvedSubject[]
 }
@@ -20,12 +21,13 @@ export const useSuiteStore = defineStore('suite', () => {
     //return (await axios.post(url, { yaml })).data.data
     return new Promise((resolve) => {
       const generation = subjekt.fromYaml(yaml)
-      const result = JSON.parse(generation.resolveSubjectsAsJson().asString())
+      const result = JSON.parse(generation.resolveSubjectsAsJson().asString()) as Array<object>
       const graph = JSON.parse(generation.getGenerationGraph().asString())
       const graphData: GraphData = convertGraph(graph)
+      const resultData = convertToSubjects(result)
       resolve({
         generationGraph: graphData,
-        result: result,
+        result: resultData,
       })
     })
   }
