@@ -2,6 +2,8 @@
  * Contains utility functions used by multiple components.
  */
 
+import { ResolvedSubject } from '@/stores/suite.ts'
+
 /** An enum representing the possible roles of a user. */
 export enum Role {
   User = 'user',
@@ -74,4 +76,26 @@ export function capitalizeFirstLetter(str: string) {
     return str
   }
   return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+/**
+ * Converts an array of maps of keys and value into a ResolvedSubject object.
+ * @param objs the objs to convert.
+ */
+export function convertToSubjects(objs: object[]): ResolvedSubject[] {
+  return objs.map((obj, index) => {
+    let name = obj['name']
+    if (!name) {
+      name = 'subject' + index
+    }
+    return {
+      name: name,
+      values: Object.entries(obj)
+        .filter(([key]) => key !== 'name')
+        .map(([key, value]) => ({
+          key,
+          value,
+        })),
+    }
+  })
 }

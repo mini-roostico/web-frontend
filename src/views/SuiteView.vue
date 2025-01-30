@@ -6,8 +6,9 @@ import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
 import { useAuthStore } from '@/stores/auth.ts'
 import { Source, useSourceStore } from '@/stores/sources.ts'
-import { useSuiteStore } from '@/stores/suite.ts'
+import { ResolvedSubject, useSuiteStore } from '@/stores/suite.ts'
 import { GraphData } from '@/scripts/graph.ts'
+import SubjectResult from '@/components/SubjectResult.vue'
 
 type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
@@ -34,7 +35,9 @@ const isLogged: Ref<boolean> = ref(authStore.isLogged)
 const suiteNameInput: Ref<string> = ref('')
 const generationLoading: Ref<boolean> = ref(false)
 const criticalError: Ref<boolean> = ref(false)
+
 const graphData: Ref<GraphData> = ref({ nodes: [], edges: [] })
+const resultData: Ref<ResolvedSubject[]> = ref([])
 
 const isSaved: Ref<boolean> = ref(true)
 
@@ -156,7 +159,10 @@ function runRegeneration() {
       generationDone.value = true
       generationLoading.value = false
       graphData.value = generationGraph
-      // TODO show result
+      resultData.value = []
+      result.forEach((subject) => {
+        resultData.value.push(subject)
+      })
     })
     .catch((error) => {
       console.error('Error generating suite:', error)
@@ -264,7 +270,14 @@ function runRegeneration() {
           </ul>
           <div class="tab-content">
             <div v-show="activeTabRight === 'Subjekt Output'" class="tab-pane fade show active">
-              <p v-if="generationDone">Result</p>
+              <div v-if="generationDone">
+                <SubjectResult
+                  v-for="result in resultData"
+                  :key="result.name + result.values.join('')"
+                  :result="result"
+                >
+                </SubjectResult>
+              </div>
               <p v-else>Run the generation to produce an output.</p>
             </div>
             <div v-show="activeTabRight === 'Generation graph'" class="tab-pane fade show active">
