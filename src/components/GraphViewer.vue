@@ -56,7 +56,7 @@ async function layoutGraph(direction: Direction) {
       :zoom-on-scroll="false"
       :zoom-on-double-click="false"
       :pan-on-drag="false"
-      @nodes-initialized="layoutGraph('LR')"
+      @nodes-initialized="layoutGraph(Direction.LeftToRight)"
     >
       <Background />
       <Controls :show-zoom="false" :show-fit="false" :show-interactive="false" />
