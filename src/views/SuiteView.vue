@@ -169,6 +169,17 @@ function runRegeneration() {
       generationLoading.value = false
     })
 }
+
+function downloadResultData() {
+  const dataStr =
+    'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(resultData.value, null, 2))
+  const downloadAnchorNode = document.createElement('a')
+  downloadAnchorNode.setAttribute('href', dataStr)
+  downloadAnchorNode.setAttribute('download', `${suiteNameInput.value}_result.json`)
+  document.body.appendChild(downloadAnchorNode)
+  downloadAnchorNode.click()
+  downloadAnchorNode.remove()
+}
 </script>
 <template>
   <!-- Alert Component -->
@@ -217,6 +228,9 @@ function runRegeneration() {
         <div v-else class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
+        <button v-if="generationDone" class="btn btn-outline-secondary" @click="downloadResultData">
+          <i class="bi bi-download me-1"></i>Download JSON
+        </button>
       </div>
     </div>
 
