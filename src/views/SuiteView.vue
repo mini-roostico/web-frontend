@@ -9,8 +9,8 @@ import { Source, useSourceStore } from '@/stores/sources.ts'
 import { ResolvedSubject, useSuiteStore } from '@/stores/suite.ts'
 import { GraphData } from '@/scripts/graph.ts'
 import SubjectResult from '@/components/SubjectResult.vue'
+import AlertComponent from '@/components/AlertComponent.vue'
 
-type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
 type TabRight = 'Subjekt Output' | 'Generation graph'
 
@@ -23,14 +23,18 @@ const suiteId: string | string[] = route.params.suiteId
 
 const source: Ref<Source> = ref(null)
 
+const alert: Ref<typeof AlertComponent> = ref(null)
+
+function showAlert(text: string, type: string) {
+  alert.value.show(text, type)
+}
+
 const activeTabLeft: Ref<TabLeft> = ref('Suite Configuration')
 const activeTabRight: Ref<TabRight> = ref('Subjekt Output')
 const loading: Ref<boolean> = ref(false)
 const generationDone: Ref<boolean> = ref(false)
 const yamlText: Ref<string> = ref('')
 const suiteFormsRef = ref(null)
-const alertText: Ref<string> = ref('')
-const alertType: Ref<AlertType> = ref('alert-info')
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
 const suiteNameInput: Ref<string> = ref('')
 const generationLoading: Ref<boolean> = ref(false)
@@ -74,15 +78,6 @@ onMounted(() => {
       loading.value = false
     })
 })
-
-function showAlert(text: string, type: AlertType = 'alert-info') {
-  alertText.value = text
-  alertType.value = type
-}
-
-function clearAlert() {
-  alertText.value = ''
-}
 
 function saveYamlToStore(name: string, yaml: string) {
   sourceStore
@@ -182,16 +177,8 @@ function downloadResultData() {
 }
 </script>
 <template>
-  <!-- Alert Component -->
-  <div
-    v-if="alertText"
-    class="alert alert-dismissible alert-dark fade show m-4"
-    :class="alertType"
-    role="alert"
-  >
-    {{ alertText }}
-    <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
-  </div>
+  <!-- AlertComponent Component -->
+  <AlertComponent ref="alert" />
   <div v-if="loading">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
