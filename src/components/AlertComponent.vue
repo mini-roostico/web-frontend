@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-
-enum AlertType {
-  INFO = 'alert-info',
-  DANGER = 'alert-danger',
-  SUCCESS = 'alert-success',
-}
+import { AlertType } from '@/commons/utils.ts'
 
 const alertText = ref('')
 const alertType = ref(AlertType.INFO)
