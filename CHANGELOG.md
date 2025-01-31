@@ -1,3 +1,31 @@
+## [1.2.0](https://github.com/mini-roostico/web-frontend/compare/1.1.0...1.2.0) (2025-01-31)
+
+### Features
+
+* added a simple download button ([82b8032](https://github.com/mini-roostico/web-frontend/commit/82b8032ddfdeb9c79d4a79410dc33f326bf5b0cf))
+* added simple saving guard for suite editor ([8a11767](https://github.com/mini-roostico/web-frontend/commit/8a117678a0d682466bfd1bae64c7cc35cbf45d24))
+* added source saving and generation capabilities (first version) ([1b1165e](https://github.com/mini-roostico/web-frontend/commit/1b1165e8b94dc677e097f7ab5a51de18e8961c66))
+* implemented a simple result display system that switches between text and code format ([c8dd5ad](https://github.com/mini-roostico/web-frontend/commit/c8dd5ad3b31e1da53edef7a880bdbede7fa985df))
+* implemented an initial sourceStore with placeholders ([a4f5e02](https://github.com/mini-roostico/web-frontend/commit/a4f5e020d5ecd03936827e070f1ceb949cea74d6))
+* introduced working generation and saving into SuiteView.vue ([7b04a6f](https://github.com/mini-roostico/web-frontend/commit/7b04a6f971fbfa687f8b574e454e289b9adf3071))
+* started skeleton for sources store ([3e5793e](https://github.com/mini-roostico/web-frontend/commit/3e5793e6cb2cc65b60fabcde42e143a05b0ca01f))
+
+### Bug Fixes
+
+* fixed graph bug not re-arranging elements after first generation ([5031436](https://github.com/mini-roostico/web-frontend/commit/5031436742de43af390339fbe2cd4c681e273b27))
+* fixed parameter to layoutGraph function ([ab5c96a](https://github.com/mini-roostico/web-frontend/commit/ab5c96add96c0785f77eae0fe3f2d44d78896fbf))
+
+### Build and continuous integration
+
+* temporarily added subjekt to test generations ([efe5da9](https://github.com/mini-roostico/web-frontend/commit/efe5da95110d7b1b6f6c46a7347833aebaf60ab1))
+* updated subjekt version ([3bb054b](https://github.com/mini-roostico/web-frontend/commit/3bb054bcee579c506e77b9bc208a91c8b7a8c06f))
+* updated tsconfig.json causing problems with '@' imports ([9d263be](https://github.com/mini-roostico/web-frontend/commit/9d263be9ef7f132d023ee8f27ad142fa5bcf1945))
+
+### General maintenance
+
+* deleted unused file ([70be57b](https://github.com/mini-roostico/web-frontend/commit/70be57b8fb319a8c7c2ff2eca44a687ea9f65d0e))
+* removed log ([44f9809](https://github.com/mini-roostico/web-frontend/commit/44f9809ed58675d320351b54055e45e32f1a8a2d))
+
 ## [1.1.0](https://github.com/mini-roostico/web-frontend/compare/1.0.1...1.1.0) (2025-01-28)
 
 ### Features
