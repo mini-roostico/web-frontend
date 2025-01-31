@@ -10,6 +10,7 @@ import { ResolvedSubject, useSuiteStore } from '@/stores/suite.ts'
 import { GraphData } from '@/scripts/graph.ts'
 import SubjectResult from '@/components/SubjectResult.vue'
 import AlertComponent from '@/components/AlertComponent.vue'
+import { AlertType } from '@/commons/utils.ts'
 
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
 type TabRight = 'Subjekt Output' | 'Generation graph'
@@ -70,7 +71,7 @@ onMounted(() => {
       setFormsFromYaml(data.yaml)
     })
     .catch((error) => {
-      showAlert('Error fetching suite. Please try again later.', 'alert-danger')
+      showAlert('Error fetching suite. Please try again later.', AlertType.DANGER)
       criticalError.value = true
       console.error(error)
     })
@@ -83,14 +84,14 @@ function saveYamlToStore(name: string, yaml: string) {
   sourceStore
     .saveSource(source.value.id, name, yaml)
     .then((source) => {
-      showAlert('Suite saved successfully!', 'alert-success')
+      showAlert('Suite saved successfully!', AlertType.SUCCESS)
       console.log(source.yaml)
       setFormsFromYaml(source.yaml)
       isSaved.value = true
     })
     .catch((error) => {
       console.error('Error saving suite:', error)
-      showAlert('Error saving suite. Please try again later.', 'alert-danger')
+      showAlert('Error saving suite. Please try again later.', AlertType.DANGER)
     })
 }
 
@@ -113,7 +114,7 @@ function setFormsFromYaml(yaml: string): boolean {
     previousText = yaml
     showAlert(
       'There was an error parsing your YAML, please fix it before going back',
-      'alert-danger',
+      AlertType.DANGER,
     )
     activeTabLeft.value = 'Suite YAML'
   } else {
@@ -160,7 +161,7 @@ function runRegeneration() {
     })
     .catch((error) => {
       console.error('Error generating suite:', error)
-      showAlert(`Error generating suite: ${error}`, 'alert-danger')
+      showAlert(`Error generating suite: ${error}`, AlertType.DANGER)
       generationLoading.value = false
     })
 }
