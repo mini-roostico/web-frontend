@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 
+/**
+ * Utility interface to represent a key-value pair.
+ */
 interface KeyValuePair {
   key: string
   value: string
 }
+
+/**
+ * The props of the component. `title` is the title of the card and `items` is an array of key-value
+ * pairs.
+ */
 const props = defineProps({
   title: {
     type: String,

@@ -2,8 +2,16 @@
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import { onMounted, Ref, ref } from 'vue'
 
+/**
+ * Reference to the "\<i\>" tag corresponding to the icon.
+ */
 const iconI: Ref<HTMLElement> = ref(null)
 
+/**
+ * Properties of the icon. `icon` is the class of the icon, `size` is the size of the icon, `color`
+ * is the color of the icon, `toggleable` is a boolean property that determines if the icon can be
+ * toggled, and `toggleColor` is the color of the icon when it is toggled.
+ */
 const props = defineProps({
   icon: {
     default: 'bi bi-alarm',

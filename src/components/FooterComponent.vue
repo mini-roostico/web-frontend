@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import { Ref } from 'vue'
 
+/**
+ * Reference to the current year.
+ */
 const currentYear: Ref<number> = ref(new Date().getFullYear())
 </script>
 <template>

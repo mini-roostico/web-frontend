@@ -2,9 +2,25 @@
 import { ref, computed, Ref } from 'vue'
 import { useAuthStore } from '@/stores/auth.ts'
 
+/**
+ * Stores that helps to manage the authentication state.
+ */
 const authStore = useAuthStore()
+
+/**
+ * The username of the user.
+ */
 const username: Ref<string> = ref(authStore.user)
+
+/**
+ * Emits the events to the parent component. The events are:
+ * - logout: emitted when the user logs out.
+ */
 const emit = defineEmits(['logout'])
+
+/**
+ * The initials of the user, displayed in the avatar.
+ */
 const userInitials = computed(() =>
   username.value
     .split(' ')
@@ -14,6 +30,12 @@ const userInitials = computed(() =>
     .toUpperCase(),
 )
 
+/**
+ * Generates a gradient based on the username.
+ *
+ * @param username The username to generate the gradient.
+ * @returns The gradient generated.
+ */
 function generateGradient(username: string): string {
   const hash = username.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0)
 
@@ -23,8 +45,14 @@ function generateGradient(username: string): string {
   return `linear-gradient(135deg, hsl(${h1}, 70%, 60%), hsl(${h2}, 70%, 60%))`
 }
 
+/**
+ * The gradient background of the avatar.
+ */
 const gradientBackground = computed(() => generateGradient(username.value))
 
+/**
+ * Logs out the user.
+ */
 function logout(): void {
   emit('logout')
 }

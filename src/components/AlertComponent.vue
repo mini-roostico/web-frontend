@@ -2,9 +2,19 @@
 import { ref } from 'vue'
 import { AlertType } from '@/commons/utils.ts'
 
+/**
+ * Text of the alert.
+ */
 const alertText = ref('')
+/**
+ * Type of the alert.
+ */
 const alertType = ref(AlertType.INFO)
 
+/**
+ * Properties of the alert. `cancellable` is a boolean property that determines if the alert can
+ * be closed by the user.
+ */
 const props = defineProps({
   cancellable: {
     type: Boolean,
@@ -12,11 +22,19 @@ const props = defineProps({
   },
 })
 
+/**
+ * Shows an alert with the given text and type.
+ * @param text Text of the alert.
+ * @param type Type of the alert.
+ */
 function show(text: string, type: AlertType) {
   alertText.value = text
   alertType.value = type
 }
 
+/**
+ * Clears the alert.
+ */
 function clear() {
   alertText.value = ''
 }

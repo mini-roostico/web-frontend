@@ -4,23 +4,43 @@ import { computed, ComputedRef, ref, Ref } from 'vue'
 import YamlEditor from '@/components/YamlEditor.vue'
 import ResultCard from '@/components/ResultCard.vue'
 
+/**
+ * Utility enum to determine the type of the result.
+ */
 enum Type {
+  /**
+   * The result is simple text.
+   */
   Text = 'text',
+  /**
+   * The result is code.
+   */
   Code = 'code',
 }
 
+/**
+ * The props of the component. It contains the result to be displayed.
+ */
 interface Props {
+  /**
+   * The result to be displayed.
+   */
   result: ResolvedSubject
 }
 
 const props = defineProps<Props>()
 
+/**
+ * The type of the result.
+ */
 const type: ComputedRef<Type> = computed(() => {
   return props.result?.values?.some((obj) => obj.key === 'code') ? Type.Code : Type.Text
 })
 
+/**
+ * The code of the result. Empty string if the result is not code.
+ */
 const code: Ref<string> = ref(props.result?.values?.find((obj) => obj.key === 'code')?.value || '')
-console.log(props.result.values)
 </script>
 
 <template>
