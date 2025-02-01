@@ -1,6 +1,9 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
 
+/**
+ * Sets up the axios interceptors.
+ */
 export default function axiosSetup() {
   const authStore = useAuthStore()
 
