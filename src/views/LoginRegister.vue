@@ -4,9 +4,8 @@ import { useRoute } from 'vue-router'
 import router from '@/router/index.ts'
 import { EventBus } from '@/scripts/EventBus.ts'
 import { useAuthStore } from '@/stores/auth.ts'
-import { Role } from '@/commons/utils.ts'
-
-type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
+import { AlertType, Role } from '@/commons/utils.ts'
+import AlertComponent from '@/components/AlertComponent.vue'
 
 const route = useRoute()
 const isLogin: Ref<boolean> = ref(route.path !== '/register')
@@ -14,27 +13,25 @@ const username: Ref<string> = ref('')
 const password: Ref<string> = ref('')
 const confirmPassword: Ref<string> = ref('')
 
-const alertText: Ref<string> = ref('')
-const alertType: Ref<AlertType> = ref('alert-info')
+const alert: Ref<typeof AlertComponent> = ref(null)
 const submitBtn = ref(null)
 
 const authStore = useAuthStore()
 const loading: Ref<boolean> = ref(false)
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
-function showAlert(text: string, type: AlertType = 'alert-info') {
-  alertText.value = text
-  alertType.value = type
+function showAlert(text: string, type: AlertType = AlertType.INFO) {
+  alert.value.show(text, type)
 }
 
 function clearAlert() {
-  alertText.value = ''
+  alert.value.clear()
 }
 
 function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
   if (isLogin.value === false) {
     if (newValue !== refToCheck.value) {
-      showAlert('Passwords do not match', 'alert-danger')
+      showAlert('Passwords do not match', AlertType.DANGER)
       submitBtn.value.disabled = true
     } else {
       clearAlert()
@@ -54,7 +51,7 @@ function login(username: string, password: string) {
     .catch((e) => {
       console.log(e)
       loading.value = false
-      showAlert('Invalid credentials', 'alert-danger')
+      showAlert('Invalid credentials', AlertType.DANGER)
     })
 }
 
@@ -66,7 +63,7 @@ function register(username: string, password: string) {
     })
     .catch(() => {
       loading.value = false
-      showAlert('Username already exists', 'alert-danger')
+      showAlert('Username already exists', AlertType.DANGER)
     })
 }
 
@@ -104,16 +101,7 @@ watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword,
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <!-- Alert Component -->
-    <div
-      v-if="alertText"
-      class="alert alert-dismissible alert-dark fade show"
-      :class="alertType"
-      role="alert"
-    >
-      {{ alertText }}
-      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
-    </div>
+    <AlertComponent ref="alert" :cancellable="false"></AlertComponent>
     <form class="form-container" @submit.prevent="handleSubmit">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
