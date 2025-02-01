@@ -7,6 +7,9 @@ import { Controls } from '@vue-flow/controls'
 import { Direction, useLayout } from '@/stores/layout.js'
 import { GraphData } from '@/scripts/graph.ts'
 
+/**
+ * Properties of the component. `modelValue` is the graph data that will be displayed.
+ */
 const props = defineProps({
   modelValue: {
     type: Object,
@@ -19,7 +22,13 @@ const props = defineProps({
 
 defineEmits(['update:modelValue'])
 
+/**
+ * Reference to the nodes of the graph.
+ */
 const nodes = ref(props.modelValue.nodes)
+/**
+ * Reference to the edges of the graph.
+ */
 const edges = ref(props.modelValue.edges)
 
 watch(
@@ -31,15 +40,24 @@ watch(
   },
   { immediate: true },
 )
-
+/**
+ * Layouts the graph in the given direction.
+ */
 const { layout } = useLayout()
 
+/**
+ * Fits the view of the graph.
+ */
 const { fitView } = useVueFlow()
 
+/**
+ * Layouts the graph in the given direction and fits the view.
+ * @param direction Direction of the layout.
+ */
 async function layoutGraph(direction: Direction) {
   nodes.value = layout(nodes.value, edges.value, direction)
 
-  nextTick(() => {
+  await nextTick(() => {
     fitView()
   })
 }

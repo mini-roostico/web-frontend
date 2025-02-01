@@ -8,8 +8,20 @@ import { EventBus } from '@/scripts/EventBus.ts'
 import { useAuthStore } from '@/stores/auth.js'
 
 hljs.registerLanguage('yaml', yaml)
+
+/**
+ * Stores that helps to manage the authentication state.
+ */
 const authStore = useAuthStore()
+
+/**
+ * Indicates if the user is logged in.
+ */
 const isLogged = ref(authStore.isLogged)
+
+/**
+ * The YAML text to be displayed in the editor.
+ */
 const yamlText = ref(
   `name: "Home page suite"
 
@@ -33,10 +45,19 @@ subjects:
       End of subject`,
 )
 
-const highlightCode = (code: string) => {
+/**
+ * Highlights the YAML code.
+ *
+ * @param code The code to be highlighted.
+ * @returns The highlighted code.
+ */
+function highlightCode(code: string): string {
   return hljs.highlight(code, { language: 'yaml' }).value
 }
 
+/**
+ * Refreshes the button state, checking if the user is logged in.
+ */
 function refreshButton() {
   isLogged.value = authStore.isLogged
 }
@@ -128,7 +149,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <router-link :to="isLogged ? '/sources' : '/login'" custom> </router-link>
+        <router-link :to="isLogged ? '/sources' : '/login'" custom></router-link>
       </div>
     </main>
     <footer class="w-full m-4 p-6">

@@ -1,14 +1,35 @@
 <script setup lang="ts">
 import { Ref, ref, useSlots } from 'vue'
 
+/**
+ * Emits the events to the parent component. The events are:
+ * - modal-opened: emitted when the modal is opened.
+ * - modal-closed: emitted when the modal is closed.
+ * - modal-confirmed: emitted when the modal is confirmed.
+ * - modal-cancelled: emitted when the modal is cancelled.
+ */
 const emit = defineEmits(['modal-opened', 'modal-closed', 'modal-confirmed', 'modal-cancelled'])
 const slots = useSlots()
+
+/**
+ * The title of the modal.
+ */
 const title: Ref<string> = ref('')
 
+/**
+ * Indicates if the modal is visible.
+ */
 const isVisible: Ref<boolean> = ref(false)
+
 let resolveClose = null
 let rejectClose = null
 
+/**
+ * Opens the modal.
+ *
+ * @param data The data to be passed to the modal.
+ * @returns A promise that resolves when the modal is closed.
+ */
 function open(data = null) {
   isVisible.value = true
   if (data && data.title) {
@@ -21,6 +42,11 @@ function open(data = null) {
   })
 }
 
+/**
+ * Closes the modal.
+ *
+ * @param result The result to be passed to the parent component.
+ */
 function close(result = null) {
   isVisible.value = false
   emit('modal-closed', result)
@@ -29,6 +55,9 @@ function close(result = null) {
   }
 }
 
+/**
+ * Cancels the modal.
+ */
 function cancel() {
   isVisible.value = false
   emit('modal-cancelled')
@@ -37,6 +66,9 @@ function cancel() {
   }
 }
 
+/**
+ * Confirms the modal.
+ */
 function confirm() {
   emit('modal-confirmed')
   close()
