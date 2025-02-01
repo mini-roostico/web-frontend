@@ -5,9 +5,10 @@ import SourceCard from '@/components/SourceCard.vue'
 import ModalComponent from '@/components/ModalComponent.vue'
 import { useAuthStore } from '@/stores/auth.ts'
 import { Source, useSourceStore } from '@/stores/sources.ts'
+import AlertComponent from '@/components/AlertComponent.vue'
+import { AlertType } from '@/commons/utils.ts'
 
 type ModalAction = 'rename' | 'delete' | 'create'
-type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
 const mainColor: string = '#CE29AA'
 
 const router: Router = useRouter()
@@ -19,9 +20,7 @@ const newFileInput: Ref<string> = ref('')
 
 const modalAction: Ref<ModalAction> = ref('rename')
 
-const alertText = ref('')
-const alertType: Ref<AlertType> = ref('alert-info')
-
+const alert: Ref<typeof AlertComponent> = ref(null)
 const loading: Ref<boolean> = ref(false)
 const authStore = useAuthStore()
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
@@ -41,7 +40,7 @@ function refreshSources() {
     })
     .catch((error) => {
       console.error('Error fetching sources:', error)
-      showAlert('Error fetching sources. Please try again later.', 'alert-danger')
+      showAlert('Error fetching sources. Please try again later.', AlertType.DANGER)
     })
     .finally(() => {
       loading.value = false
@@ -58,13 +57,8 @@ const filteredSources: ComputedRef<Source[]> = computed(() => {
   )
 })
 
-function showAlert(text: string, type: AlertType = 'alert-info') {
-  alertText.value = text
-  alertType.value = type
-}
-
-function clearAlert() {
-  alertText.value = ''
+function showAlert(text: string, type: AlertType = AlertType.INFO) {
+  alert.value.show(text, type)
 }
 
 function handleModalOpen() {
@@ -80,12 +74,12 @@ function createSource() {
   sourceStore
     .createSource(newFileInput.value)
     .then((source: Source) => {
-      showAlert(`Source "${source.name}" created successfully!`, 'alert-success')
+      showAlert(`Source "${source.name}" created successfully!`, AlertType.DANGER)
       refreshSources()
     })
     .catch((error) => {
       console.error('Error creating source:', error)
-      showAlert('Error creating source. Please try again later.', 'alert-danger')
+      showAlert('Error creating source. Please try again later.', AlertType.DANGER)
     })
     .finally(() => {
       loading.value = false
@@ -98,12 +92,12 @@ function deleteSource() {
     sourceStore
       .deleteSource(selectedSource.value.id)
       .then(() => {
-        showAlert('Source deleted successfully!', 'alert-success')
+        showAlert('Source deleted successfully!', AlertType.SUCCESS)
         refreshSources()
       })
       .catch((error) => {
         console.error('Error deleting source:', error)
-        showAlert('Error deleting source. Please try again later.', 'alert-danger')
+        showAlert('Error deleting source. Please try again later.', AlertType.DANGER)
       })
       .finally(() => {
         loading.value = false
@@ -117,12 +111,12 @@ function renameSource(newName: string) {
     sourceStore
       .renameSource(selectedSource.value.id, newName)
       .then(() => {
-        showAlert('Source renamed successfully!', 'alert-success')
+        showAlert('Source renamed successfully!', AlertType.SUCCESS)
         refreshSources()
       })
       .catch((error) => {
         console.error('Error renaming source:', error)
-        showAlert('Error renaming source. Please try again later.', 'alert-danger')
+        showAlert('Error renaming source. Please try again later.', AlertType.DANGER)
       })
       .finally(() => {
         loading.value = false
@@ -136,19 +130,19 @@ function handleConfirmation() {
       if (newFileInput.value !== '') {
         createSource()
       } else {
-        showAlert('Please enter a name for the new source.', 'alert-danger')
+        showAlert('Please enter a name for the new source.', AlertType.DANGER)
         return
       }
       break
 
     case 'delete':
       deleteSource()
-      showAlert('Source deleted successfully!', 'alert-success')
+      showAlert('Source deleted successfully!', AlertType.SUCCESS)
       break
 
     case 'rename':
       renameSource(renameInput.value)
-      showAlert('Source renamed successfully!', 'alert-success')
+      showAlert('Source renamed successfully!', AlertType.SUCCESS)
       break
   }
   selectedSource.value = null
@@ -186,16 +180,7 @@ function createNewFileModal() {
 <template>
   <div v-if="isLogged" class="sources-view container py-4">
     <h1 class="text-center mb-4" :style="{ color: mainColor }">Sources</h1>
-    <!-- Alert Component -->
-    <div
-      v-if="alertText"
-      class="alert alert-dismissible alert-dark fade show"
-      :class="alertType"
-      role="alert"
-    >
-      {{ alertText }}
-      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
-    </div>
+    <AlertComponent ref="alert"></AlertComponent>
     <!-- User Confirmation Modal -->
     <ModalComponent
       ref="userModal"

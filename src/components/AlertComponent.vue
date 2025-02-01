@@ -5,6 +5,13 @@ import { AlertType } from '@/commons/utils.ts'
 const alertText = ref('')
 const alertType = ref(AlertType.INFO)
 
+const props = defineProps({
+  cancellable: {
+    type: Boolean,
+    default: true,
+  },
+})
+
 function show(text: string, type: AlertType) {
   alertText.value = text
   alertType.value = type
@@ -27,6 +34,12 @@ defineExpose({
     role="alert"
   >
     {{ alertText }}
-    <button type="button" class="btn-close" aria-label="Close" @click="clear"></button>
+    <button
+      v-if="props.cancellable"
+      type="button"
+      class="btn-close"
+      aria-label="Close"
+      @click="clear"
+    ></button>
   </div>
 </template>
