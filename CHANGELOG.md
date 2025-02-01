@@ -1,3 +1,31 @@
+## [1.3.0](https://github.com/mini-roostico/web-frontend/compare/1.2.0...1.3.0) (2025-02-01)
+
+### Features
+
+* updated footer and AboutView.vue ([ffd3db6](https://github.com/mini-roostico/web-frontend/commit/ffd3db6419a82ac603e1d84f8c448e94900c5568))
+
+### Bug Fixes
+
+* fixed incorrect alert type ([cdf5d72](https://github.com/mini-roostico/web-frontend/commit/cdf5d72f19686e717c13c37b05e1680691c60292))
+* fixed page not warning for unsaved changes when adding values through forms ([8d55047](https://github.com/mini-roostico/web-frontend/commit/8d55047b59abbc6b170a236b47f2b74236ef26d2))
+
+### Documentation
+
+* added documentation inside components files ([fc91eaa](https://github.com/mini-roostico/web-frontend/commit/fc91eaa7140f93d7ac1ed4c133bb40146d53e9a7))
+* added documentation inside secondary files ([2ca39ab](https://github.com/mini-roostico/web-frontend/commit/2ca39ab9361037caf2412b772f5023457744293a))
+* added documentation inside views ([e194f86](https://github.com/mini-roostico/web-frontend/commit/e194f8625568ccefbaa7fea2b7c18b08cd65c2b7))
+* corrected spelling mistake ([6aac6d1](https://github.com/mini-roostico/web-frontend/commit/6aac6d1994b8aa8cbec937c97bae7047e98a0780))
+
+### Refactoring
+
+* changed YamlEditor.vue default theme ([2327bb2](https://github.com/mini-roostico/web-frontend/commit/2327bb242a914954bbb9c27ad30925e4d3859e36))
+* extracted alert type to utils.ts ([5a0c6ac](https://github.com/mini-roostico/web-frontend/commit/5a0c6acf611c42401165f99cdbdf26431af98e6e))
+* extracted interfaces related to the model to model.ts ([43eead7](https://github.com/mini-roostico/web-frontend/commit/43eead79d8e07991a59de942756680fc7e20df09))
+* made the alert disappear on a successful generation ([be7e585](https://github.com/mini-roostico/web-frontend/commit/be7e585e5cf13dbf154e4e70f8f8ea095ce52f18))
+* moved files from 'scripts' to 'commons' ([f38ae5f](https://github.com/mini-roostico/web-frontend/commit/f38ae5f24ffe2e3d4de197c201928620072bb6e8))
+* refactored alert inside SuiteView.vue using new component ([5d6fad0](https://github.com/mini-roostico/web-frontend/commit/5d6fad0a75271b1a36915d0058e60a833c4c51e8))
+* switched using AlertComponent inside Login and Sources views ([d3b1533](https://github.com/mini-roostico/web-frontend/commit/d3b15334ae330dca807805a9a38c6c6ed1c29024))
+
 ## [1.2.0](https://github.com/mini-roostico/web-frontend/compare/1.1.0...1.2.0) (2025-01-31)
 
 ### Features
