@@ -17,7 +17,7 @@ const currentYear: Ref<number> = ref(new Date().getFullYear())
           <i class="bi bi-github"></i> GitHub
         </a>
       </div>
-      <div class="footer-copyright">© {{ currentYear }} Your Project Name</div>
+      <div class="footer-copyright">© {{ currentYear }} Subjekt</div>
     </div>
   </footer>
 </template>
