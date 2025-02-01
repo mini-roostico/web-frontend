@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { Source } from '@/scripts/model.ts'
+import { Source } from '@/commons/model.ts'
 
 /**
  * Store for the sources, utility for handling the CRUD operations of the sources.

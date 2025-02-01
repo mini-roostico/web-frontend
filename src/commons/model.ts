@@ -1,4 +1,4 @@
-import { GraphData } from '@/scripts/graph.ts'
+import { GraphData } from '@/commons/graph.ts'
 
 /**
  * Configuration of the suite.

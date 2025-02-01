@@ -3,7 +3,7 @@ import BootstrapIcon from '@/components/BootstrapIcon.vue'
 import NavbarUserDropdown from '@/components/NavbarUserDropdown.vue'
 import { onMounted, Ref, ref } from 'vue'
 import router from '@/router/index.ts'
-import { EventBus } from '@/scripts/EventBus.ts'
+import { EventBus } from '@/commons/EventBus.ts'
 import { useAuthStore } from '@/stores/auth.ts'
 
 /**

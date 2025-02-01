@@ -5,7 +5,7 @@ import { Background } from '@vue-flow/background'
 
 import { Controls } from '@vue-flow/controls'
 import { Direction, useLayout } from '@/stores/layout.js'
-import { GraphData } from '@/scripts/graph.ts'
+import { GraphData } from '@/commons/graph.ts'
 
 /**
  * Properties of the component. `modelValue` is the graph data that will be displayed.

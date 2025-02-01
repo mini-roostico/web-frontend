@@ -2,7 +2,7 @@
 import { computed, ComputedRef, ref, Ref } from 'vue'
 import YamlEditor from '@/components/YamlEditor.vue'
 import ResultCard from '@/components/ResultCard.vue'
-import { ResolvedSubject } from '@/scripts/model.ts'
+import { ResolvedSubject } from '@/commons/model.ts'
 
 /**
  * Utility enum to determine the type of the result.

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import yaml from 'js-yaml'
-import { Configuration, Macro, Parameter, Subject, Suite } from '@/scripts/model.ts'
+import { Configuration, Macro, Parameter, Subject, Suite } from '@/commons/model.ts'
 
 /**
  * Defines the props of the component. The `disabled` prop is used to disable the form.
