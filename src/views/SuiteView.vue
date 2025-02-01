@@ -13,40 +13,114 @@ import AlertComponent from '@/components/AlertComponent.vue'
 import { AlertType } from '@/commons/utils.ts'
 import { ResolvedSubject, Source } from '@/commons/model.ts'
 
+/**
+ * Tab names for the left side of the page.
+ */
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
+/**
+ * Tab names for the right side of the page.
+ */
 type TabRight = 'Subjekt Output' | 'Generation graph'
 
+/**
+ * Route of the page.
+ */
 const route = useRoute()
+/**
+ * Stores to handle authentication state.
+ */
 const authStore = useAuthStore()
+/**
+ * Stores to handle source state.
+ */
 const sourceStore = useSourceStore()
+/**
+ * Stores to handle suite generation.
+ */
 const suiteStore = useSuiteStore()
 
+/**
+ * Suite ID from the route.
+ */
 const suiteId: string | string[] = route.params.suiteId
 
+/**
+ * Source data loaded.
+ */
 const source: Ref<Source> = ref(null)
 
+/**
+ * Alert component reference.
+ */
 const alert: Ref<typeof AlertComponent> = ref(null)
 
+/**
+ * Shows an alert with the given text and type.
+ * @param text Text to show in the alert.
+ * @param type Type of the alert.
+ */
 function showAlert(text: string, type: string) {
   alert.value.show(text, type)
 }
 
+/**
+ * Active tab on the left side of the page.
+ */
 const activeTabLeft: Ref<TabLeft> = ref('Suite Configuration')
+/**
+ * Active tab on the right side of the page.
+ */
 const activeTabRight: Ref<TabRight> = ref('Subjekt Output')
+/**
+ * Whether the page is loading or not.
+ */
 const loading: Ref<boolean> = ref(false)
+/**
+ * Whether the generation is done or not.
+ */
 const generationDone: Ref<boolean> = ref(false)
+/**
+ * YAML text of the suite.
+ */
 const yamlText: Ref<string> = ref('')
-const suiteFormsRef = ref(null)
+/**
+ * Reference to the suite forms component.
+ */
+const suiteFormsRef: Ref<typeof SuiteForms> = ref(null)
+/**
+ * Whether the user is logged in or not.
+ */
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
+/**
+ * Input value for the suite name.
+ */
 const suiteNameInput: Ref<string> = ref('')
+/**
+ * Whether the generation is loading or not.
+ */
 const generationLoading: Ref<boolean> = ref(false)
+/**
+ * Whether a critical error occurred or not.
+ */
 const criticalError: Ref<boolean> = ref(false)
 
+/**
+ * Graph data of the generation.
+ */
 const graphData: Ref<GraphData> = ref({ nodes: [], edges: [] })
+/**
+ * Result data of the generation.
+ */
 const resultData: Ref<ResolvedSubject[]> = ref([])
 
+/**
+ * Whether the suite local changes are saved or not.
+ */
 const isSaved: Ref<boolean> = ref(true)
 
+/**
+ * Previous text of the YAML before the modification.
+ */
 let previousText: string = null
 
 onBeforeRouteLeave(() => {
@@ -58,6 +132,9 @@ onBeforeRouteLeave(() => {
   }
 })
 
+/**
+ * Handles the key press event.
+ */
 function keyPressed() {
   isSaved.value = false
 }
@@ -81,6 +158,11 @@ onMounted(() => {
     })
 })
 
+/**
+ * Saves the YAML to the source store.
+ * @param name Name of the suite.
+ * @param yaml YAML text of the source.
+ */
 function saveYamlToStore(name: string, yaml: string) {
   sourceStore
     .saveSource(source.value.id, name, yaml)
@@ -96,6 +178,9 @@ function saveYamlToStore(name: string, yaml: string) {
     })
 }
 
+/**
+ * Saves the suite to the source store.
+ */
 function saveSuite() {
   const name = suiteNameInput.value
   if (activeTabLeft.value === 'Suite Configuration') {
@@ -108,6 +193,11 @@ function saveSuite() {
   }
 }
 
+/**
+ * Sets the forms parsing the YAML text.
+ * @param yaml YAML text to set the forms from.
+ * @returns Whether the operation was successful or not.
+ */
 function setFormsFromYaml(yaml: string): boolean {
   const result = suiteFormsRef.value.setFromYAML(yaml)
   if (result.success === false) {
@@ -143,6 +233,10 @@ watch(activeTabLeft, (newTab) => {
   }
 })
 
+/**
+ * Runs the suite generation. Shows an alert if there is an error, otherwise sets the result data
+ * and the generation graph.
+ */
 function runRegeneration() {
   generationLoading.value = true
   if (activeTabLeft.value === 'Suite Configuration') {
@@ -168,6 +262,9 @@ function runRegeneration() {
     })
 }
 
+/**
+ * Downloads the result data as a JSON file.
+ */
 function downloadResultData() {
   const dataStr =
     'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(resultData.value, null, 2))
@@ -348,7 +445,6 @@ function downloadResultData() {
   background-color: #242427;
 }
 
-/* Play button styling */
 .play-btn {
   background-color: #ce29aa;
   color: white;

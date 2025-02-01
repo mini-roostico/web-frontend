@@ -7,28 +7,71 @@ import { useAuthStore } from '@/stores/auth.ts'
 import { AlertType, Role } from '@/commons/utils.ts'
 import AlertComponent from '@/components/AlertComponent.vue'
 
+/**
+ * Route of the page.
+ */
 const route = useRoute()
+/**
+ * Whether the user is trying to login or register.
+ */
 const isLogin: Ref<boolean> = ref(route.path !== '/register')
+/**
+ * Username of the user.
+ */
 const username: Ref<string> = ref('')
+/**
+ * Password of the user.
+ */
 const password: Ref<string> = ref('')
+/**
+ * Confirm password input of the user.
+ */
 const confirmPassword: Ref<string> = ref('')
 
+/**
+ * Alert component reference.
+ */
 const alert: Ref<typeof AlertComponent> = ref(null)
+/**
+ * Submit button reference.
+ */
 const submitBtn = ref(null)
 
+/**
+ * Stores to handle authentication state.
+ */
 const authStore = useAuthStore()
+/**
+ * Whether the page is loading or not.
+ */
 const loading: Ref<boolean> = ref(false)
+/**
+ * Whether the user is logged in or not.
+ */
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
+/**
+ * Shows an alert with the given text and type.
+ * @param text Text to show in the alert.
+ * @param type Type of the alert.
+ */
 function showAlert(text: string, type: AlertType = AlertType.INFO) {
   alert.value.show(text, type)
 }
 
+/**
+ * Clears the alert.
+ */
 function clearAlert() {
   alert.value.clear()
 }
 
-function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
+/**
+ * Checks if the password matches the reference.
+ * @param newValue New value to check.
+ * @param refToCheck reference to check.
+ */
+function checkPassword(newValue: string, refToCheck: Ref<string>) {
   if (isLogin.value === false) {
     if (newValue !== refToCheck.value) {
       showAlert('Passwords do not match', AlertType.DANGER)
@@ -40,6 +83,12 @@ function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
   }
 }
 
+/**
+ * Logs in the user with the given credentials. Shows an alert if the credentials are invalid,
+ * otherwise redirects to the sources page.
+ * @param username Username of the user.
+ * @param password Password of the user.
+ */
 function login(username: string, password: string) {
   authStore
     .login(Role.User, username, password)
@@ -55,6 +104,12 @@ function login(username: string, password: string) {
     })
 }
 
+/**
+ * Registers the user with the given credentials. Shows an alert if the username already exists,
+ * otherwise logs in the user.
+ * @param username Username of the user.
+ * @param password Password of the user.
+ */
 function register(username: string, password: string) {
   authStore
     .register(username, password)
@@ -67,6 +122,10 @@ function register(username: string, password: string) {
     })
 }
 
+/**
+ * Handles the form submission. If the user is trying to log in, logs in the user,
+ * otherwise registers the user.
+ */
 function handleSubmit() {
   if (isLogin.value) {
     loading.value = true
@@ -82,6 +141,9 @@ function handleSubmit() {
   }
 }
 
+/**
+ * Toggles the form between login and register.
+ */
 function toggleForm() {
   isLogin.value = !isLogin.value
   clearAlert()
