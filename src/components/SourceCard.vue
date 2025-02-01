@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { formatDate } from '../commons/utils.ts'
-import { Source } from '@/scripts/model.ts'
+import { Source } from '@/commons/model.ts'
 
 /**
  * The properties of the component.

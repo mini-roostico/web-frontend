@@ -2,7 +2,7 @@
 import { Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router/index.ts'
-import { EventBus } from '@/scripts/EventBus.ts'
+import { EventBus } from '@/commons/EventBus.ts'
 import { useAuthStore } from '@/stores/auth.ts'
 import { AlertType, Role } from '@/commons/utils.ts'
 import AlertComponent from '@/components/AlertComponent.vue'

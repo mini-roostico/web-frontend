@@ -7,7 +7,7 @@ import { useAuthStore } from '@/stores/auth.ts'
 import { useSourceStore } from '@/stores/sources.ts'
 import AlertComponent from '@/components/AlertComponent.vue'
 import { AlertType } from '@/commons/utils.ts'
-import { Source } from '@/scripts/model.ts'
+import { Source } from '@/commons/model.ts'
 
 type ModalAction = 'rename' | 'delete' | 'create'
 const mainColor: string = '#CE29AA'

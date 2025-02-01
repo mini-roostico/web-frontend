@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 import { io } from '@mini-roostico/subjekt'
 import subjekt = io.github.subjekt.Subjekt
-import { convertGraph, GraphData } from '@/scripts/graph.ts'
+import { convertGraph, GraphData } from '@/commons/graph.ts'
 import { convertToSubjects } from '@/commons/utils.ts'
-import { GenerationResult } from '@/scripts/model.ts'
+import { GenerationResult } from '@/commons/model.ts'
 
 /**
  * Store for the suite, utility for handling the generation of the suite.
