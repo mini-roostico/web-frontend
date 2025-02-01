@@ -29,7 +29,7 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   readOnly: false,
-  theme: 'default',
+  theme: 'androidstudio',
   wrap: true,
   language: () => ['yaml', 'YAML'],
 })
