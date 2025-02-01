@@ -16,17 +16,23 @@ hljs.registerLanguage('yaml', yaml)
  * @property {string[]} language - The languages supported by the editor.
  */
 interface Props {
-  modelValue: string
-  readOnly: boolean
-  theme: string
-  wrap: boolean
-  language: string[]
+  modelValue?: string
+  readOnly?: boolean
+  theme?: string
+  wrap?: boolean
+  language?: string[]
 }
 
 /**
- * The props of the component.
+ * The props of the component with default values.
  */
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  readOnly: false,
+  theme: 'default',
+  wrap: true,
+  language: () => ['yaml', 'YAML'],
+})
 
 /**
  * Emits interface for YamlEditor component. It emits the 'update:modelValue' event when the
