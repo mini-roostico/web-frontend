@@ -9,28 +9,82 @@ import AlertComponent from '@/components/AlertComponent.vue'
 import { AlertType } from '@/commons/utils.ts'
 import { Source } from '@/commons/model.ts'
 
-type ModalAction = 'rename' | 'delete' | 'create'
+/**
+ * Enum for the modal actions.
+ */
+enum ModalAction {
+  Rename = 'rename',
+  Delete = 'delete',
+  Create = 'create',
+}
+
+/**
+ * Main color of the page.
+ */
 const mainColor: string = '#CE29AA'
 
+/**
+ * Router instance.
+ */
 const router: Router = useRouter()
-const sourceStore = useSourceStore()
 
-const userModal = ref(null)
+/**
+ * Source store instance.
+ */
+const sourceStore = useSourceStore()
+/**
+ * Stores to handle authentication state.
+ */
+const authStore = useAuthStore()
+
+/**
+ * Modal component reference.
+ */
+const userModal: Ref<typeof ModalComponent> = ref(null)
+
+/**
+ * Rename input value.
+ */
 const renameInput: Ref<string> = ref('')
+/**
+ * New file input value.
+ */
 const newFileInput: Ref<string> = ref('')
 
-const modalAction: Ref<ModalAction> = ref('rename')
+/**
+ * Modal action selected.
+ */
+const modalAction: Ref<ModalAction> = ref(ModalAction.Rename)
 
+/**
+ * Alert component reference.
+ */
 const alert: Ref<typeof AlertComponent> = ref(null)
+/**
+ * Whether the page is loading or not.
+ */
 const loading: Ref<boolean> = ref(false)
-const authStore = useAuthStore()
+/**
+ * Whether the user is logged in or not.
+ */
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
+/**
+ * Reference to the list of sources loaded.
+ */
 const sources: Ref<Source[]> = ref([])
+/**
+ * Reference to the selected source (through filtering).
+ */
 const selectedSource: Ref<Source | null> = ref(null)
+/**
+ * Search query for filtering sources.
+ */
+const searchQuery: Ref<string> = ref('')
 
-const searchQuery: Ref<string, string> = ref('')
-
+/**
+ * Refreshes the sources list.
+ */
 function refreshSources() {
   loading.value = true
   sourceStore
@@ -52,24 +106,41 @@ onMounted(() => {
   refreshSources()
 })
 
+/**
+ * Computed property to filter sources based on the search query.
+ */
 const filteredSources: ComputedRef<Source[]> = computed(() => {
   return sources.value.filter((source) =>
     source.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 
+/**
+ * Shows an alert with the given text and type.
+ * @param text Text to show in the alert.
+ * @param type Type of the alert.
+ */
 function showAlert(text: string, type: AlertType = AlertType.INFO) {
   alert.value.show(text, type)
 }
 
+/**
+ * Callback function when the modal is opened.
+ */
 function handleModalOpen() {
   // do nothing
 }
 
+/**
+ * Callback function when the modal is closed.
+ */
 function handleModalClose() {
   // do nothing
 }
 
+/**
+ * Creates a new empty source. Shows an alert on success or error.
+ */
 function createSource() {
   loading.value = true
   sourceStore
@@ -87,6 +158,9 @@ function createSource() {
     })
 }
 
+/**
+ * Deletes the selected source. Shows an alert on success or error.
+ */
 function deleteSource() {
   if (selectedSource.value) {
     loading.value = true
@@ -106,6 +180,10 @@ function deleteSource() {
   }
 }
 
+/**
+ * Renames the selected source. Shows an alert on success or error.
+ * @param newName New name for the source.
+ */
 function renameSource(newName: string) {
   if (selectedSource.value && newName) {
     loading.value = true
@@ -125,9 +203,12 @@ function renameSource(newName: string) {
   }
 }
 
+/**
+ * Handles the user confirmation modal. Based on the action, performs the required operation.
+ */
 function handleConfirmation() {
   switch (modalAction.value) {
-    case 'create':
+    case ModalAction.Create:
       if (newFileInput.value !== '') {
         createSource()
       } else {
@@ -136,12 +217,12 @@ function handleConfirmation() {
       }
       break
 
-    case 'delete':
+    case ModalAction.Delete:
       deleteSource()
       showAlert('Source deleted successfully!', AlertType.SUCCESS)
       break
 
-    case 'rename':
+    case ModalAction.Rename:
       renameSource(renameInput.value)
       showAlert('Source renamed successfully!', AlertType.SUCCESS)
       break
@@ -149,32 +230,50 @@ function handleConfirmation() {
   selectedSource.value = null
 }
 
+/**
+ * Handles the user cancellation of the action.
+ */
 function handleCancellation() {
   console.log('User cancelled the action')
 }
 
+/**
+ * Opens the file in the editor. Redirects to the suite page.
+ * @param source Source to open.
+ */
 function openFile(source: Source) {
   selectedSource.value = source
   console.log('Opening file:', source)
   router.push({ path: `/suite/${source.id}` })
 }
 
+/**
+ * Renames the file with a modal.
+ * @param source Source to rename.
+ */
 function renameFileModal(source: Source) {
   selectedSource.value = source
-  modalAction.value = 'rename'
+  modalAction.value = ModalAction.Rename
   renameInput.value = source.name
   userModal.value.open({ title: `Renaming: ${source.name}` })
 }
 
+/**
+ * Deletes the file with a modal.
+ * @param source Source to delete.
+ */
 function deleteFileModal(source: Source) {
   selectedSource.value = source
-  modalAction.value = 'delete'
+  modalAction.value = ModalAction.Delete
   userModal.value.open({ title: `Deleting: ${source.name}` })
 }
 
+/**
+ * Creates a new file with a modal.
+ */
 function createNewFileModal() {
-  modalAction.value = 'create'
   newFileInput.value = ''
+  modalAction.value = ModalAction.Create
   userModal.value.open({ title: 'Create New Source' })
 }
 </script>
