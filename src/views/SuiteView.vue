@@ -342,7 +342,12 @@ function downloadResultData() {
           </ul>
           <div class="tab-content">
             <div v-show="activeTabLeft === 'Suite Configuration'" class="tab-pane fade show active">
-              <SuiteForms ref="suiteFormsRef" :disabled="loading" @keyup="keyPressed"></SuiteForms>
+              <SuiteForms
+                ref="suiteFormsRef"
+                :disabled="loading"
+                @keyup="keyPressed"
+                @button-pressed="isSaved = false"
+              ></SuiteForms>
             </div>
             <div v-show="activeTabLeft === 'Suite YAML'" class="tab-pane fade show active">
               <YamlEditor v-model="yamlText" @keyup="keyPressed"></YamlEditor>
