@@ -12,7 +12,7 @@ import AlertComponent from '@/components/AlertComponent.vue'
  */
 const route = useRoute()
 /**
- * Whether the user is trying to login or register.
+ * Whether the user is trying to log in or register.
  */
 const isLogin: Ref<boolean> = ref(route.path !== '/register')
 /**
