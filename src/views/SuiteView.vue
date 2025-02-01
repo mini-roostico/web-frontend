@@ -159,6 +159,7 @@ function runRegeneration() {
       result.forEach((subject) => {
         resultData.value.push(subject)
       })
+      alert.value.clear()
     })
     .catch((error) => {
       console.error('Error generating suite:', error)
