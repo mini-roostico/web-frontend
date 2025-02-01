@@ -146,7 +146,7 @@ function createSource() {
   sourceStore
     .createSource(newFileInput.value)
     .then((source: Source) => {
-      showAlert(`Source "${source.name}" created successfully!`, AlertType.DANGER)
+      showAlert(`Source "${source.name}" created successfully!`, AlertType.SUCCESS)
       refreshSources()
     })
     .catch((error) => {
