@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ResolvedSubject } from '@/stores/suite.ts'
 import { computed, ComputedRef, ref, Ref } from 'vue'
 import YamlEditor from '@/components/YamlEditor.vue'
 import ResultCard from '@/components/ResultCard.vue'
+import { ResolvedSubject } from '@/scripts/model.ts'
 
 /**
  * Utility enum to determine the type of the result.

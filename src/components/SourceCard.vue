@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type Source } from '@/stores/sources.ts'
 import { formatDate } from '../commons/utils.ts'
+import { Source } from '@/scripts/model.ts'
 
 /**
  * The properties of the component.

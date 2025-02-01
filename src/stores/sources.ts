@@ -1,12 +1,9 @@
 import { defineStore } from 'pinia'
+import { Source } from '@/scripts/model.ts'
 
-export interface Source {
-  id: string
-  name: string
-  lastModified: Date
-  yaml: string
-}
-
+/**
+ * Store for the sources, utility for handling the CRUD operations of the sources.
+ */
 export const useSourceStore = defineStore('source', () => {
   // TODO remove
   const dummySources: Source[] = [
@@ -39,6 +36,9 @@ export const useSourceStore = defineStore('source', () => {
     },
   ]
 
+  /**
+   * Get all the sources.
+   */
   async function getSources(): Promise<Source[]> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources`
@@ -48,6 +48,10 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
+  /**
+   * Get a source by its identifier.
+   * @param id the identifier of the source.
+   */
   async function getSource(id: string): Promise<Source> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
@@ -57,6 +61,10 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
+  /**
+   * Create a new source.
+   * @param name the name of the source.
+   */
   async function createSource(name: string): Promise<Source> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources`
@@ -73,6 +81,11 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
+  /**
+   * Rename a source.
+   * @param id the identifier of the source.
+   * @param name the new name of the source.
+   */
   async function renameSource(id: string, name: string): Promise<Source> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
@@ -87,6 +100,10 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
+  /**
+   * Delete a source.
+   * @param id the identifier of the source.
+   */
   async function deleteSource(id: string): Promise<void> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
@@ -100,6 +117,12 @@ export const useSourceStore = defineStore('source', () => {
     })
   }
 
+  /**
+   * Save the source.
+   * @param id the identifier of the source.
+   * @param name the new name of the source.
+   * @param yaml the new YAML content of the source.
+   */
   async function saveSource(id: string, name: string, yaml: string): Promise<Source> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/suite/${id}`

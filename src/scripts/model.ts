@@ -1,3 +1,5 @@
+import { GraphData } from '@/scripts/graph.ts'
+
 /**
  * Configuration of the suite.
  * @property pairs the pairs of key-value that define the configuration.
@@ -50,4 +52,38 @@ export interface Suite {
   parameters: Parameter[]
   macros: Macro[]
   subjects: Subject[]
+}
+
+/**
+ * Source of the suite.
+ * @property id the unique identifier of the source.
+ * @property name the name of the source.
+ * @property lastModified the last modification date of the source.
+ * @property yaml the YAML content of the source.
+ */
+export interface Source {
+  id: string
+  name: string
+  lastModified: Date
+  yaml: string
+}
+
+/**
+ * Resolved subject, obtained from resolving a subject in the suite.
+ * @property name the name of the subject.
+ * @property values the values of the subject.
+ */
+export interface ResolvedSubject {
+  name: string
+  values: { key: string; value: string }[]
+}
+
+/**
+ * Result of the generation of the suite.
+ * @property generationGraph the graph of the generation.
+ * @property result the resolved subjects of the suite.
+ */
+export interface GenerationResult {
+  generationGraph: GraphData
+  result: ResolvedSubject[]
 }
