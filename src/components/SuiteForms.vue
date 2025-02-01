@@ -14,6 +14,11 @@ defineProps({
 })
 
 /**
+ * Emits for when a button is pressed in form: `buttonPressed`.
+ */
+const emit = defineEmits(['buttonPressed'])
+
+/**
  * The configuration of the suite.
  */
 const configuration = ref([])
@@ -155,6 +160,7 @@ defineExpose({
  */
 function addConfigPair() {
   configuration.value.push({ key: '', value: '' })
+  emit('buttonPressed')
 }
 
 /**
@@ -163,6 +169,7 @@ function addConfigPair() {
  */
 function removeConfigPair(index: number) {
   configuration.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
 /**
@@ -173,6 +180,7 @@ function addParameter() {
     name: '',
     values: [],
   })
+  emit('buttonPressed')
 }
 
 /**
@@ -181,6 +189,7 @@ function addParameter() {
  */
 function addParameterValue(paramIndex: number) {
   parameters.value[paramIndex].values.push('')
+  emit('buttonPressed')
 }
 
 /**
@@ -189,6 +198,7 @@ function addParameterValue(paramIndex: number) {
  */
 function removeParameter(index: number) {
   parameters.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
 /**
@@ -198,6 +208,7 @@ function removeParameter(index: number) {
  */
 function removeParameterValue(paramIndex: number, valueIndex: number) {
   parameters.value[paramIndex].values.splice(valueIndex, 1)
+  emit('buttonPressed')
 }
 
 /**
@@ -208,6 +219,7 @@ function addMacro() {
     name: '',
     values: [],
   })
+  emit('buttonPressed')
 }
 
 /**
@@ -216,6 +228,7 @@ function addMacro() {
  */
 function addMacroValue(macroIndex: number) {
   macros.value[macroIndex].values.push('')
+  emit('buttonPressed')
 }
 
 /**
@@ -224,6 +237,7 @@ function addMacroValue(macroIndex: number) {
  */
 function removeMacro(index: number) {
   macros.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
 /**
@@ -233,6 +247,7 @@ function removeMacro(index: number) {
  */
 function removeMacroValue(macroIndex: number, valueIndex: number) {
   macros.value[macroIndex].values.splice(valueIndex, 1)
+  emit('buttonPressed')
 }
 
 /**
@@ -243,6 +258,7 @@ function addSubject() {
     name: `Subject ${subjects.value.length + 1}`,
     pairs: [],
   })
+  emit('buttonPressed')
 }
 
 /**
@@ -251,6 +267,7 @@ function addSubject() {
  */
 function removeSubject(index: number) {
   subjects.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
 /**
@@ -259,6 +276,7 @@ function removeSubject(index: number) {
  */
 function addSubjectPair(subjectIndex: number) {
   subjects.value[subjectIndex].pairs.push({ key: '', value: '' })
+  emit('buttonPressed')
 }
 
 /**
@@ -268,6 +286,7 @@ function addSubjectPair(subjectIndex: number) {
  */
 function removeSubjectPair(subjectIndex: number, pairIndex: number) {
   subjects.value[subjectIndex].pairs.splice(pairIndex, 1)
+  emit('buttonPressed')
 }
 </script>
 
