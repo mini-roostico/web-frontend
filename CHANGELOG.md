@@ -1,3 +1,18 @@
+## [1.3.1](https://github.com/mini-roostico/web-frontend/compare/1.3.0...1.3.1) (2025-02-07)
+
+### Dependency updates
+
+* **deps:** update dependency vite to v6.1.0 ([335a131](https://github.com/mini-roostico/web-frontend/commit/335a1317fca8f396007e712a8cc8304889b01189))
+* **deps:** update eslint monorepo to v9.19.0 ([9f8ba96](https://github.com/mini-roostico/web-frontend/commit/9f8ba96ccde696b164db4892de5e1252cbb8b0cd))
+
+### Bug Fixes
+
+* **deps:** update dependency highlight.js to v11.11.1 ([b0fc65a](https://github.com/mini-roostico/web-frontend/commit/b0fc65a768a3e4726af2ad582565c7c87b0b0932))
+
+### Refactoring
+
+* added endpoints to nginx and replaced them inside globals.ts ([7b30416](https://github.com/mini-roostico/web-frontend/commit/7b304168eb9929341c90794c8530ca9c0697480a))
+
 ## [1.3.0](https://github.com/mini-roostico/web-frontend/compare/1.2.0...1.3.0) (2025-02-01)
 
 ### Features
