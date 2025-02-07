@@ -99,3 +99,12 @@ export function convertToSubjects(objs: object[]): ResolvedSubject[] {
     }
   })
 }
+
+/**
+ * Utility type representing an alert message type.
+ */
+export enum AlertType {
+  INFO = 'alert-info',
+  DANGER = 'alert-danger',
+  SUCCESS = 'alert-success',
+}

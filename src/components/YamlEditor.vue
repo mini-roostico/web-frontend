@@ -7,34 +7,44 @@ import yaml from 'highlight.js/lib/languages/yaml'
 
 hljs.registerLanguage('yaml', yaml)
 
-const props = defineProps({
-  modelValue: {
-    type: String,
-    default: () => '',
-  },
-  readOnly: {
-    type: Boolean,
-    default: false,
-  },
-  theme: {
-    type: String,
-    default: 'androidstudio',
-  },
-  wrap: {
-    type: Boolean,
-    default: true,
-  },
-  language: {
-    type: Array,
-    default: () => ['yaml', 'YAML'],
-  },
+/**
+ * Props interface for YamlEditor component.
+ * @property {string} modelValue - The value of the model.
+ * @property {boolean} readOnly - Whether the editor is read-only.
+ * @property {string} theme - The theme of the editor.
+ * @property {boolean} wrap - Whether the editor should wrap text.
+ * @property {string[]} language - The languages supported by the editor.
+ */
+interface Props {
+  modelValue?: string
+  readOnly?: boolean
+  theme?: string
+  wrap?: boolean
+  language?: string[]
+}
+
+/**
+ * The props of the component with default values.
+ */
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: '',
+  readOnly: false,
+  theme: 'androidstudio',
+  wrap: true,
+  language: () => ['yaml', 'YAML'],
 })
 
+/**
+ * Emits interface for YamlEditor component. It emits the 'update:modelValue' event when the
+ * internal text changes.
+ */
 const emit = defineEmits(['update:modelValue'])
 
+/**
+ * The text of the editor.
+ */
 const text: Ref<string> = ref(props.modelValue)
 
-// changes in model
 watch(
   () => props.modelValue,
   (newValue) => {
@@ -47,6 +57,11 @@ watch(text, (newText: string) => {
   emit('update:modelValue', newText)
 })
 
+/**
+ * Highlights the code.
+ * @param code - The code to be highlighted.
+ * @returns The highlighted code.
+ */
 function highlightCode(code: string) {
   return hljs.highlight(code, { language: 'yaml' }).value
 }

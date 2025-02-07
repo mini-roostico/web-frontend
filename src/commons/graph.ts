@@ -1,6 +1,21 @@
-export type Point = { x: number; y: number }
+/**
+ * Represents a point in 2D space.
+ * @property x - The x-coordinate of the point.
+ * @property y - The y-coordinate of the point.
+ */
+export interface Point {
+  x: number
+  y: number
+}
 
-export type TreeNode = {
+/**
+ * Represents a tree node.
+ * @property id - The unique identifier of the node.
+ * @property position - The position of the node in 2D space.
+ * @property data - The data of the node.
+ * @property data.label - The label of the node.
+ */
+export interface TreeNode {
   id: string
   position: Point
   data: {
@@ -8,17 +23,32 @@ export type TreeNode = {
   }
 }
 
-export type Edge = {
+/**
+ * Represents an edge between two nodes.
+ * @property id - The unique identifier of the edge.
+ * @property source - The source node of the edge.
+ * @property target - The target node of the edge.
+ */
+export interface Edge {
   id: string
   source: string
   target: string
 }
 
-export type GraphData = {
+/**
+ * Represents the data of a graph.
+ * @property nodes - The nodes of the graph.
+ * @property edges - The edges of the graph.
+ */
+export interface GraphData {
   nodes: TreeNode[]
   edges: Edge[]
 }
 
+/**
+ * Converts the given graph to a GraphData object.
+ * @param graph the graph to convert, returned by Subjekt.
+ */
 export function convertGraph(graph: Record<number, string[]>): GraphData {
   const position: Point = { x: 0, y: 0 }
   const nodes: TreeNode[] = []

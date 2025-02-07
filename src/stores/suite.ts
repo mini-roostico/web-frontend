@@ -1,20 +1,18 @@
 import { defineStore } from 'pinia'
 import { io } from '@mini-roostico/subjekt'
 import subjekt = io.github.subjekt.Subjekt
-import { convertGraph, GraphData } from '@/scripts/graph.ts'
+import { convertGraph, GraphData } from '@/commons/graph.ts'
 import { convertToSubjects } from '@/commons/utils.ts'
+import { GenerationResult } from '@/commons/model.ts'
 
-export interface ResolvedSubject {
-  name: string
-  values: { key: string; value: string }[]
-}
-
-export interface GenerationResult {
-  generationGraph: GraphData
-  result: ResolvedSubject[]
-}
-
+/**
+ * Store for the suite, utility for handling the generation of the suite.
+ */
 export const useSuiteStore = defineStore('suite', () => {
+  /**
+   * Runs a Subjekt generation using the Suite configuration contained in the given YAML.
+   * @param yaml the YAML content of the Suite.
+   */
   async function generate(yaml: string): Promise<GenerationResult> {
     // TODO uncomment
     //const url = `${apiEndpoints.API_SERVER}/suite`

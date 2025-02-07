@@ -3,27 +3,55 @@ import BootstrapIcon from '@/components/BootstrapIcon.vue'
 import NavbarUserDropdown from '@/components/NavbarUserDropdown.vue'
 import { onMounted, Ref, ref } from 'vue'
 import router from '@/router/index.ts'
-import { EventBus } from '@/scripts/EventBus.ts'
+import { EventBus } from '@/commons/EventBus.ts'
 import { useAuthStore } from '@/stores/auth.ts'
 
+/**
+ * Utility interface to represent a link in the navbar.
+ */
 interface Link {
+  /**
+   * The URL of the link.
+   */
   href: string
+  /**
+   * The displayed name of the link.
+   */
   name: string
+  /**
+   * Indicates if the user needs to be logged in to access the link.
+   */
   loginNeeded: boolean
 }
 
+/**
+ * Stores that helps to manage the authentication state.
+ */
 const authStore = useAuthStore()
+/**
+ * Reference that indicates if the user is logged in.
+ */
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
+
+/**
+ * The links to be displayed in the navbar.
+ */
 const links: Ref<Link[]> = ref([
   { href: '/', name: 'Home', loginNeeded: false },
   { href: '/sources', name: 'Sources', loginNeeded: true },
   { href: '/about', name: 'About', loginNeeded: false },
 ])
 
+/**
+ * Reloads the navbar, updating the logged state.
+ */
 function reloadNavbar() {
   isLogged.value = authStore.isLogged
 }
 
+/**
+ * Logs out the user.
+ */
 function logout() {
   authStore.logout()
   router.push('/')
