@@ -4,7 +4,7 @@
  */
 export const apiEndpoints = {
   /** The endpoint of the API server. */
-  API_SERVER: 'http://localhost:8080', // process.env.API_SERVER_URL ||
+  API_SERVER: '/api', // process.env.API_SERVER_URL ||
   /** The endpoint of the authentication server. */
-  AUTH_SERVER: 'http://localhost:8080', // process.env.AUTH_SERVER_URL ||
+  AUTH_SERVER: '/auth', // process.env.AUTH_SERVER_URL ||
 }
