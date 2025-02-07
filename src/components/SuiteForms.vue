@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import yaml from 'js-yaml'
+import { Configuration, Macro, Parameter, Subject, Suite } from '@/commons/model.ts'
 
+/**
+ * Defines the props of the component. The `disabled` prop is used to disable the form.
+ */
 defineProps({
   disabled: {
     type: Boolean,
@@ -9,44 +13,47 @@ defineProps({
   },
 })
 
+/**
+ * Emits for when a button is pressed in form: `buttonPressed`.
+ */
+const emit = defineEmits(['buttonPressed'])
+
+/**
+ * The configuration of the suite.
+ */
 const configuration = ref([])
+/**
+ * The parameters of the suite.
+ */
 const parameters = ref([])
+/**
+ * The macros of the suite.
+ */
 const macros = ref([])
+/**
+ * The subjects of the suite. Starts with one empty subject.
+ */
 const subjects = ref([{ name: 'Subject 1', pairs: [] }])
 
-interface Configuration {
-  pairs: { key: string; value: string }[]
-}
-
-interface Parameter {
-  name: string
-  values: string[]
-}
-
-interface Macro {
-  name: string
-  values: string[]
-}
-
-interface Subject {
-  name: string
-  pairs: { key: string; value: string }[]
-}
-
-interface Suite {
-  name: string
-  configuration: Configuration
-  parameters: Parameter[]
-  macros: Macro[]
-  subjects: Subject[]
-}
-
+/**
+ * Utility interface that contains the parsing result of the YAML editor or the suite object.
+ */
 interface SubjektConfig {
+  /**
+   * The YAML string obtained from the form values.
+   */
   yaml: string
+  /**
+   * The suite object obtained parsing the YAML string.
+   */
   suite: Suite
 }
 
-// to generate YAML from the forms
+/**
+ * Generates a YAML string from the current form values.
+ * @param suiteName The name of the suite, contained in a separate form.
+ * @returns The YAML string and the suite object wrapped in a SubjektConfig object.
+ */
 function generateYAML(suiteName: string): SubjektConfig {
   const configObj: Configuration = configuration.value.reduce((acc, item) => {
     if (item.key && item.value) {
@@ -98,6 +105,11 @@ function generateYAML(suiteName: string): SubjektConfig {
   }
 }
 
+/**
+ * Sets the form values from a YAML string.
+ * @param yamlString The YAML string to parse.
+ * @returns An object with the success status, the suite name if successful, and the error message if not.
+ */
 function setFromYAML(yamlString: string): { success: boolean; suiteName?: string; error?: string } {
   try {
     const suite: Suite = yaml.load(yamlString) as Suite
@@ -138,75 +150,143 @@ function setFromYAML(yamlString: string): { success: boolean; suiteName?: string
   }
 }
 
-// Expose both methods
 defineExpose({
   generateYAML,
   setFromYAML,
 })
 
+/**
+ * Adds a new empty key-value pair to the configuration.
+ */
 function addConfigPair() {
   configuration.value.push({ key: '', value: '' })
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a key-value pair from the configuration.
+ * @param index The index of the pair to remove.
+ */
 function removeConfigPair(index: number) {
   configuration.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
+/**
+ * Adds a new empty parameter to the suite.
+ */
 function addParameter() {
   parameters.value.push({
     name: '',
     values: [],
   })
+  emit('buttonPressed')
 }
 
+/**
+ * Adds a new value to a parameter.
+ * @param paramIndex The index of the parameter to add the value to.
+ */
 function addParameterValue(paramIndex: number) {
   parameters.value[paramIndex].values.push('')
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a parameter from the suite.
+ * @param index The index of the parameter to remove.
+ */
 function removeParameter(index: number) {
   parameters.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a value from a parameter.
+ * @param paramIndex The index of the parameter.
+ * @param valueIndex The index of the value to remove.
+ */
 function removeParameterValue(paramIndex: number, valueIndex: number) {
   parameters.value[paramIndex].values.splice(valueIndex, 1)
+  emit('buttonPressed')
 }
 
+/**
+ * Adds a new empty macro to the suite.
+ */
 function addMacro() {
   macros.value.push({
     name: '',
     values: [],
   })
+  emit('buttonPressed')
 }
 
+/**
+ * Adds a new value to a macro.
+ * @param macroIndex The index of the macro to add the value to.
+ */
 function addMacroValue(macroIndex: number) {
   macros.value[macroIndex].values.push('')
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a macro from the suite.
+ * @param index The index of the macro to remove.
+ */
 function removeMacro(index: number) {
   macros.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a value from a macro.
+ * @param macroIndex The index of the macro.
+ * @param valueIndex The index of the value to remove.
+ */
 function removeMacroValue(macroIndex: number, valueIndex: number) {
   macros.value[macroIndex].values.splice(valueIndex, 1)
+  emit('buttonPressed')
 }
 
+/**
+ * Adds a new empty subject to the suite.
+ */
 function addSubject() {
   subjects.value.push({
     name: `Subject ${subjects.value.length + 1}`,
     pairs: [],
   })
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a subject from the suite.
+ * @param index The index of the subject to remove.
+ */
 function removeSubject(index: number) {
   subjects.value.splice(index, 1)
+  emit('buttonPressed')
 }
 
+/**
+ * Adds a new key-value pair to a subject.
+ * @param subjectIndex The index of the subject to add the pair to.
+ */
 function addSubjectPair(subjectIndex: number) {
   subjects.value[subjectIndex].pairs.push({ key: '', value: '' })
+  emit('buttonPressed')
 }
 
+/**
+ * Removes a key-value pair from a subject.
+ * @param subjectIndex The index of the subject.
+ * @param pairIndex The index of the pair to remove.
+ */
 function removeSubjectPair(subjectIndex: number, pairIndex: number) {
   subjects.value[subjectIndex].pairs.splice(pairIndex, 1)
+  emit('buttonPressed')
 }
 </script>
 

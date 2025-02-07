@@ -5,42 +5,122 @@ import YamlEditor from '@/components/YamlEditor.vue'
 import SuiteForms from '@/components/SuiteForms.vue'
 import GraphViewer from '@/components/GraphViewer.vue'
 import { useAuthStore } from '@/stores/auth.ts'
-import { Source, useSourceStore } from '@/stores/sources.ts'
-import { ResolvedSubject, useSuiteStore } from '@/stores/suite.ts'
-import { GraphData } from '@/scripts/graph.ts'
+import { useSourceStore } from '@/stores/sources.ts'
+import { useSuiteStore } from '@/stores/suite.ts'
+import { GraphData } from '@/commons/graph.ts'
 import SubjectResult from '@/components/SubjectResult.vue'
+import AlertComponent from '@/components/AlertComponent.vue'
+import { AlertType } from '@/commons/utils.ts'
+import { ResolvedSubject, Source } from '@/commons/model.ts'
 
-type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
+/**
+ * Tab names for the left side of the page.
+ */
 type TabLeft = 'Suite Configuration' | 'Suite YAML'
+/**
+ * Tab names for the right side of the page.
+ */
 type TabRight = 'Subjekt Output' | 'Generation graph'
 
+/**
+ * Route of the page.
+ */
 const route = useRoute()
+/**
+ * Stores to handle authentication state.
+ */
 const authStore = useAuthStore()
+/**
+ * Stores to handle source state.
+ */
 const sourceStore = useSourceStore()
+/**
+ * Stores to handle suite generation.
+ */
 const suiteStore = useSuiteStore()
 
+/**
+ * Suite ID from the route.
+ */
 const suiteId: string | string[] = route.params.suiteId
 
+/**
+ * Source data loaded.
+ */
 const source: Ref<Source> = ref(null)
 
+/**
+ * Alert component reference.
+ */
+const alert: Ref<typeof AlertComponent> = ref(null)
+
+/**
+ * Shows an alert with the given text and type.
+ * @param text Text to show in the alert.
+ * @param type Type of the alert.
+ */
+function showAlert(text: string, type: string) {
+  alert.value.show(text, type)
+}
+
+/**
+ * Active tab on the left side of the page.
+ */
 const activeTabLeft: Ref<TabLeft> = ref('Suite Configuration')
+/**
+ * Active tab on the right side of the page.
+ */
 const activeTabRight: Ref<TabRight> = ref('Subjekt Output')
+/**
+ * Whether the page is loading or not.
+ */
 const loading: Ref<boolean> = ref(false)
+/**
+ * Whether the generation is done or not.
+ */
 const generationDone: Ref<boolean> = ref(false)
+/**
+ * YAML text of the suite.
+ */
 const yamlText: Ref<string> = ref('')
-const suiteFormsRef = ref(null)
-const alertText: Ref<string> = ref('')
-const alertType: Ref<AlertType> = ref('alert-info')
+/**
+ * Reference to the suite forms component.
+ */
+const suiteFormsRef: Ref<typeof SuiteForms> = ref(null)
+/**
+ * Whether the user is logged in or not.
+ */
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
+/**
+ * Input value for the suite name.
+ */
 const suiteNameInput: Ref<string> = ref('')
+/**
+ * Whether the generation is loading or not.
+ */
 const generationLoading: Ref<boolean> = ref(false)
+/**
+ * Whether a critical error occurred or not.
+ */
 const criticalError: Ref<boolean> = ref(false)
 
+/**
+ * Graph data of the generation.
+ */
 const graphData: Ref<GraphData> = ref({ nodes: [], edges: [] })
+/**
+ * Result data of the generation.
+ */
 const resultData: Ref<ResolvedSubject[]> = ref([])
 
+/**
+ * Whether the suite local changes are saved or not.
+ */
 const isSaved: Ref<boolean> = ref(true)
 
+/**
+ * Previous text of the YAML before the modification.
+ */
 let previousText: string = null
 
 onBeforeRouteLeave(() => {
@@ -52,6 +132,9 @@ onBeforeRouteLeave(() => {
   }
 })
 
+/**
+ * Handles the key press event.
+ */
 function keyPressed() {
   isSaved.value = false
 }
@@ -66,7 +149,7 @@ onMounted(() => {
       setFormsFromYaml(data.yaml)
     })
     .catch((error) => {
-      showAlert('Error fetching suite. Please try again later.', 'alert-danger')
+      showAlert('Error fetching suite. Please try again later.', AlertType.DANGER)
       criticalError.value = true
       console.error(error)
     })
@@ -75,30 +158,29 @@ onMounted(() => {
     })
 })
 
-function showAlert(text: string, type: AlertType = 'alert-info') {
-  alertText.value = text
-  alertType.value = type
-}
-
-function clearAlert() {
-  alertText.value = ''
-}
-
+/**
+ * Saves the YAML to the source store.
+ * @param name Name of the suite.
+ * @param yaml YAML text of the source.
+ */
 function saveYamlToStore(name: string, yaml: string) {
   sourceStore
     .saveSource(source.value.id, name, yaml)
     .then((source) => {
-      showAlert('Suite saved successfully!', 'alert-success')
+      showAlert('Suite saved successfully!', AlertType.SUCCESS)
       console.log(source.yaml)
       setFormsFromYaml(source.yaml)
       isSaved.value = true
     })
     .catch((error) => {
       console.error('Error saving suite:', error)
-      showAlert('Error saving suite. Please try again later.', 'alert-danger')
+      showAlert('Error saving suite. Please try again later.', AlertType.DANGER)
     })
 }
 
+/**
+ * Saves the suite to the source store.
+ */
 function saveSuite() {
   const name = suiteNameInput.value
   if (activeTabLeft.value === 'Suite Configuration') {
@@ -111,6 +193,11 @@ function saveSuite() {
   }
 }
 
+/**
+ * Sets the forms parsing the YAML text.
+ * @param yaml YAML text to set the forms from.
+ * @returns Whether the operation was successful or not.
+ */
 function setFormsFromYaml(yaml: string): boolean {
   const result = suiteFormsRef.value.setFromYAML(yaml)
   if (result.success === false) {
@@ -118,7 +205,7 @@ function setFormsFromYaml(yaml: string): boolean {
     previousText = yaml
     showAlert(
       'There was an error parsing your YAML, please fix it before going back',
-      'alert-danger',
+      AlertType.DANGER,
     )
     activeTabLeft.value = 'Suite YAML'
   } else {
@@ -146,6 +233,10 @@ watch(activeTabLeft, (newTab) => {
   }
 })
 
+/**
+ * Runs the suite generation. Shows an alert if there is an error, otherwise sets the result data
+ * and the generation graph.
+ */
 function runRegeneration() {
   generationLoading.value = true
   if (activeTabLeft.value === 'Suite Configuration') {
@@ -162,14 +253,18 @@ function runRegeneration() {
       result.forEach((subject) => {
         resultData.value.push(subject)
       })
+      alert.value.clear()
     })
     .catch((error) => {
       console.error('Error generating suite:', error)
-      showAlert(`Error generating suite: ${error}`, 'alert-danger')
+      showAlert(`Error generating suite: ${error}`, AlertType.DANGER)
       generationLoading.value = false
     })
 }
 
+/**
+ * Downloads the result data as a JSON file.
+ */
 function downloadResultData() {
   const dataStr =
     'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(resultData.value, null, 2))
@@ -182,16 +277,8 @@ function downloadResultData() {
 }
 </script>
 <template>
-  <!-- Alert Component -->
-  <div
-    v-if="alertText"
-    class="alert alert-dismissible alert-dark fade show m-4"
-    :class="alertType"
-    role="alert"
-  >
-    {{ alertText }}
-    <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
-  </div>
+  <!-- AlertComponent Component -->
+  <AlertComponent ref="alert" />
   <div v-if="loading">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -255,7 +342,12 @@ function downloadResultData() {
           </ul>
           <div class="tab-content">
             <div v-show="activeTabLeft === 'Suite Configuration'" class="tab-pane fade show active">
-              <SuiteForms ref="suiteFormsRef" :disabled="loading" @keyup="keyPressed"></SuiteForms>
+              <SuiteForms
+                ref="suiteFormsRef"
+                :disabled="loading"
+                @keyup="keyPressed"
+                @button-pressed="isSaved = false"
+              ></SuiteForms>
             </div>
             <div v-show="activeTabLeft === 'Suite YAML'" class="tab-pane fade show active">
               <YamlEditor v-model="yamlText" @keyup="keyPressed"></YamlEditor>
@@ -358,7 +450,6 @@ function downloadResultData() {
   background-color: #242427;
 }
 
-/* Play button styling */
 .play-btn {
   background-color: #ce29aa;
   color: white;

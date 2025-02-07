@@ -5,6 +5,9 @@ import router from '@/router'
 import { apiEndpoints } from '@/commons/globals'
 import { type Role, toRole } from '@/commons/utils'
 
+/**
+ * Store to manage the authentication of the user.
+ */
 export const useAuthStore = defineStore('auth', () => {
   /** The url to which redirect the client after a successful login. */
   const returnUrl = '/sources'
@@ -32,6 +35,11 @@ export const useAuthStore = defineStore('auth', () => {
     await router.push(returnUrl)
   }
 
+  /**
+   * Registers a new user with the given credentials.
+   * @param username the username of the new user
+   * @param password the password of the new user
+   */
   async function register(
     username: string,
     password: string,
@@ -48,6 +56,12 @@ export const useAuthStore = defineStore('auth', () => {
     return { success: true, msg: 'Registration successful' }
   }
 
+  /**
+   * Verifies that the user has the given role.
+   * @param username the username of the user
+   * @param role the role to verify
+   * @param accessToken the access token of the user
+   */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function verifyRole(username: string, role: Role, accessToken: string) {
     const roleVerification = await axios.get(`${apiEndpoints.API_SERVER}/users/`, {
@@ -58,6 +72,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /** Refreshes the access token of the user. */
   async function refreshAccessToken() {
     console.debug('Refreshing access token...')
     const url = `${apiEndpoints.AUTH_SERVER}/auth/refresh`
@@ -84,6 +99,10 @@ export const useAuthStore = defineStore('auth', () => {
     window.location.href = '/login'
   }
 
+  /**
+   * Sets the access token of the user.
+   * @param token the access token to set
+   */
   function setAccessToken(token: string) {
     accessToken.value = token
     sessionStorage.setItem('accessToken', token)
@@ -93,6 +112,10 @@ export const useAuthStore = defineStore('auth', () => {
     // )
   }
 
+  /**
+   * Sets the refresh token of the user.
+   * @param token the refresh token to set
+   */
   function setRefreshToken(token: string) {
     sessionStorage.setItem('refreshToken', token)
     // TODO uncomment
@@ -101,11 +124,19 @@ export const useAuthStore = defineStore('auth', () => {
     // )
   }
 
+  /**
+   * Sets the user of the store.
+   * @param username the username to set
+   */
   function setUser(username: string) {
     user.value = username
     sessionStorage.setItem('username', username)
   }
 
+  /**
+   * Sets the role of the user.
+   * @param role the role to set
+   */
   function setUserRole(role: Role) {
     userRole.value = role
     sessionStorage.setItem('role', role)

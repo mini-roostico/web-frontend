@@ -2,6 +2,9 @@ import dagre from '@dagrejs/dagre'
 import { Ref, ref } from 'vue'
 import { useVueFlow, Position } from '@vue-flow/core'
 
+/**
+ * The direction in which the layout should be calculated.
+ */
 export enum Direction {
   TopToBottom = 'TB',
   LeftToRight = 'LR',

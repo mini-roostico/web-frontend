@@ -1,24 +1,48 @@
 <script setup lang="ts">
-import { type Source } from '@/stores/sources.ts'
 import { formatDate } from '../commons/utils.ts'
+import { Source } from '@/commons/model.ts'
 
+/**
+ * The properties of the component.
+ */
 interface Props {
+  /**
+   * The source to be displayed.
+   */
   source: Source
+  /**
+   * The main color of the file card.
+   */
   mainColor: string
 }
 
 const props = defineProps<Props>()
 
+/**
+ * Emits the events to the parent component. The events are:
+ * - open: emitted when the source is opened.
+ * - rename: emitted when the source is renamed.
+ * - delete: emitted when the source is deleted.
+ */
 const emit = defineEmits(['open', 'rename', 'delete'])
 
+/**
+ * Opens the source.
+ */
 function openFile() {
   emit('open', props.source)
 }
 
+/**
+ * Renames the source.
+ */
 function renameFile() {
   emit('rename', props.source)
 }
 
+/**
+ * Deletes the source.
+ */
 function deleteFile() {
   emit('delete', props.source)
 }
