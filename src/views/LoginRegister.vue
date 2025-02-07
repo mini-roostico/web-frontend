@@ -2,39 +2,79 @@
 import { Ref, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router/index.ts'
-import { EventBus } from '@/scripts/EventBus.ts'
+import { EventBus } from '@/commons/EventBus.ts'
 import { useAuthStore } from '@/stores/auth.ts'
-import { Role } from '@/commons/utils.ts'
+import { AlertType, Role } from '@/commons/utils.ts'
+import AlertComponent from '@/components/AlertComponent.vue'
 
-type AlertType = 'alert-info' | 'alert-danger' | 'alert-success'
-
+/**
+ * Route of the page.
+ */
 const route = useRoute()
+/**
+ * Whether the user is trying to log in or register.
+ */
 const isLogin: Ref<boolean> = ref(route.path !== '/register')
+/**
+ * Username of the user.
+ */
 const username: Ref<string> = ref('')
+/**
+ * Password of the user.
+ */
 const password: Ref<string> = ref('')
+/**
+ * Confirm password input of the user.
+ */
 const confirmPassword: Ref<string> = ref('')
 
-const alertText: Ref<string> = ref('')
-const alertType: Ref<AlertType> = ref('alert-info')
+/**
+ * Alert component reference.
+ */
+const alert: Ref<typeof AlertComponent> = ref(null)
+/**
+ * Submit button reference.
+ */
 const submitBtn = ref(null)
 
+/**
+ * Stores to handle authentication state.
+ */
 const authStore = useAuthStore()
+/**
+ * Whether the page is loading or not.
+ */
 const loading: Ref<boolean> = ref(false)
+/**
+ * Whether the user is logged in or not.
+ */
 const isLogged: Ref<boolean> = ref(authStore.isLogged)
 
-function showAlert(text: string, type: AlertType = 'alert-info') {
-  alertText.value = text
-  alertType.value = type
+/**
+ * Shows an alert with the given text and type.
+ * @param text Text to show in the alert.
+ * @param type Type of the alert.
+ */
+function showAlert(text: string, type: AlertType = AlertType.INFO) {
+  alert.value.show(text, type)
 }
 
+/**
+ * Clears the alert.
+ */
 function clearAlert() {
-  alertText.value = ''
+  alert.value.clear()
 }
 
-function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
+/**
+ * Checks if the password matches the reference.
+ * @param newValue New value to check.
+ * @param refToCheck reference to check.
+ */
+function checkPassword(newValue: string, refToCheck: Ref<string>) {
   if (isLogin.value === false) {
     if (newValue !== refToCheck.value) {
-      showAlert('Passwords do not match', 'alert-danger')
+      showAlert('Passwords do not match', AlertType.DANGER)
       submitBtn.value.disabled = true
     } else {
       clearAlert()
@@ -43,6 +83,12 @@ function checkPassword(newValue: string, refToCheck: Ref<string, string>) {
   }
 }
 
+/**
+ * Logs in the user with the given credentials. Shows an alert if the credentials are invalid,
+ * otherwise redirects to the sources page.
+ * @param username Username of the user.
+ * @param password Password of the user.
+ */
 function login(username: string, password: string) {
   authStore
     .login(Role.User, username, password)
@@ -54,10 +100,16 @@ function login(username: string, password: string) {
     .catch((e) => {
       console.log(e)
       loading.value = false
-      showAlert('Invalid credentials', 'alert-danger')
+      showAlert('Invalid credentials', AlertType.DANGER)
     })
 }
 
+/**
+ * Registers the user with the given credentials. Shows an alert if the username already exists,
+ * otherwise logs in the user.
+ * @param username Username of the user.
+ * @param password Password of the user.
+ */
 function register(username: string, password: string) {
   authStore
     .register(username, password)
@@ -66,10 +118,14 @@ function register(username: string, password: string) {
     })
     .catch(() => {
       loading.value = false
-      showAlert('Username already exists', 'alert-danger')
+      showAlert('Username already exists', AlertType.DANGER)
     })
 }
 
+/**
+ * Handles the form submission. If the user is trying to log in, logs in the user,
+ * otherwise registers the user.
+ */
 function handleSubmit() {
   if (isLogin.value) {
     loading.value = true
@@ -85,6 +141,9 @@ function handleSubmit() {
   }
 }
 
+/**
+ * Toggles the form between login and register.
+ */
 function toggleForm() {
   isLogin.value = !isLogin.value
   clearAlert()
@@ -104,16 +163,7 @@ watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword,
         <span class="visually-hidden">Loading...</span>
       </div>
     </div>
-    <!-- Alert Component -->
-    <div
-      v-if="alertText"
-      class="alert alert-dismissible alert-dark fade show"
-      :class="alertType"
-      role="alert"
-    >
-      {{ alertText }}
-      <button type="button" class="btn-close" aria-label="Close" @click="clearAlert"></button>
-    </div>
+    <AlertComponent ref="alert" :cancellable="false"></AlertComponent>
     <form class="form-container" @submit.prevent="handleSubmit">
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
