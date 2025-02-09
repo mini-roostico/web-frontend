@@ -86,7 +86,7 @@ export interface ResolvedSubject {
  */
 export interface GenerationResult {
   generationGraph: GraphData
-  result: ResolvedSubject[]
+  resolvedSubjects: ResolvedSubject[]
 }
 
 /**
