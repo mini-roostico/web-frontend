@@ -58,14 +58,14 @@ function getSuiteConfiguration(suiteName: string): Suite {
   const parametersArray: Parameter[] = parameters.value
     .map((param) => ({
       name: param.name,
-      values: param.values.filter((v) => v.trim() !== ''),
+      values: param.values.filter((v: string | number) => v.toString().trim() !== ''),
     }))
     .filter((param) => param.name && param.values.length > 0)
 
   const macrosArray: Macro[] = macros.value
     .map((macro) => ({
       name: macro.name,
-      values: macro.values.filter((v) => v.trim() !== ''),
+      values: macro.values.filter((v: string | number) => v.toString().trim() !== ''),
     }))
     .filter((macro) => macro.name && macro.values.length > 0)
 
