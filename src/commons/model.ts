@@ -56,13 +56,13 @@ export interface Suite {
 
 /**
  * Source of the suite.
- * @property id the unique identifier of the source.
+ * @property _id the unique identifier of the source.
  * @property name the name of the source.
  * @property lastModified the last modification date of the source.
  * @property yaml the YAML content of the source.
  */
 export interface Source {
-  id: string
+  _id: string
   name: string
   lastModified: Date
   yaml: string
