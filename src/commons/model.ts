@@ -134,3 +134,13 @@ export function getYamlFromSuite(
     suite: suite,
   }
 }
+
+/**
+ * Checks if this suite object has some unknown fields.
+ * @param suite suite to check.
+ * @return an array of strings containing the unknown fields found.
+ */
+export function checkUnknownFields(suite: object): string[] {
+  const knownFields = ['name', 'configuration', 'parameters', 'macros', 'subjects']
+  return Object.keys(suite).filter((field) => !knownFields.includes(field))
+}
