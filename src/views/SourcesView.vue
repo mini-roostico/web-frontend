@@ -165,7 +165,7 @@ function deleteSource() {
   if (selectedSource.value) {
     loading.value = true
     sourceStore
-      .deleteSource(selectedSource.value.id)
+      .deleteSource(selectedSource.value._id)
       .then(() => {
         showAlert('Source deleted successfully!', AlertType.SUCCESS)
         refreshSources()
@@ -188,7 +188,7 @@ function renameSource(newName: string) {
   if (selectedSource.value && newName) {
     loading.value = true
     sourceStore
-      .renameSource(selectedSource.value.id, newName)
+      .renameSource(selectedSource.value._id, newName)
       .then(() => {
         showAlert('Source renamed successfully!', AlertType.SUCCESS)
         refreshSources()
@@ -244,7 +244,7 @@ function handleCancellation() {
 function openFile(source: Source) {
   selectedSource.value = source
   console.log('Opening file:', source)
-  router.push({ path: `/suite/${source.id}` })
+  router.push({ path: `/suite/${source._id}` })
 }
 
 /**
