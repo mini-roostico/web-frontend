@@ -1,3 +1,13 @@
+## [1.4.3](https://github.com/mini-roostico/web-frontend/compare/1.4.2...1.4.3) (2025-02-09)
+
+### Dependency updates
+
+* **deps:** update dependency prettier to v3.5.0 ([302bd52](https://github.com/mini-roostico/web-frontend/commit/302bd52f41cd3f82ae28f514930c34e9b179ca79))
+
+### Bug Fixes
+
+* fixed unknown fields getting silently ignored ([ac37d0a](https://github.com/mini-roostico/web-frontend/commit/ac37d0a257c6981ddec27dab691b768b8a11e6b2))
+
 ## [1.4.2](https://github.com/mini-roostico/web-frontend/compare/1.4.1...1.4.2) (2025-02-09)
 
 ### Bug Fixes
