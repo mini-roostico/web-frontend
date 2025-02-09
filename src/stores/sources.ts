@@ -73,7 +73,7 @@ export const useSourceStore = defineStore('source', () => {
    */
   async function renameSource(id: string, name: string): Promise<Source> {
     const url = `${apiEndpoints.API_SERVER}/sources`
-    return (await axios.put(url, { data: { _id: id, name } })).data.data
+    return (await axios.put(url, { data: { _id: id, data: { name } } })).data.data
   }
 
   /**
