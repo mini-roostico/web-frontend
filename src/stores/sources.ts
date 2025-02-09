@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getYamlFromSuite, Source } from '@/commons/model.ts'
+import { getYamlFromSuite, Source, Suite } from '@/commons/model.ts'
 import { apiEndpoints } from '@/commons/globals.ts'
 import axios from 'axios'
 
@@ -88,12 +88,11 @@ export const useSourceStore = defineStore('source', () => {
   /**
    * Save the source.
    * @param id the identifier of the source.
-   * @param name the new name of the source.
-   * @param yaml the new YAML content of the source.
+   * @param suite the suite contained in the source to save.
    */
-  async function saveSource(id: string, name: string, yaml: string): Promise<Source> {
-    const url = `${apiEndpoints.API_SERVER}/sources/${id}`
-    return (await axios.put(url, { name, yaml })).data.data
+  async function saveSource(id: string, suite: Suite): Promise<Source> {
+    const url = `${apiEndpoints.API_SERVER}/sources`
+    return (await axios.put(url, { data: { _id: id, data: suite } })).data.data
   }
 
   return {

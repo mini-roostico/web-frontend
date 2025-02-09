@@ -44,11 +44,10 @@ const macros = ref([])
 const subjects = ref([{ name: 'Subject 1', pairs: [] }])
 
 /**
- * Generates a YAML string from the current form values.
- * @param suiteName The name of the suite, contained in a separate form.
- * @returns The YAML string and the suite object wrapped in a SubjektConfig object.
+ * Extracts the suite configuration from the form values.
+ * @param suiteName The name of the suite.
  */
-function generateYAML(suiteName: string): SubjektConfig {
+function getSuiteConfiguration(suiteName: string): Suite {
   const configObj: Configuration = configuration.value.reduce((acc, item) => {
     if (item.key && item.value) {
       acc[item.key] = item.value
@@ -81,7 +80,23 @@ function generateYAML(suiteName: string): SubjektConfig {
     )
     .filter((subject) => Object.keys(subject).length > 0)
 
-  return getYamlFromSuite(suiteName, configObj, parametersArray, macrosArray, subjectsArray)
+  return {
+    name: suiteName,
+    configuration: configObj,
+    parameters: parametersArray,
+    macros: macrosArray,
+    subjects: subjectsArray,
+  }
+}
+
+/**
+ * Generates a YAML string from the current form values.
+ * @param suiteName The name of the suite, contained in a separate form.
+ * @returns The YAML string and the suite object wrapped in a SubjektConfig object.
+ */
+function generateYAML(suiteName: string): SubjektConfig {
+  const { configuration, parameters, macros, subjects } = getSuiteConfiguration(suiteName)
+  return getYamlFromSuite(suiteName, configuration, parameters, macros, subjects)
 }
 
 /**
@@ -89,7 +104,12 @@ function generateYAML(suiteName: string): SubjektConfig {
  * @param yamlString The YAML string to parse.
  * @returns An object with the success status, the suite name if successful, and the error message if not.
  */
-function setFromYAML(yamlString: string): { success: boolean; suiteName?: string; error?: string } {
+function setFromYAML(yamlString: string): {
+  success: boolean
+  suiteName?: string
+  error?: string
+  suite?: Suite
+} {
   try {
     const suite: Suite = yaml.load(yamlString) as Suite
 
@@ -120,7 +140,7 @@ function setFromYAML(yamlString: string): { success: boolean; suiteName?: string
       })),
     }))
 
-    return { success: true, suiteName: suite.name }
+    return { success: true, suiteName: suite.name, suite }
   } catch (error) {
     return {
       success: false,
@@ -132,6 +152,7 @@ function setFromYAML(yamlString: string): { success: boolean; suiteName?: string
 defineExpose({
   generateYAML,
   setFromYAML,
+  getSuiteConfiguration,
 })
 
 /**

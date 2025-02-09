@@ -11,7 +11,7 @@ import { GraphData } from '@/commons/graph.ts'
 import SubjectResult from '@/components/SubjectResult.vue'
 import AlertComponent from '@/components/AlertComponent.vue'
 import { AlertType } from '@/commons/utils.ts'
-import { ResolvedSubject, Source } from '@/commons/model.ts'
+import { ResolvedSubject, Source, Suite } from '@/commons/model.ts'
 
 /**
  * Tab names for the left side of the page.
@@ -159,22 +159,27 @@ onMounted(() => {
 })
 
 /**
- * Saves the YAML to the source store.
- * @param name Name of the suite.
- * @param yaml YAML text of the source.
+ * Saves the Suite to the source store.
+ * @param suite Suite to save.
  */
-function saveYamlToStore(name: string, yaml: string) {
+function saveYamlToStore(suite: Suite) {
+  let error = true
   sourceStore
-    .saveSource(source.value._id, name, yaml)
+    .saveSource(source.value._id, suite)
     .then((source) => {
-      showAlert('Suite saved successfully!', AlertType.SUCCESS)
-      console.log(source.yaml)
-      setFormsFromYaml(source.yaml)
-      isSaved.value = true
+      if (source) {
+        showAlert('Suite saved successfully!', AlertType.SUCCESS)
+        isSaved.value = true
+        error = false
+      }
     })
     .catch((error) => {
       console.error('Error saving suite:', error)
-      showAlert('Error saving suite. Please try again later.', AlertType.DANGER)
+    })
+    .finally(() => {
+      if (error) {
+        showAlert('Error saving suite. Please try again later.', AlertType.DANGER)
+      }
     })
 }
 
@@ -184,12 +189,11 @@ function saveYamlToStore(name: string, yaml: string) {
 function saveSuite() {
   const name = suiteNameInput.value
   if (activeTabLeft.value === 'Suite Configuration') {
-    const { yaml } = suiteFormsRef.value.generateYAML(name)
-    saveYamlToStore(name, yaml)
+    const suite: Suite = suiteFormsRef.value.getSuiteConfiguration(name)
+    saveYamlToStore(suite)
   } else {
-    if (setFormsFromYaml(yamlText.value) === true) {
-      saveYamlToStore(name, yamlText.value)
-    }
+    const { suite } = suiteFormsRef.value.setFromYAML(yamlText.value)
+    saveYamlToStore(suite)
   }
 }
 
@@ -222,7 +226,6 @@ watch(activeTabLeft, (newTab) => {
     }
     case 'Suite YAML': {
       if (!previousText) {
-        console.log(suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml)
         yamlText.value = suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml
       } else {
         yamlText.value = previousText
