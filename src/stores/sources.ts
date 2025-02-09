@@ -1,7 +1,32 @@
 import { defineStore } from 'pinia'
-import { Source } from '@/commons/model.ts'
+import { getYamlFromSuite, Source } from '@/commons/model.ts'
 import { apiEndpoints } from '@/commons/globals.ts'
 import axios from 'axios'
+
+/**
+ * Converts the given source object to the Source object.
+ * @param source the source object to convert, obtained from the API.
+ */
+function toEditorSource(source: object): Source {
+  const sourceObj = {}
+  const subjects = source['subjects'] ?? []
+  const parameters = source['parameters'] ?? []
+  const macros = source['macros'] ?? []
+  const configuration = source['configuration'] ?? new Map()
+  const last_update = new Date(source['last_update'])
+  if (source['name']) {
+    sourceObj['name'] = source['name']
+  } else {
+    throw new Error('Source name is missing')
+  }
+  const { yaml } = getYamlFromSuite(source['name'], configuration, parameters, macros, subjects)
+  return {
+    _id: source['_id'],
+    name: source['name'],
+    lastModified: last_update,
+    yaml: yaml,
+  }
+}
 
 /**
  * Store for the sources, utility for handling the CRUD operations of the sources.
@@ -12,7 +37,7 @@ export const useSourceStore = defineStore('source', () => {
    */
   async function getSources(): Promise<Source[]> {
     const url = `${apiEndpoints.API_SERVER}/sources`
-    return (await axios.get(url)).data.data
+    return (await axios.get(url)).data.data.map(toEditorSource)
   }
 
   /**
@@ -20,8 +45,8 @@ export const useSourceStore = defineStore('source', () => {
    * @param id the identifier of the source.
    */
   async function getSource(id: string): Promise<Source> {
-    const url = `${apiEndpoints.API_SERVER}/sources/${id}`
-    return (await axios.get(url)).data.data
+    const sources = await getSources()
+    return sources.find((source) => source._id === id)
   }
 
   /**
@@ -38,9 +63,7 @@ export const useSourceStore = defineStore('source', () => {
         },
       ],
     }
-
-    const res = (await axios.post(url, source)).data.data
-    return res
+    return (await axios.post(url, source)).data.data
   }
 
   /**

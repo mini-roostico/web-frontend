@@ -165,7 +165,7 @@ onMounted(() => {
  */
 function saveYamlToStore(name: string, yaml: string) {
   sourceStore
-    .saveSource(source.value.id, name, yaml)
+    .saveSource(source.value._id, name, yaml)
     .then((source) => {
       showAlert('Suite saved successfully!', AlertType.SUCCESS)
       console.log(source.yaml)
