@@ -242,18 +242,25 @@ watch(activeTabLeft, (newTab) => {
  */
 function runRegeneration() {
   generationLoading.value = true
-  if (activeTabLeft.value === 'Suite Configuration') {
-    yamlText.value = suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml
+  if (activeTabLeft.value === 'Suite YAML') {
+    const { success, error } = suiteFormsRef.value.setFromYAML(yamlText.value)
+    if (!success) {
+      showAlert(`Error parsing YAML: ${error}`, AlertType.DANGER)
+      generationLoading.value = false
+      return
+    }
   }
+  const generationSuite = suiteFormsRef.value.getSuiteConfiguration(suiteNameInput.value)
+
   suiteStore
-    .generate(yamlText.value)
+    .generate(generationSuite)
     .then((data) => {
-      const { result, generationGraph } = data
+      const { resolvedSubjects, generationGraph } = data
       generationDone.value = true
       generationLoading.value = false
       graphData.value = generationGraph
       resultData.value = []
-      result.forEach((subject) => {
+      resolvedSubjects.forEach((subject) => {
         resultData.value.push(subject)
       })
       alert.value.clear()
