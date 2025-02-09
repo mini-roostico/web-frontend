@@ -2,7 +2,7 @@
  * Contains utility functions used by multiple components.
  */
 
-import { ResolvedSubject } from '@/stores/suite.ts'
+import { ResolvedSubject } from '@/commons/model.ts'
 
 /** An enum representing the possible roles of a user. */
 export enum Role {
@@ -28,12 +28,13 @@ export function formatDate(
   date: Date,
   yearsDigit: '2-digit' | 'numeric' | undefined = '2-digit',
 ): string {
+  const dateObj = new Date(date)
   const options: Intl.DateTimeFormatOptions = {
     day: '2-digit',
     month: 'short',
     year: yearsDigit,
   }
-  return new Intl.DateTimeFormat('it-IT', options).format(date).toString()
+  return new Intl.DateTimeFormat('it-IT', options).format(dateObj).toString()
 }
 
 /**
