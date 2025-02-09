@@ -21,17 +21,13 @@ export const useAuthStore = defineStore('auth', () => {
   const isLogged = computed(() => accessToken.value !== null)
 
   /** Attempts to log in the user with the given credentials, throwing an exception if the request fails. */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function login(role: Role, username: string, password: string) {
-    // TODO uncomment following lines
-    //const url = `${apiEndpoints.AUTH_SERVER}/auth/login`
-    //const response = await axios.post(url, { email: username, password: password })
-    //await verifyRole(username, role, response.data.data.accessToken)
+    const url = `${apiEndpoints.AUTH_SERVER}/auth/login`
+    const response = await axios.post(url, { email: username, password: password })
     setUser(username)
     setUserRole(role)
-    // TODO uncomment
-    setAccessToken(/*response.data.data.accessToken*/ 'fake-token')
-    setRefreshToken(/*response.data.data.refreshToken*/ 'fake-token')
+    setAccessToken(response.data.data.accessToken)
+    setRefreshToken(response.data.data.refreshToken)
     await router.push(returnUrl)
   }
 
@@ -39,37 +35,31 @@ export const useAuthStore = defineStore('auth', () => {
    * Registers a new user with the given credentials.
    * @param username the username of the new user
    * @param password the password of the new user
+   * @param firstName the first name of the new user
+   * @param secondName the second name of the new user
    */
   async function register(
     username: string,
     password: string,
+    firstName: string,
+    secondName: string,
   ): Promise<{
     success: boolean
     msg: string
   }> {
-    const urlCreation = `${apiEndpoints.AUTH_SERVER}/users`
-    const responseResult = await axios.post(urlCreation, { email: username, password: password })
+    const urlCreation = `${apiEndpoints.API_SERVER}/users`
+    const responseResult = await axios.post(urlCreation, {
+      email: username,
+      password: password,
+      firstName: firstName,
+      secondName: secondName,
+      role: 'user',
+    })
 
     if (responseResult.status !== 201) {
       return { success: false, msg: 'Error during registration' }
     }
     return { success: true, msg: 'Registration successful' }
-  }
-
-  /**
-   * Verifies that the user has the given role.
-   * @param username the username of the user
-   * @param role the role to verify
-   * @param accessToken the access token of the user
-   */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async function verifyRole(username: string, role: Role, accessToken: string) {
-    const roleVerification = await axios.get(`${apiEndpoints.API_SERVER}/users/`, {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    })
-    if (roleVerification.data.data.role !== role) {
-      throw new Error('Login error: Unauthorized')
-    }
   }
 
   /** Refreshes the access token of the user. */
@@ -106,10 +96,9 @@ export const useAuthStore = defineStore('auth', () => {
   function setAccessToken(token: string) {
     accessToken.value = token
     sessionStorage.setItem('accessToken', token)
-    // TODO uncomment
-    // console.debug(
-    //   `Expiration access token: ${new Date(1000 * JSON.parse(atob(token.split('.')[1])).exp)}`,
-    // )
+    console.debug(
+      `Expiration access token: ${new Date(1000 * JSON.parse(atob(token.split('.')[1])).exp)}`,
+    )
   }
 
   /**
@@ -118,10 +107,9 @@ export const useAuthStore = defineStore('auth', () => {
    */
   function setRefreshToken(token: string) {
     sessionStorage.setItem('refreshToken', token)
-    // TODO uncomment
-    // console.debug(
-    //   `Expiration refresh token: ${new Date(1000 * JSON.parse(atob(token.split('.')[1])).exp)}`,
-    // )
+    console.debug(
+      `Expiration refresh token: ${new Date(1000 * JSON.parse(atob(token.split('.')[1])).exp)}`,
+    )
   }
 
   /**
