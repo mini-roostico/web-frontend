@@ -9,6 +9,10 @@ FROM nginx:stable
 COPY --from=vue-build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
-COPY ./nginx.conf /etc/nginx/conf.d/nginx.conf.template
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY ./nginx.conf /etc/nginx/nginx.conf.template
+
+COPY ./entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
