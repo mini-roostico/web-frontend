@@ -1,3 +1,15 @@
+## [1.4.2](https://github.com/mini-roostico/web-frontend/compare/1.4.1...1.4.2) (2025-02-09)
+
+### Bug Fixes
+
+* fixed non-string values causing silent errors ([92cdb5c](https://github.com/mini-roostico/web-frontend/commit/92cdb5cdfe7756dedb2aa9436d3346e7b9baafac))
+* fixed typo ([a8daa64](https://github.com/mini-roostico/web-frontend/commit/a8daa645ca02935d3946e958e1f3d24fb5551e76))
+* user dropdown using first name instead of email ([2666500](https://github.com/mini-roostico/web-frontend/commit/2666500a61dd567db70887059e92b558ba9089b0))
+
+### Build and continuous integration
+
+* downgraded highlight.js since newer version cause highlight to not work with simple-code-editor ([906cbab](https://github.com/mini-roostico/web-frontend/commit/906cbab9bf7e5f64202fd4d533f7fd6cfb567d00))
+
 ## [1.4.1](https://github.com/mini-roostico/web-frontend/compare/1.4.0...1.4.1) (2025-02-09)
 
 ### Bug Fixes

@@ -267,7 +267,7 @@ watch(activeTabLeft, (newTab) => {
  * Runs the suite generation. Shows an alert if there is an error, otherwise sets the result data
  * and the generation graph.
  */
-function runRegeneration() {
+function runGeneration() {
   if (activeTabLeft.value === 'Suite YAML') {
     const { success } = setFormsFromYaml(yamlText.value)
     if (!success) {
@@ -343,7 +343,7 @@ function downloadResultData() {
           v-if="!generationLoading"
           class="btn play-btn me-2"
           :disabled="loading"
-          @click="runRegeneration"
+          @click="runGeneration"
         >
           <i class="bi bi-play-fill"></i> Run Suite
         </button>
