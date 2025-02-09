@@ -18,7 +18,16 @@ const isLogin: Ref<boolean> = ref(route.path !== '/register')
 /**
  * Username of the user.
  */
-const username: Ref<string> = ref('')
+const email: Ref<string> = ref('')
+/**
+ * First name of the user.
+ */
+const firstName: Ref<string> = ref('')
+
+/**
+ * Last name of the user.
+ */
+const secondName: Ref<string> = ref('')
 /**
  * Password of the user.
  */
@@ -86,12 +95,12 @@ function checkPassword(newValue: string, refToCheck: Ref<string>) {
 /**
  * Logs in the user with the given credentials. Shows an alert if the credentials are invalid,
  * otherwise redirects to the sources page.
- * @param username Username of the user.
+ * @param email Email of the user.
  * @param password Password of the user.
  */
-function login(username: string, password: string) {
+function login(email: string, password: string) {
   authStore
-    .login(Role.User, username, password)
+    .login(Role.User, email, password)
     .then(() => {
       loading.value = false
       EventBus.$emit('refresh-navbar')
@@ -105,20 +114,23 @@ function login(username: string, password: string) {
 }
 
 /**
- * Registers the user with the given credentials. Shows an alert if the username already exists,
+ * Registers the user with the given credentials. Shows an alert if the email already exists,
  * otherwise logs in the user.
- * @param username Username of the user.
+ * @param email Email of the user.
  * @param password Password of the user.
+ * @param firstName First name of the user.
+ * @param secondName Last name of the user.
  */
-function register(username: string, password: string) {
+function register(email: string, password: string, firstName: string, secondName: string) {
   authStore
-    .register(username, password)
+    .register(email, password, firstName, secondName)
     .then(() => {
-      login(username, password)
+      login(email, password)
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log('Error while registering: ', e)
       loading.value = false
-      showAlert('Username already exists', AlertType.DANGER)
+      showAlert('Email already exists', AlertType.DANGER)
     })
 }
 
@@ -129,12 +141,12 @@ function register(username: string, password: string) {
 function handleSubmit() {
   if (isLogin.value) {
     loading.value = true
-    login(username.value, password.value)
+    login(email.value, password.value)
   } else {
     // Handle registration
     if (password.value === confirmPassword.value) {
       loading.value = true
-      register(username.value, password.value)
+      register(email.value, password.value, firstName.value, secondName.value)
     } else {
       // error
     }
@@ -166,10 +178,24 @@ watch(confirmPassword, (newConfirmPassword) => checkPassword(newConfirmPassword,
     <AlertComponent ref="alert" :cancellable="false"></AlertComponent>
     <form class="form-container" @submit.prevent="handleSubmit">
       <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
+        <label for="email" class="form-label">E-mail</label>
+        <input id="email" v-model="email" type="email" class="form-control dark-input" required />
+      </div>
+      <div v-if="!isLogin" class="mb-3">
+        <label for="firstName" class="form-label">First Name</label>
         <input
-          id="username"
-          v-model="username"
+          id="firstName"
+          v-model="firstName"
+          type="text"
+          class="form-control dark-input"
+          required
+        />
+      </div>
+      <div v-if="!isLogin" class="mb-3">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input
+          id="lastName"
+          v-model="secondName"
           type="text"
           class="form-control dark-input"
           required
