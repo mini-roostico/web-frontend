@@ -1,4 +1,5 @@
 import { GraphData } from '@/commons/graph.ts'
+import yaml from 'js-yaml'
 
 /**
  * Configuration of the suite.
@@ -86,4 +87,50 @@ export interface ResolvedSubject {
 export interface GenerationResult {
   generationGraph: GraphData
   result: ResolvedSubject[]
+}
+
+/**
+ * Utility interface that contains the parsing result of the YAML editor or the suite object.
+ */
+export interface SubjektConfig {
+  /**
+   * The YAML string obtained from the form values.
+   */
+  yaml: string
+  /**
+   * The suite object obtained parsing the YAML string.
+   */
+  suite: Suite
+}
+
+/**
+ * Returns the YAML string and the suite object from the given suite values.
+ * @param name the name of the suite.
+ * @param configuration the configuration of the suite.
+ * @param parameters the parameters of the suite.
+ * @param macros the macros of the suite.
+ * @param subjects the subjects of the suite.
+ */
+export function getYamlFromSuite(
+  name: string,
+  configuration: Configuration,
+  parameters: Parameter[],
+  macros: Macro[],
+  subjects: Subject[],
+): SubjektConfig {
+  const suite = {
+    name,
+    configuration,
+    parameters,
+    macros,
+    subjects,
+  }
+  return {
+    yaml: yaml.dump(suite, {
+      skipInvalid: true,
+      // Ensure multi-line strings are properly formatted
+      forceQuotes: true,
+    }),
+    suite: suite,
+  }
 }

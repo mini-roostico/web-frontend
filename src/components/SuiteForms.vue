@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import {
+  Configuration,
+  getYamlFromSuite,
+  Macro,
+  Parameter,
+  Subject,
+  SubjektConfig,
+  Suite,
+} from '@/commons/model.ts'
 import yaml from 'js-yaml'
-import { Configuration, Macro, Parameter, Subject, Suite } from '@/commons/model.ts'
 
 /**
  * Defines the props of the component. The `disabled` prop is used to disable the form.
@@ -34,20 +42,6 @@ const macros = ref([])
  * The subjects of the suite. Starts with one empty subject.
  */
 const subjects = ref([{ name: 'Subject 1', pairs: [] }])
-
-/**
- * Utility interface that contains the parsing result of the YAML editor or the suite object.
- */
-interface SubjektConfig {
-  /**
-   * The YAML string obtained from the form values.
-   */
-  yaml: string
-  /**
-   * The suite object obtained parsing the YAML string.
-   */
-  suite: Suite
-}
 
 /**
  * Generates a YAML string from the current form values.
@@ -87,22 +81,7 @@ function generateYAML(suiteName: string): SubjektConfig {
     )
     .filter((subject) => Object.keys(subject).length > 0)
 
-  const suite = {
-    name: suiteName,
-    configuration: configObj,
-    parameters: parametersArray,
-    macros: macrosArray,
-    subjects: subjectsArray,
-  }
-
-  return {
-    yaml: yaml.dump(suite, {
-      skipInvalid: true,
-      // Ensure multi-line strings are properly formatted
-      forceQuotes: true,
-    }),
-    suite: suite,
-  }
+  return getYamlFromSuite(suiteName, configObj, parametersArray, macrosArray, subjectsArray)
 }
 
 /**
