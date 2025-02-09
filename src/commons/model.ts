@@ -1,4 +1,5 @@
 import { GraphData } from '@/commons/graph.ts'
+import yaml from 'js-yaml'
 
 /**
  * Configuration of the suite.
@@ -56,13 +57,13 @@ export interface Suite {
 
 /**
  * Source of the suite.
- * @property id the unique identifier of the source.
+ * @property _id the unique identifier of the source.
  * @property name the name of the source.
  * @property lastModified the last modification date of the source.
  * @property yaml the YAML content of the source.
  */
 export interface Source {
-  id: string
+  _id: string
   name: string
   lastModified: Date
   yaml: string
@@ -85,5 +86,61 @@ export interface ResolvedSubject {
  */
 export interface GenerationResult {
   generationGraph: GraphData
-  result: ResolvedSubject[]
+  resolvedSubjects: ResolvedSubject[]
+}
+
+/**
+ * Utility interface that contains the parsing result of the YAML editor or the suite object.
+ */
+export interface SubjektConfig {
+  /**
+   * The YAML string obtained from the form values.
+   */
+  yaml: string
+  /**
+   * The suite object obtained parsing the YAML string.
+   */
+  suite: Suite
+}
+
+/**
+ * Returns the YAML string and the suite object from the given suite values.
+ * @param name the name of the suite.
+ * @param configuration the configuration of the suite.
+ * @param parameters the parameters of the suite.
+ * @param macros the macros of the suite.
+ * @param subjects the subjects of the suite.
+ */
+export function getYamlFromSuite(
+  name: string,
+  configuration: Configuration,
+  parameters: Parameter[],
+  macros: Macro[],
+  subjects: Subject[],
+): SubjektConfig {
+  const suite = {
+    name,
+    configuration,
+    parameters,
+    macros,
+    subjects,
+  }
+  return {
+    yaml: yaml.dump(suite, {
+      skipInvalid: true,
+      // Ensure multi-line strings are properly formatted
+      forceQuotes: true,
+    }),
+    suite: suite,
+  }
+}
+
+/**
+ * Checks if this suite object has some unknown fields.
+ * @param suite suite to check.
+ * @return an array of strings containing the unknown fields found.
+ */
+export function checkUnknownFields(suite: object): string[] {
+  const knownFields = ['name', 'configuration', 'parameters', 'macros', 'subjects']
+  return Object.keys(suite).filter((field) => !knownFields.includes(field))
 }

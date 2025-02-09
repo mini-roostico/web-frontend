@@ -1,33 +1,27 @@
 import { defineStore } from 'pinia'
-import { io } from '@mini-roostico/subjekt'
-import subjekt = io.github.subjekt.Subjekt
 import { convertGraph, GraphData } from '@/commons/graph.ts'
+import { GenerationResult, Suite } from '@/commons/model.ts'
+import { apiEndpoints } from '@/commons/globals.ts'
+import axios from 'axios'
 import { convertToSubjects } from '@/commons/utils.ts'
-import { GenerationResult } from '@/commons/model.ts'
 
 /**
  * Store for the suite, utility for handling the generation of the suite.
  */
 export const useSuiteStore = defineStore('suite', () => {
   /**
-   * Runs a Subjekt generation using the Suite configuration contained in the given YAML.
-   * @param yaml the YAML content of the Suite.
+   * Runs a Subjekt generation using the provided Suite configuration.
+   * @param suite The suite configuration to use for the generation.
    */
-  async function generate(yaml: string): Promise<GenerationResult> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/suite`
-    //return (await axios.post(url, { yaml })).data.data
-    return new Promise((resolve) => {
-      const generation = subjekt.fromYaml(yaml)
-      const result = JSON.parse(generation.resolveSubjectsAsJson().asString()) as Array<object>
-      const graph = JSON.parse(generation.getGenerationGraph().asString())
-      const graphData: GraphData = convertGraph(graph)
-      const resultData = convertToSubjects(result)
-      resolve({
-        generationGraph: graphData,
-        result: resultData,
-      })
-    })
+  async function generate(suite: Suite): Promise<GenerationResult> {
+    const url = `${apiEndpoints.API_SERVER}/sources/submit`
+    const { resolvedSubjects, generationGraph } = (await axios.post(url, suite)).data.data
+    const convertedSubjects = convertToSubjects(resolvedSubjects)
+    const convertedGraph: GraphData = convertGraph(generationGraph)
+    return {
+      generationGraph: convertedGraph,
+      resolvedSubjects: convertedSubjects,
+    }
   }
 
   return {

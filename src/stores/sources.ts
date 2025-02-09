@@ -1,51 +1,43 @@
 import { defineStore } from 'pinia'
-import { Source } from '@/commons/model.ts'
+import { getYamlFromSuite, Source, Suite } from '@/commons/model.ts'
+import { apiEndpoints } from '@/commons/globals.ts'
+import axios from 'axios'
+
+/**
+ * Converts the given source object to the Source object.
+ * @param source the source object to convert, obtained from the API.
+ */
+function toEditorSource(source: object): Source {
+  const sourceObj = {}
+  const subjects = source['subjects'] ?? []
+  const parameters = source['parameters'] ?? []
+  const macros = source['macros'] ?? []
+  const configuration = source['configuration'] ?? new Map()
+  const last_update = new Date(source['last_update'])
+  if (source['name']) {
+    sourceObj['name'] = source['name']
+  } else {
+    throw new Error('Source name is missing')
+  }
+  const { yaml } = getYamlFromSuite(source['name'], configuration, parameters, macros, subjects)
+  return {
+    _id: source['_id'],
+    name: source['name'],
+    lastModified: last_update,
+    yaml: yaml,
+  }
+}
 
 /**
  * Store for the sources, utility for handling the CRUD operations of the sources.
  */
 export const useSourceStore = defineStore('source', () => {
-  // TODO remove
-  const dummySources: Source[] = [
-    {
-      id: '1',
-      name: 'Source 1',
-      lastModified: new Date(),
-      yaml: `
-      name: "Source 1"
-      parameters:
-        - name: "param1"
-          values:
-          - "value1"
-          - "value2"
-        - name: "param2"
-          values:
-          - "value3"
-          - "value3"
-      subjects:
-        - name: "Subject Awesome"
-          score: 10
-        - name: "Subject Bad"
-      `,
-    },
-    {
-      id: '2',
-      name: 'Source 2',
-      lastModified: new Date(),
-      yaml: `name: "Source 2"`,
-    },
-  ]
-
   /**
    * Get all the sources.
    */
   async function getSources(): Promise<Source[]> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/sources`
-    //return (await axios.get(url)).data.data
-    return new Promise((resolve) => {
-      resolve(dummySources)
-    })
+    const url = `${apiEndpoints.API_SERVER}/sources`
+    return (await axios.get(url)).data.data.map(toEditorSource)
   }
 
   /**
@@ -53,12 +45,8 @@ export const useSourceStore = defineStore('source', () => {
    * @param id the identifier of the source.
    */
   async function getSource(id: string): Promise<Source> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
-    //return (await axios.get(url)).data.data
-    return new Promise((resolve) => {
-      resolve(dummySources.find((source) => source.id === id))
-    })
+    const sources = await getSources()
+    return sources.find((source) => source._id === id)
   }
 
   /**
@@ -66,19 +54,16 @@ export const useSourceStore = defineStore('source', () => {
    * @param name the name of the source.
    */
   async function createSource(name: string): Promise<Source> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/sources`
-    //return (await axios.post(url, { name })).data.data
-    return new Promise((resolve) => {
-      const newSource = {
-        id: (dummySources.length + 1).toString(),
-        name,
-        lastModified: new Date(),
-        yaml: '',
-      }
-      dummySources.push(newSource)
-      resolve(newSource)
-    })
+    const url = `${apiEndpoints.API_SERVER}/sources`
+    const source = {
+      name: name,
+      subjects: [
+        {
+          name: 'Subjekt 1',
+        },
+      ],
+    }
+    return (await axios.post(url, source)).data.data
   }
 
   /**
@@ -87,17 +72,8 @@ export const useSourceStore = defineStore('source', () => {
    * @param name the new name of the source.
    */
   async function renameSource(id: string, name: string): Promise<Source> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
-    //return (await axios.put(url, { name })).data.data
-    return new Promise((resolve) => {
-      const source = dummySources.find((source) => source.id === id)
-      if (source) {
-        source.name = name
-        source.lastModified = new Date()
-      }
-      resolve(source)
-    })
+    const url = `${apiEndpoints.API_SERVER}/sources`
+    return (await axios.put(url, { data: { _id: id, data: { name } } })).data.data
   }
 
   /**
@@ -105,35 +81,18 @@ export const useSourceStore = defineStore('source', () => {
    * @param id the identifier of the source.
    */
   async function deleteSource(id: string): Promise<void> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/sources/${id}`
-    //await axios.delete(url)
-    return new Promise((resolve) => {
-      const index = dummySources.findIndex((source) => source.id === id)
-      if (index >= 0) {
-        dummySources.splice(index, 1)
-      }
-      resolve()
-    })
+    const url = `${apiEndpoints.API_SERVER}/sources`
+    await axios.delete(url, { data: { data: { _id: id } } })
   }
 
   /**
    * Save the source.
    * @param id the identifier of the source.
-   * @param name the new name of the source.
-   * @param yaml the new YAML content of the source.
+   * @param suite the suite contained in the source to save.
    */
-  async function saveSource(id: string, name: string, yaml: string): Promise<Source> {
-    // TODO uncomment
-    //const url = `${apiEndpoints.API_SERVER}/suite/${id}`
-    //return (await axios.put(url, { name, yaml })).data.data
-    return new Promise((resolve) => {
-      const source = dummySources.find((source) => source.id === id)!
-      source.yaml = yaml
-      source.name = name
-      source.lastModified = new Date()
-      resolve({ id, name, lastModified: new Date(), yaml })
-    })
+  async function saveSource(id: string, suite: Suite): Promise<Source> {
+    const url = `${apiEndpoints.API_SERVER}/sources`
+    return (await axios.put(url, { data: { _id: id, data: suite } })).data.data
   }
 
   return {

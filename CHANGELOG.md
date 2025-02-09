@@ -1,3 +1,51 @@
+## [1.4.2](https://github.com/mini-roostico/web-frontend/compare/1.4.1...1.4.2) (2025-02-09)
+
+### Bug Fixes
+
+* fixed non-string values causing silent errors ([92cdb5c](https://github.com/mini-roostico/web-frontend/commit/92cdb5cdfe7756dedb2aa9436d3346e7b9baafac))
+* fixed typo ([a8daa64](https://github.com/mini-roostico/web-frontend/commit/a8daa645ca02935d3946e958e1f3d24fb5551e76))
+* user dropdown using first name instead of email ([2666500](https://github.com/mini-roostico/web-frontend/commit/2666500a61dd567db70887059e92b558ba9089b0))
+
+### Build and continuous integration
+
+* downgraded highlight.js since newer version cause highlight to not work with simple-code-editor ([906cbab](https://github.com/mini-roostico/web-frontend/commit/906cbab9bf7e5f64202fd4d533f7fd6cfb567d00))
+
+## [1.4.1](https://github.com/mini-roostico/web-frontend/compare/1.4.0...1.4.1) (2025-02-09)
+
+### Bug Fixes
+
+* fixed renaming call ([1a9169b](https://github.com/mini-roostico/web-frontend/commit/1a9169bc3c86e8a86577e41ce758d0f40539e9b7))
+
+## [1.4.0](https://github.com/mini-roostico/web-frontend/compare/1.3.1...1.4.0) (2025-02-09)
+
+### Features
+
+* added correct source parsing and YAML generation after the call to the API ([5e88560](https://github.com/mini-roostico/web-frontend/commit/5e88560a9ecdaf57b4dd3bae7c37317125ff4ca1))
+* integrated register/login and logout routes with api ([2c01a6e](https://github.com/mini-roostico/web-frontend/commit/2c01a6e9e594da524f14798a7dcdc5cdfb0cc0cb))
+* integrated source creation, renaming and deletion ([6cd8c11](https://github.com/mini-roostico/web-frontend/commit/6cd8c1191a1e8b83d8c9c85c43fc60e7d69c10bf))
+* integrated suite generation with api ([edfd76a](https://github.com/mini-roostico/web-frontend/commit/edfd76a6990998955e69b1d4950a91e279e595ac))
+* integrated suite saving system with the api ([43910fc](https://github.com/mini-roostico/web-frontend/commit/43910fc16a355e46939580c96893eafda46f5604))
+
+### Dependency updates
+
+* **deps:** update actions/setup-node action to v4.2.0 ([2ed26a4](https://github.com/mini-roostico/web-frontend/commit/2ed26a4ae3ee2865e363223ad61cadd886201fe6))
+* **deps:** update dependency @types/node to v22.13.1 ([f3e8f6a](https://github.com/mini-roostico/web-frontend/commit/f3e8f6ac20e043e96c02a79e2edf2704141872d7))
+* **deps:** update dependency semantic-release-preconfigured-conventional-commits to v1.1.122 ([87554ee](https://github.com/mini-roostico/web-frontend/commit/87554ee363d60ef5800e25516994864580f6e337))
+* **deps:** update dependency typescript-eslint to v8.23.0 ([0bc5705](https://github.com/mini-roostico/web-frontend/commit/0bc570596159a9b740584d075e32d6f51e2eabab))
+* **deps:** update dependency vite-plugin-vue-devtools to v7.7.1 ([b7c6885](https://github.com/mini-roostico/web-frontend/commit/b7c68858dce4c706c6dbe24b315397e4eb7aa7b4))
+* **deps:** update docker/build-push-action digest to ca877d9 ([b6a46dd](https://github.com/mini-roostico/web-frontend/commit/b6a46dd950700d7cc26a4b931c89eec12e0e0a23))
+* **deps:** update docker/login-action digest to 327cd5a ([385a412](https://github.com/mini-roostico/web-frontend/commit/385a41268d801d113aa9dac8ddd153db732f4abb))
+* **deps:** update docker/metadata-action digest to 8e1d546 ([7f61829](https://github.com/mini-roostico/web-frontend/commit/7f61829ec6cb6611b7c0d79302430b3838792e1a))
+* **deps:** update node.js to 22.13 ([e01c5ce](https://github.com/mini-roostico/web-frontend/commit/e01c5ceb9c8875fb4a4d5e49f679feae21a8128a))
+
+### Bug Fixes
+
+* fixed utils function for date conversion and formatting ([e1af689](https://github.com/mini-roostico/web-frontend/commit/e1af689714e6626ece04a3d2f23c0508b4906511))
+
+### Build and continuous integration
+
+* setup of nginx configuration with entrypoint.sh ([2bc2a83](https://github.com/mini-roostico/web-frontend/commit/2bc2a8392fbbb3e9a6777284331e9be2164072a8))
+
 ## [1.3.1](https://github.com/mini-roostico/web-frontend/compare/1.3.0...1.3.1) (2025-02-07)
 
 ### Dependency updates

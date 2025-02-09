@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import {
+  Configuration,
+  getYamlFromSuite,
+  Macro,
+  Parameter,
+  Subject,
+  SubjektConfig,
+  Suite,
+} from '@/commons/model.ts'
 import yaml from 'js-yaml'
-import { Configuration, Macro, Parameter, Subject, Suite } from '@/commons/model.ts'
 
 /**
  * Defines the props of the component. The `disabled` prop is used to disable the form.
@@ -36,25 +44,10 @@ const macros = ref([])
 const subjects = ref([{ name: 'Subject 1', pairs: [] }])
 
 /**
- * Utility interface that contains the parsing result of the YAML editor or the suite object.
+ * Extracts the suite configuration from the form values.
+ * @param suiteName The name of the suite.
  */
-interface SubjektConfig {
-  /**
-   * The YAML string obtained from the form values.
-   */
-  yaml: string
-  /**
-   * The suite object obtained parsing the YAML string.
-   */
-  suite: Suite
-}
-
-/**
- * Generates a YAML string from the current form values.
- * @param suiteName The name of the suite, contained in a separate form.
- * @returns The YAML string and the suite object wrapped in a SubjektConfig object.
- */
-function generateYAML(suiteName: string): SubjektConfig {
+function getSuiteConfiguration(suiteName: string): Suite {
   const configObj: Configuration = configuration.value.reduce((acc, item) => {
     if (item.key && item.value) {
       acc[item.key] = item.value
@@ -65,14 +58,14 @@ function generateYAML(suiteName: string): SubjektConfig {
   const parametersArray: Parameter[] = parameters.value
     .map((param) => ({
       name: param.name,
-      values: param.values.filter((v) => v.trim() !== ''),
+      values: param.values.filter((v: string | number) => v.toString().trim() !== ''),
     }))
     .filter((param) => param.name && param.values.length > 0)
 
   const macrosArray: Macro[] = macros.value
     .map((macro) => ({
       name: macro.name,
-      values: macro.values.filter((v) => v.trim() !== ''),
+      values: macro.values.filter((v: string | number) => v.toString().trim() !== ''),
     }))
     .filter((macro) => macro.name && macro.values.length > 0)
 
@@ -87,22 +80,23 @@ function generateYAML(suiteName: string): SubjektConfig {
     )
     .filter((subject) => Object.keys(subject).length > 0)
 
-  const suite = {
+  return {
     name: suiteName,
     configuration: configObj,
     parameters: parametersArray,
     macros: macrosArray,
     subjects: subjectsArray,
   }
+}
 
-  return {
-    yaml: yaml.dump(suite, {
-      skipInvalid: true,
-      // Ensure multi-line strings are properly formatted
-      forceQuotes: true,
-    }),
-    suite: suite,
-  }
+/**
+ * Generates a YAML string from the current form values.
+ * @param suiteName The name of the suite, contained in a separate form.
+ * @returns The YAML string and the suite object wrapped in a SubjektConfig object.
+ */
+function generateYAML(suiteName: string): SubjektConfig {
+  const { configuration, parameters, macros, subjects } = getSuiteConfiguration(suiteName)
+  return getYamlFromSuite(suiteName, configuration, parameters, macros, subjects)
 }
 
 /**
@@ -110,7 +104,12 @@ function generateYAML(suiteName: string): SubjektConfig {
  * @param yamlString The YAML string to parse.
  * @returns An object with the success status, the suite name if successful, and the error message if not.
  */
-function setFromYAML(yamlString: string): { success: boolean; suiteName?: string; error?: string } {
+function setFromYAML(yamlString: string): {
+  success: boolean
+  suiteName?: string
+  error?: string
+  suite?: Suite
+} {
   try {
     const suite: Suite = yaml.load(yamlString) as Suite
 
@@ -141,7 +140,7 @@ function setFromYAML(yamlString: string): { success: boolean; suiteName?: string
       })),
     }))
 
-    return { success: true, suiteName: suite.name }
+    return { success: true, suiteName: suite.name, suite }
   } catch (error) {
     return {
       success: false,
@@ -153,6 +152,7 @@ function setFromYAML(yamlString: string): { success: boolean; suiteName?: string
 defineExpose({
   generateYAML,
   setFromYAML,
+  getSuiteConfiguration,
 })
 
 /**

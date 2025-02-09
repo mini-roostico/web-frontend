@@ -11,7 +11,7 @@ import { GraphData } from '@/commons/graph.ts'
 import SubjectResult from '@/components/SubjectResult.vue'
 import AlertComponent from '@/components/AlertComponent.vue'
 import { AlertType } from '@/commons/utils.ts'
-import { ResolvedSubject, Source } from '@/commons/model.ts'
+import { checkUnknownFields, ResolvedSubject, Source, Suite } from '@/commons/model.ts'
 
 /**
  * Tab names for the left side of the page.
@@ -53,7 +53,10 @@ const source: Ref<Source> = ref(null)
  * Alert component reference.
  */
 const alert: Ref<typeof AlertComponent> = ref(null)
-
+/**
+ * Info alert component reference.
+ */
+const alertInfo: Ref<typeof AlertComponent> = ref(null)
 /**
  * Shows an alert with the given text and type.
  * @param text Text to show in the alert.
@@ -61,6 +64,14 @@ const alert: Ref<typeof AlertComponent> = ref(null)
  */
 function showAlert(text: string, type: string) {
   alert.value.show(text, type)
+}
+
+/**
+ * Shows an info alert with the given text.
+ * @param text Text to show in the alert.
+ */
+function showInfoAlert(text: string) {
+  alertInfo.value.show(text, AlertType.INFO)
 }
 
 /**
@@ -159,22 +170,27 @@ onMounted(() => {
 })
 
 /**
- * Saves the YAML to the source store.
- * @param name Name of the suite.
- * @param yaml YAML text of the source.
+ * Saves the Suite to the source store.
+ * @param suite Suite to save.
  */
-function saveYamlToStore(name: string, yaml: string) {
+function saveYamlToStore(suite: Suite) {
+  let error = true
   sourceStore
-    .saveSource(source.value.id, name, yaml)
+    .saveSource(source.value._id, suite)
     .then((source) => {
-      showAlert('Suite saved successfully!', AlertType.SUCCESS)
-      console.log(source.yaml)
-      setFormsFromYaml(source.yaml)
-      isSaved.value = true
+      if (source) {
+        showAlert('Suite saved successfully!', AlertType.SUCCESS)
+        isSaved.value = true
+        error = false
+      }
     })
     .catch((error) => {
       console.error('Error saving suite:', error)
-      showAlert('Error saving suite. Please try again later.', AlertType.DANGER)
+    })
+    .finally(() => {
+      if (error) {
+        showAlert('Error saving suite. Please try again later.', AlertType.DANGER)
+      }
     })
 }
 
@@ -184,12 +200,11 @@ function saveYamlToStore(name: string, yaml: string) {
 function saveSuite() {
   const name = suiteNameInput.value
   if (activeTabLeft.value === 'Suite Configuration') {
-    const { yaml } = suiteFormsRef.value.generateYAML(name)
-    saveYamlToStore(name, yaml)
+    const suite: Suite = suiteFormsRef.value.getSuiteConfiguration(name)
+    saveYamlToStore(suite)
   } else {
-    if (setFormsFromYaml(yamlText.value) === true) {
-      saveYamlToStore(name, yamlText.value)
-    }
+    const { suite } = setFormsFromYaml(yamlText.value)
+    saveYamlToStore(suite)
   }
 }
 
@@ -198,7 +213,12 @@ function saveSuite() {
  * @param yaml YAML text to set the forms from.
  * @returns Whether the operation was successful or not.
  */
-function setFormsFromYaml(yaml: string): boolean {
+function setFormsFromYaml(yaml: string): {
+  success: boolean
+  suiteName?: string
+  error?: string
+  suite?: Suite
+} {
   const result = suiteFormsRef.value.setFromYAML(yaml)
   if (result.success === false) {
     console.log(result.error)
@@ -209,9 +229,20 @@ function setFormsFromYaml(yaml: string): boolean {
     )
     activeTabLeft.value = 'Suite YAML'
   } else {
-    suiteNameInput.value = result.suiteName
+    const unknownFields = checkUnknownFields(result.suite)
+    if (unknownFields.length > 0) {
+      previousText = yaml
+      showInfoAlert(
+        `There are unknown fields in your YAML: ${unknownFields}. Please fix them or they` +
+          ` will be lost at you're next load.`,
+      )
+      activeTabLeft.value = 'Suite YAML'
+    } else {
+      alertInfo.value.clear()
+      suiteNameInput.value = result.suiteName
+    }
   }
-  return result.success
+  return result
 }
 
 watch(activeTabLeft, (newTab) => {
@@ -222,7 +253,6 @@ watch(activeTabLeft, (newTab) => {
     }
     case 'Suite YAML': {
       if (!previousText) {
-        console.log(suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml)
         yamlText.value = suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml
       } else {
         yamlText.value = previousText
@@ -237,27 +267,32 @@ watch(activeTabLeft, (newTab) => {
  * Runs the suite generation. Shows an alert if there is an error, otherwise sets the result data
  * and the generation graph.
  */
-function runRegeneration() {
-  generationLoading.value = true
-  if (activeTabLeft.value === 'Suite Configuration') {
-    yamlText.value = suiteFormsRef.value.generateYAML(suiteNameInput.value).yaml
+function runGeneration() {
+  if (activeTabLeft.value === 'Suite YAML') {
+    const { success } = setFormsFromYaml(yamlText.value)
+    if (!success) {
+      return
+    }
   }
+  const generationSuite = suiteFormsRef.value.getSuiteConfiguration(suiteNameInput.value)
+  generationLoading.value = true
   suiteStore
-    .generate(yamlText.value)
+    .generate(generationSuite)
     .then((data) => {
-      const { result, generationGraph } = data
+      const { resolvedSubjects, generationGraph } = data
       generationDone.value = true
       generationLoading.value = false
       graphData.value = generationGraph
       resultData.value = []
-      result.forEach((subject) => {
+      resolvedSubjects.forEach((subject) => {
         resultData.value.push(subject)
       })
       alert.value.clear()
     })
     .catch((error) => {
+      const message = error.response?.data?.error?.message || error.message
       console.error('Error generating suite:', error)
-      showAlert(`Error generating suite: ${error}`, AlertType.DANGER)
+      showAlert(`Error generating suite: ${message}`, AlertType.DANGER)
       generationLoading.value = false
     })
 }
@@ -277,8 +312,8 @@ function downloadResultData() {
 }
 </script>
 <template>
-  <!-- AlertComponent Component -->
   <AlertComponent ref="alert" />
+  <AlertComponent ref="alertInfo" />
   <div v-if="loading">
     <div class="spinner-border" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -308,7 +343,7 @@ function downloadResultData() {
           v-if="!generationLoading"
           class="btn play-btn me-2"
           :disabled="loading"
-          @click="runRegeneration"
+          @click="runGeneration"
         >
           <i class="bi bi-play-fill"></i> Run Suite
         </button>
