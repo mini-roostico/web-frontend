@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/mini-roostico/web-frontend/compare/1.4.0...1.4.1) (2025-02-09)
+
+### Bug Fixes
+
+* fixed renaming call ([1a9169b](https://github.com/mini-roostico/web-frontend/commit/1a9169bc3c86e8a86577e41ce758d0f40539e9b7))
+
 ## [1.4.0](https://github.com/mini-roostico/web-frontend/compare/1.3.1...1.4.0) (2025-02-09)
 
 ### Features
