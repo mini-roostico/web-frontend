@@ -13,6 +13,11 @@ const authStore = useAuthStore()
 const username: Ref<string> = ref(authStore.user)
 
 /**
+ * The first name of the user.
+ */
+const firstName = ref(authStore.userFirstName)
+
+/**
  * Emits the events to the parent component. The events are:
  * - logout: emitted when the user logs out.
  */
@@ -22,7 +27,7 @@ const emit = defineEmits(['logout'])
  * The initials of the user, displayed in the avatar.
  */
 const userInitials = computed(() =>
-  username.value
+  firstName.value
     .split(' ')
     .map((name) => name[0])
     .slice(0, 2)
@@ -75,7 +80,7 @@ function logout(): void {
           <span class="user-initials">{{ userInitials }}</span>
         </div>
         <div class="user-info">
-          <div class="user-name">{{ username }}</div>
+          <div class="user-name">{{ firstName }}</div>
         </div>
       </div>
       <div class="dropdown-divider"></div>

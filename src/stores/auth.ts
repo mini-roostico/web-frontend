@@ -15,6 +15,8 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(sessionStorage.getItem('accessToken'))
   /** The username of the logged user or null if not logged. */
   const user = ref(sessionStorage.getItem('username'))
+  /** The first name of the logged user or null if not logged. */
+  const userFirstName = ref(sessionStorage.getItem('firstName'))
   /** The role of the logged user or null if not logged. */
   const userRole = ref(toRole(sessionStorage.getItem('role')))
   /** True if the user is logged, false otherwise. */
@@ -26,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
     const response = await axios.post(url, { email: username, password: password })
     setUser(username)
     setUserRole(role)
+    setFirstName(response.data.data.firstName ?? 'TestUser')
     setAccessToken(response.data.data.accessToken)
     setRefreshToken(response.data.data.refreshToken)
     await router.push(returnUrl)
@@ -79,7 +82,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     user.value = null
     userRole.value = null
+    userFirstName.value = null
     sessionStorage.removeItem('username')
+    sessionStorage.removeItem('firstName')
     sessionStorage.removeItem('accessToken')
     sessionStorage.removeItem('refreshToken')
     sessionStorage.removeItem('role')
@@ -122,6 +127,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   /**
+   * Sets the first name of the user.
+   * @param firstName the first name to set
+   */
+  function setFirstName(firstName: string) {
+    userFirstName.value = firstName
+    sessionStorage.setItem('firstName', firstName)
+  }
+
+  /**
    * Sets the role of the user.
    * @param role the role to set
    */
@@ -134,6 +148,7 @@ export const useAuthStore = defineStore('auth', () => {
     returnUrl,
     accessToken,
     user,
+    userFirstName,
     userRole,
     register,
     login,
