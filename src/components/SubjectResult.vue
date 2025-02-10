@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ComputedRef, ref, Ref } from 'vue'
+import { computed, ComputedRef, ref, Ref, watch } from 'vue'
 import YamlEditor from '@/components/YamlEditor.vue'
 import ResultCard from '@/components/ResultCard.vue'
 import { ResolvedSubject } from '@/commons/model.ts'
@@ -37,10 +37,22 @@ const type: ComputedRef<Type> = computed(() => {
   return props.result?.values?.some((obj) => obj.key === 'code') ? Type.Code : Type.Text
 })
 
+function setupCode(result: ResolvedSubject): string {
+  return result?.values?.find((obj) => obj.key === 'code')?.value || ''
+}
+
 /**
  * The code of the result. Empty string if the result is not code.
  */
-const code: Ref<string> = ref(props.result?.values?.find((obj) => obj.key === 'code')?.value || '')
+const code: Ref<string> = ref(setupCode(props.result))
+
+watch(
+  () => props.result,
+  (newResult: ResolvedSubject) => {
+    code.value = setupCode(newResult)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
