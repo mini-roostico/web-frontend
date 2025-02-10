@@ -1,3 +1,9 @@
+## [1.4.6](https://github.com/mini-roostico/web-frontend/compare/1.4.5...1.4.6) (2025-02-10)
+
+### Bug Fixes
+
+* fixed new 'put' route of the API for sources renaming and saving ([a1a0e98](https://github.com/mini-roostico/web-frontend/commit/a1a0e987cc2a75ef4a6aefede51c1cac85fa5f4b))
+
 ## [1.4.5](https://github.com/mini-roostico/web-frontend/compare/1.4.4...1.4.5) (2025-02-10)
 
 ### Bug Fixes
