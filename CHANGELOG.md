@@ -1,3 +1,17 @@
+## [1.4.4](https://github.com/mini-roostico/web-frontend/compare/1.4.3...1.4.4) (2025-02-10)
+
+### Dependency updates
+
+* **deps:** update eslint monorepo to v9.20.0 ([7397007](https://github.com/mini-roostico/web-frontend/commit/73970070a1e30840b5d0cf113ee0e7b3a33353fa))
+
+### Bug Fixes
+
+* fixed error message when using an inappropriate password ([e022a3d](https://github.com/mini-roostico/web-frontend/commit/e022a3d99b18713eb3e230a30043dcaf8949eb77))
+
+### Build and continuous integration
+
+* removed subjekt dependency ([f34ffb2](https://github.com/mini-roostico/web-frontend/commit/f34ffb22425033aa0f099dfaa92c6ca5141142b2))
+
 ## [1.4.3](https://github.com/mini-roostico/web-frontend/compare/1.4.2...1.4.3) (2025-02-09)
 
 ### Dependency updates

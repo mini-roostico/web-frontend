@@ -128,9 +128,18 @@ function register(email: string, password: string, firstName: string, secondName
       login(email, password)
     })
     .catch((e) => {
-      console.log('Error while registering: ', e)
+      const error = e.response.data.error.message.toString() ?? 'duplicate key'
+      console.log(error)
+      if (error.includes('duplicate key')) {
+        showAlert('Email already exists', AlertType.DANGER)
+      } else {
+        showAlert(
+          'An error occurred: try changing your password to a more complex one ' +
+            '(i.e. at least 8 characters, one symbol, uppercase and lowercase, numbers)',
+          AlertType.DANGER,
+        )
+      }
       loading.value = false
-      showAlert('Email already exists', AlertType.DANGER)
     })
 }
 
