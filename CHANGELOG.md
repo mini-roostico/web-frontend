@@ -1,3 +1,9 @@
+## [1.4.5](https://github.com/mini-roostico/web-frontend/compare/1.4.4...1.4.5) (2025-02-10)
+
+### Bug Fixes
+
+* fixed SubjectResult.vue code not updating after outer result changes ([9e16ea4](https://github.com/mini-roostico/web-frontend/commit/9e16ea4145bb78920040acbbf084979d51ece34f))
+
 ## [1.4.4](https://github.com/mini-roostico/web-frontend/compare/1.4.3...1.4.4) (2025-02-10)
 
 ### Dependency updates
